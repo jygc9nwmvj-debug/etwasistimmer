@@ -266,8 +266,8 @@
     .main-intro {
       display: grid;
       grid-template-columns: 1.1fr 0.9fr;
-      gap: 3.5rem;
-      align-items: center;
+      gap: 2.5rem;
+      align-items: end;
       padding: 12rem 0 5rem 0;
       border-bottom: 1px solid var(--line);
       scroll-margin-top: 12rem;
@@ -606,16 +606,34 @@
       width: 100%;
       max-width: 1100px;
       max-height: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+    }
+
+    /* Bild + Info-Panel liegen übereinander statt untereinander, damit die
+       Gesamthöhe nie über die eines einzelnen (moderat gedeckelten) Bildes
+       hinauswächst -- sonst fällt der Filmstrip auf schmalen/hohen
+       Bildschirmen (iPad) unten aus dem sichtbaren Bereich raus. */
+    .lightbox-media {
+      position: relative;
+      width: 100%;
     }
 
     .lightbox-image {
-      width: 100%;
-      max-height: 65vh;
-      object-fit: contain;
+      display: block;
+      max-width: 100%;
+      max-height: 78vh;
+      width: auto;
+      height: auto;
+      margin: 0 auto;
       transition: opacity 0.35s ease;
+    }
+
+    .lightbox-info {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(13, 13, 12, 0.9);
+      padding: 1.25rem 1.5rem 1.5rem;
     }
 
     .lightbox-genre {
@@ -629,27 +647,27 @@
     }
 
     .lightbox-title {
-      margin-top: 0.75rem;
+      margin-top: 0.6rem;
       font-family: 'EB Garamond', serif;
-      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-size: clamp(1.4rem, 2.6vw, 2rem);
       font-weight: 400;
       color: #e8e6e1;
     }
 
     .lightbox-desc {
-      margin-top: 0.5rem;
+      margin-top: 0.4rem;
       font-family: 'Inter', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 300;
       color: #a9a8a3;
-      line-height: 1.6;
+      line-height: 1.5;
       max-width: 640px;
     }
 
     .lightbox-filmstrip {
       display: flex;
       gap: 0.75rem;
-      margin-top: 1.5rem;
+      margin-top: 1rem;
       overflow-x: auto;
       padding-bottom: 0.25rem;
     }
@@ -752,7 +770,11 @@
     }
 
     @media (max-width: 768px) {
-      .lightbox { padding: 5rem 1.25rem; }
+      .lightbox { padding: 4rem 0.75rem; }
+      .lightbox-image { max-height: 72vh; }
+      .lightbox-info { padding: 1rem 1.1rem 1.15rem; }
+      .lightbox-desc { font-size: 0.85rem; }
+      .filmstrip-thumb { width: 4.5rem; }
       .lightbox-arrow { width: 2.25rem; height: 2.25rem; font-size: 1.2rem; }
       .lightbox-nav-label { font-size: 0.6rem; }
       .lightbox-nav-prev { left: 0.5rem; }
@@ -1127,12 +1149,14 @@
       <span class="lightbox-nav-label" aria-hidden="true">Nächstes<br>Projekt</span>
     </div>
     <div class="lightbox-content">
-      <img id="lightboxImage" src="" alt="" class="lightbox-image">
-      <div class="lightbox-info">
-        <span class="lightbox-genre" id="lightboxGenre"></span>
-        <h3 class="lightbox-title" id="lightboxTitle"></h3>
-        <p class="lightbox-desc" id="lightboxDesc"></p>
-        <div class="lightbox-filmstrip" id="lightboxFilmstrip"></div>
+      <div class="lightbox-media">
+        <img id="lightboxImage" src="" alt="" class="lightbox-image">
+        <div class="lightbox-info">
+          <span class="lightbox-genre" id="lightboxGenre"></span>
+          <h3 class="lightbox-title" id="lightboxTitle"></h3>
+          <p class="lightbox-desc" id="lightboxDesc"></p>
+          <div class="lightbox-filmstrip" id="lightboxFilmstrip"></div>
+        </div>
       </div>
     </div>
   </div>
