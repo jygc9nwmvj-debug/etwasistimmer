@@ -514,13 +514,13 @@
           scrub: 0.3,
           invalidateOnRefresh: true,
 
-          snap: isTouch ? false : {
+          snap: {
             snapTo: function (progress) {
               return progress < 0.2 ? 0 : 1;
             },
-            duration: { min: 0.25, max: 0.6 },
-            delay: 0.05,
-            ease: 'power2.inOut',
+            duration: isTouch ? { min: 0.15, max: 0.35 } : { min: 0.25, max: 0.6 },
+            delay: isTouch ? 0.15 : 0.05,
+            ease: isTouch ? 'power1.out' : 'power2.inOut',
             inertia: false
           },
 
