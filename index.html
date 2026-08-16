@@ -387,6 +387,7 @@
       aspect-ratio: 16 / 9;
       overflow: hidden;
       background-color: var(--line);
+      cursor: pointer;
     }
 
     .portfolio-image {
@@ -394,7 +395,12 @@
       height: 100%;
       object-fit: cover;
       filter: grayscale(100%);
-      transition: opacity 0.35s ease;
+      transition: opacity 0.35s ease, filter 0.4s ease, transform 0.4s ease;
+    }
+
+    .portfolio-media:hover .portfolio-image {
+      filter: grayscale(0%);
+      transform: scale(1.04);
     }
 
     .portfolio-nav {
@@ -576,6 +582,115 @@
         color: var(--muted);
         line-height: 1.6;
       }
+    }
+
+    /* PORTFOLIO-LIGHTBOX: eigener, vom Seiten-Theme unabhängiger dunkler
+       Vollbild-Layer -- bewusst immer dunkel, unabhängig von hell/dunkel
+       Zustand der restlichen Seite, wie bei Bildbetrachtern üblich. */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(13, 13, 12, 0.94);
+      padding: 4rem 2rem;
+    }
+
+    .lightbox.is-open {
+      display: flex;
+    }
+
+    .lightbox-content {
+      width: 100%;
+      max-width: 1100px;
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .lightbox-image {
+      width: 100%;
+      max-height: 65vh;
+      object-fit: contain;
+    }
+
+    .lightbox-genre {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .lightbox-title {
+      margin-top: 0.75rem;
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 400;
+      color: #e8e6e1;
+    }
+
+    .lightbox-desc {
+      margin-top: 0.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: #a9a8a3;
+      line-height: 1.6;
+      max-width: 640px;
+    }
+
+    .lightbox-close,
+    .lightbox-arrow {
+      appearance: none;
+      background: none;
+      border: 1px solid rgba(232, 230, 225, 0.3);
+      color: #e8e6e1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .lightbox-close:hover,
+    .lightbox-arrow:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .lightbox-close {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 1.4rem;
+    }
+
+    .lightbox-arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2.75rem;
+      height: 2.75rem;
+      font-size: 1.4rem;
+    }
+
+    .lightbox-prev { left: 1.5rem; }
+    .lightbox-next { right: 1.5rem; }
+
+    @media (max-width: 768px) {
+      .lightbox { padding: 5rem 1.25rem; }
+      .lightbox-arrow { width: 2.25rem; height: 2.25rem; font-size: 1.2rem; }
+      .lightbox-prev { left: 0.5rem; }
+      .lightbox-next { right: 0.5rem; }
     }
 
     .contact-section {
@@ -935,6 +1050,20 @@
     </main>
   </div>
 
+  <div class="lightbox" id="portfolioLightbox" aria-hidden="true">
+    <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Schließen">×</button>
+    <button type="button" class="lightbox-arrow lightbox-prev" id="lightboxPrev" aria-label="Vorheriges Projekt">‹</button>
+    <button type="button" class="lightbox-arrow lightbox-next" id="lightboxNext" aria-label="Nächstes Projekt">›</button>
+    <div class="lightbox-content">
+      <img id="lightboxImage" src="" alt="" class="lightbox-image">
+      <div class="lightbox-info">
+        <span class="lightbox-genre" id="lightboxGenre"></span>
+        <h3 class="lightbox-title" id="lightboxTitle"></h3>
+        <p class="lightbox-desc" id="lightboxDesc"></p>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       'use strict';
@@ -1149,6 +1278,84 @@
 
       if (prevBtn) prevBtn.addEventListener('click', function () { step(-1); });
       if (nextBtn) nextBtn.addEventListener('click', function () { step(1); });
+
+      var media = document.querySelector('.portfolio-media');
+      var lightbox = document.getElementById('portfolioLightbox');
+      var lbImage = document.getElementById('lightboxImage');
+      var lbGenre = document.getElementById('lightboxGenre');
+      var lbTitle = document.getElementById('lightboxTitle');
+      var lbDesc = document.getElementById('lightboxDesc');
+      var lbClose = document.getElementById('lightboxClose');
+      var lbPrev = document.getElementById('lightboxPrev');
+      var lbNext = document.getElementById('lightboxNext');
+
+      if (media && lightbox) {
+        var lastFocused = null;
+
+        var fillLightbox = function (button) {
+          lbImage.setAttribute('src', button.getAttribute('data-image'));
+          lbImage.setAttribute('alt', button.getAttribute('data-alt') || '');
+          lbGenre.textContent = button.getAttribute('data-genre') || '';
+          lbTitle.textContent = button.textContent.trim();
+          lbDesc.textContent = button.getAttribute('data-desc') || '';
+        };
+
+        var onKeydown = function (e) {
+          if (e.key === 'Escape') { closeLightbox(); return; }
+          if (e.key === 'ArrowRight') { lightboxStep(1); return; }
+          if (e.key === 'ArrowLeft') { lightboxStep(-1); return; }
+          if (e.key === 'Tab') {
+            var focusable = lightbox.querySelectorAll('button');
+            var first = focusable[0];
+            var last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+              e.preventDefault();
+              last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+              e.preventDefault();
+              first.focus();
+            }
+          }
+        };
+
+        var openLightbox = function () {
+          var active = document.querySelector('.portfolio-item.is-active');
+          if (!active) return;
+          fillLightbox(active);
+          lastFocused = document.activeElement;
+          lightbox.classList.add('is-open');
+          lightbox.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+          lbClose.focus();
+          document.addEventListener('keydown', onKeydown);
+        };
+
+        var closeLightbox = function () {
+          lightbox.classList.remove('is-open');
+          lightbox.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+          document.removeEventListener('keydown', onKeydown);
+          if (lastFocused) lastFocused.focus();
+        };
+
+        var lightboxStep = function (direction) {
+          var shown = visibleItems();
+          if (!shown.length) return;
+          var current = shown.indexOf(document.querySelector('.portfolio-item.is-active'));
+          var nextIndex = (current + direction + shown.length) % shown.length;
+          var nextButton = shown[nextIndex];
+          nextButton.click();
+          fillLightbox(nextButton);
+        };
+
+        media.addEventListener('click', openLightbox);
+        lbClose.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', function (e) {
+          if (e.target === lightbox) closeLightbox();
+        });
+        lbPrev.addEventListener('click', function () { lightboxStep(-1); });
+        lbNext.addEventListener('click', function () { lightboxStep(1); });
+      }
     });
   </script>
 </body>
