@@ -51,6 +51,11 @@
       display: none;
     }
 
+    html.no-anim .site-nav {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
 
@@ -94,7 +99,16 @@
       background-color: color-mix(in srgb, var(--bg) 82%, transparent);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      opacity: 0;
+      pointer-events: none;
       transition: background-color var(--fade);
+    }
+
+    /* Menü ist Teil des Logo-Zustands, nicht der Gedicht-Seite: erscheint
+       hart zusammen mit dem Farbwechsel, keine eigene Einblend-Animation. */
+    html.is-logo .site-nav {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .site-nav a {
@@ -105,7 +119,7 @@
       font-weight: 600;
       letter-spacing: -0.02em;
       display: inline-block;
-      transition: opacity 0.2s, transform 0.2s, color var(--fade);
+      transition: opacity 0.2s, color var(--fade);
     }
 
     .site-nav a:hover {
@@ -113,7 +127,6 @@
       text-decoration: underline;
       text-decoration-thickness: 3px;
       text-underline-offset: 4px;
-      transform: translateX(4px);
     }
 
     /* GEDICHT BÜHNE */
@@ -411,6 +424,10 @@
       .poem-stage,
       .intro-spacer {
         display: none;
+      }
+      .site-nav {
+        opacity: 1;
+        pointer-events: auto;
       }
     </style>
   </noscript>
