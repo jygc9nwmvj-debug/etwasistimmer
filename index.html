@@ -175,16 +175,27 @@
       padding: 0.15em 0;
     }
 
-    /* Als Logo-Zustand braucht der Titel einen eigenen Hintergrund, sonst
-       läuft der restliche Seiteninhalt beim Weiterscrollen ungebremst
-       darunter durch. Gilt nur im Logo-Zustand, die Gedicht-Optik bleibt
-       unangetastet. */
-    html.is-logo .hero-line {
-      padding: 0.25em 0.9em;
+    /* Durchgehende Kopfleiste im Logo-Zustand: deckt das komplette obere
+       Band ab (wie die mobile Menüleiste unten), egal was dahinter
+       durchläuft -- Foto, Überschriften, Trennlinien. Nur im Logo-Zustand
+       sichtbar, die Gedicht-Optik bleibt unangetastet. */
+    .logo-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 8rem;
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0;
       background-color: color-mix(in srgb, var(--bg) 82%, transparent);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       transition: background-color var(--fade);
+    }
+
+    html.is-logo .logo-bar {
+      opacity: 1;
     }
 
     .poem-author {
@@ -397,6 +408,7 @@
       .poem-block { left: 6vw; right: 6vw; padding-right: 0; }
       .poem-line { font-size: 1.35rem; white-space: normal; }
       .scroll-hint { left: 6vw; }
+      .logo-bar { height: 7rem; }
 
       .site-nav {
         top: auto;
@@ -447,6 +459,8 @@
 <body>
 
   <div class="film-grain" aria-hidden="true"></div>
+
+  <div class="logo-bar" aria-hidden="true"></div>
 
   <!-- NAVIGATION -->
   <nav aria-label="Hauptnavigation">
