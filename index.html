@@ -43,6 +43,14 @@
       --muted: var(--muted-light);
     }
 
+    /* Fallback ohne GSAP / bei prefers-reduced-motion: die Scroll-Animation
+       läuft nie an, also das fixierte Gedicht-Overlay sofort ausblenden
+       statt es dauerhaft über dem Content hängen zu lassen. */
+    html.no-anim .poem-stage,
+    html.no-anim .intro-spacer {
+      display: none;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
 
@@ -349,6 +357,23 @@
       .portrait-freistehend { max-width: 300px; }
     }
   </style>
+
+  <noscript>
+    <style>
+      /* Ohne JavaScript läuft die Scroll-Animation nie an: sofort auf die
+         helle, statische Fassung springen und das fixierte Gedicht-Overlay
+         ausblenden, statt es dauerhaft über dem Content hängen zu lassen. */
+      :root {
+        --bg:    var(--bg-light);
+        --text:  var(--text-light);
+        --muted: var(--muted-light);
+      }
+      .poem-stage,
+      .intro-spacer {
+        display: none;
+      }
+    </style>
+  </noscript>
 </head>
 <body>
 
