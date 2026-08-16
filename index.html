@@ -267,7 +267,7 @@
       display: grid;
       grid-template-columns: 1.1fr 0.9fr;
       gap: 3.5rem;
-      align-items: flex-end;
+      align-items: center;
       padding: 12rem 0 5rem 0;
       border-bottom: 1px solid var(--line);
       scroll-margin-top: 12rem;
@@ -360,6 +360,222 @@
       color: var(--muted);
       line-height: 1.6;
       transition: color var(--fade);
+    }
+
+    /* PORTFOLIO: Bildvorschau + fließende Titelliste */
+    .portfolio-section {
+      padding: 6rem 0;
+      border-bottom: 1px solid var(--line);
+      scroll-margin-top: 8rem;
+    }
+
+    .portfolio-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .portfolio-preview {
+      position: sticky;
+      top: 11.5rem;
+    }
+
+    .portfolio-media {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background-color: var(--line);
+    }
+
+    .portfolio-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%);
+      transition: opacity 0.35s ease;
+    }
+
+    .portfolio-nav {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .portfolio-arrow {
+      appearance: none;
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--text);
+      width: 2.25rem;
+      height: 2.25rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .portfolio-arrow:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .portfolio-genre {
+      display: inline-block;
+      margin-top: 1.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .portfolio-desc {
+      margin-top: 0.75rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.6;
+      transition: color var(--fade);
+    }
+
+    .portfolio-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .portfolio-filter {
+      appearance: none;
+      background: none;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+
+    .portfolio-filter:hover {
+      color: var(--text);
+    }
+
+    .portfolio-filter.is-active {
+      color: var(--accent);
+    }
+
+    .portfolio-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      column-gap: 0.5em;
+      row-gap: 0.7em;
+    }
+
+    .portfolio-item {
+      appearance: none;
+      background: none;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      font-family: 'EB Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+
+    .portfolio-item:hover {
+      color: var(--text);
+    }
+
+    .portfolio-item.is-active {
+      color: var(--accent);
+    }
+
+    .portfolio-sep {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.3rem;
+      color: var(--muted);
+    }
+
+    .portfolio-panel {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .portfolio-layout {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .portfolio-preview {
+        display: none;
+      }
+
+      .portfolio-flow {
+        row-gap: 0;
+      }
+
+      .portfolio-panel {
+        display: block;
+        flex-basis: 100%;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease;
+      }
+
+      .portfolio-panel.is-open {
+        max-height: 32rem;
+      }
+
+      .portfolio-panel-inner {
+        padding: 1rem 0 1.5rem;
+      }
+
+      .portfolio-panel-media {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+      }
+
+      .portfolio-panel-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(100%);
+      }
+
+      .portfolio-panel-genre {
+        display: inline-block;
+        margin-top: 1rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .portfolio-panel-desc {
+        margin-top: 0.5rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 300;
+        color: var(--muted);
+        line-height: 1.6;
+      }
     }
 
     .contact-section {
@@ -516,6 +732,171 @@
         </div>
       </section>
 
+      <section class="portfolio-section" aria-label="Arbeiten">
+        <div class="portfolio-layout">
+          <div class="portfolio-preview">
+            <div class="portfolio-media">
+              <img
+                id="portfolioImage"
+                src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop"
+                alt="Nahaufnahme einer analogen Filmkamera"
+                class="portfolio-image">
+            </div>
+            <div class="portfolio-nav">
+              <button type="button" class="portfolio-arrow" id="portfolioPrev" aria-label="Vorheriges Projekt">‹</button>
+              <button type="button" class="portfolio-arrow" id="portfolioNext" aria-label="Nächstes Projekt">›</button>
+            </div>
+            <span class="portfolio-genre" id="portfolioGenre">Dokumentarfilm</span>
+            <p class="portfolio-desc" id="portfolioDesc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+          </div>
+
+          <div class="portfolio-list">
+            <div class="portfolio-filters" role="group" aria-label="Nach Format filtern">
+              <button type="button" class="portfolio-filter is-active" data-filter="all">Alle</button>
+              <button type="button" class="portfolio-filter" data-filter="Dokumentarfilm">Dokumentarfilm</button>
+              <button type="button" class="portfolio-filter" data-filter="TV">TV</button>
+            </div>
+
+            <div class="portfolio-flow" id="portfolioFlow">
+              <button type="button" class="portfolio-item is-active" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Nahaufnahme einer analogen Filmkamera" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Langzeitporträt</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Nahaufnahme einer analogen Filmkamera" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">Dokumentarfilm</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Gestapelte Tageszeitungen" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Magazinbeitrag</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Gestapelte Tageszeitungen" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">TV</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Kinosaal mit beleuchteter Leinwand" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Grenzregion</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Kinosaal mit beleuchteter Leinwand" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">Dokumentarfilm</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Gestapelte Tageszeitungen" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Studiogespräch</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Gestapelte Tageszeitungen" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">TV</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Nahaufnahme einer analogen Filmkamera" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Strukturwandel</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Nahaufnahme einer analogen Filmkamera" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">Dokumentarfilm</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Notizblock und Stift auf einem Tisch" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Primetime-Reportage</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Notizblock und Stift auf einem Tisch" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">TV</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Kinosaal mit beleuchteter Leinwand" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Generationenbericht</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Kinosaal mit beleuchteter Leinwand" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">Dokumentarfilm</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Notizblock und Stift auf einem Tisch" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Livebericht</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Notizblock und Stift auf einem Tisch" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">TV</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Nahaufnahme einer analogen Filmkamera" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Archivmontage</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Nahaufnahme einer analogen Filmkamera" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">Dokumentarfilm</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Gestapelte Tageszeitungen" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Investigativformat</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Gestapelte Tageszeitungen" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">TV</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Kinosaal mit beleuchteter Leinwand" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Nachtschicht</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Kinosaal mit beleuchteter Leinwand" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">Dokumentarfilm</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Notizblock und Stift auf einem Tisch" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Themenwoche</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Notizblock und Stift auf einem Tisch" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">TV</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Nahaufnahme einer analogen Filmkamera" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Kleinstadtchronik</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Nahaufnahme einer analogen Filmkamera" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">Dokumentarfilm</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Gestapelte Tageszeitungen" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Sondersendung</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Gestapelte Tageszeitungen" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">TV</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Kinosaal mit beleuchteter Leinwand" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Platzhalter – Wendejahre</button>
+              <div class="portfolio-panel">
+                <div class="portfolio-panel-inner">
+                  <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Kinosaal mit beleuchteter Leinwand" class="portfolio-panel-image"></div>
+                  <span class="portfolio-panel-genre">Dokumentarfilm</span>
+                  <p class="portfolio-panel-desc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="columns-grid" aria-label="Arbeitsfelder">
         <article class="col-card" id="film">
           <h2>Doku &amp; Regie</h2>
@@ -526,7 +907,7 @@
         <article class="col-card" id="journalismus">
           <h2>Recherche &amp; TV</h2>
           <h3>Journalist</h3>
-          <p>Tiefgründige TV-Reportagen und redaktionelle Beiträge für öffentlich-rechtliche Formate (MDR, BR, ZDF).</p>
+          <p>Tiefgründige TV-Reportagen und redaktionelle Beiträge für öffentlich-rechtliche Formate (MDR, ZDF, SWR).</p>
         </article>
 
         <article class="col-card" id="beratung">
@@ -640,6 +1021,131 @@
           ScrollTrigger.refresh();
         }, 150);
       });
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      'use strict';
+
+      var previewImage = document.getElementById('portfolioImage');
+      var previewGenre = document.getElementById('portfolioGenre');
+      var previewDesc = document.getElementById('portfolioDesc');
+      var items = Array.prototype.slice.call(document.querySelectorAll('.portfolio-item'));
+      var filters = document.querySelectorAll('.portfolio-filter');
+      var prevBtn = document.getElementById('portfolioPrev');
+      var nextBtn = document.getElementById('portfolioNext');
+      if (!previewImage || !items.length) return;
+
+      function getSepForButton(button) {
+        var el = button.nextElementSibling;
+        return el && el.classList.contains('portfolio-sep') ? el : null;
+      }
+
+      function getPanelForButton(button) {
+        var el = button.nextElementSibling;
+        if (el && el.classList.contains('portfolio-sep')) el = el.nextElementSibling;
+        return el && el.classList.contains('portfolio-panel') ? el : null;
+      }
+
+      function visibleItems() {
+        return items.filter(function (el) { return !el.hidden; });
+      }
+
+      function activatePreview(button) {
+        items.forEach(function (el) { el.classList.remove('is-active'); });
+        button.classList.add('is-active');
+
+        var newSrc = button.getAttribute('data-image');
+        var newAlt = button.getAttribute('data-alt') || '';
+        var newDesc = button.getAttribute('data-desc') || '';
+        var newGenre = button.getAttribute('data-genre') || '';
+
+        if (previewImage.getAttribute('src') === newSrc) {
+          previewGenre.textContent = newGenre;
+          previewDesc.textContent = newDesc;
+          return;
+        }
+
+        previewImage.style.opacity = '0';
+
+        var onFade = function () {
+          previewImage.removeEventListener('transitionend', onFade);
+          previewImage.setAttribute('src', newSrc);
+          previewImage.setAttribute('alt', newAlt);
+          previewGenre.textContent = newGenre;
+          previewDesc.textContent = newDesc;
+          requestAnimationFrame(function () {
+            previewImage.style.opacity = '1';
+          });
+        };
+        previewImage.addEventListener('transitionend', onFade);
+      }
+
+      function togglePanel(button) {
+        var panel = getPanelForButton(button);
+        if (!panel) return;
+
+        var isOpen = panel.classList.contains('is-open');
+
+        document.querySelectorAll('.portfolio-panel.is-open').forEach(function (p) {
+          p.classList.remove('is-open');
+        });
+        items.forEach(function (el) { el.setAttribute('aria-expanded', 'false'); });
+
+        if (!isOpen) {
+          panel.classList.add('is-open');
+          button.setAttribute('aria-expanded', 'true');
+        }
+      }
+
+      items.forEach(function (button) {
+        button.setAttribute('aria-expanded', 'false');
+        button.addEventListener('click', function () {
+          activatePreview(button);
+          togglePanel(button);
+        });
+      });
+
+      filters.forEach(function (filterBtn) {
+        filterBtn.addEventListener('click', function () {
+          filters.forEach(function (f) { f.classList.remove('is-active'); });
+          filterBtn.classList.add('is-active');
+
+          var value = filterBtn.getAttribute('data-filter');
+          var shown = [];
+
+          items.forEach(function (button) {
+            var match = value === 'all' || button.getAttribute('data-genre') === value;
+            button.hidden = !match;
+            var sep = getSepForButton(button);
+            if (sep) sep.hidden = !match;
+            if (match) shown.push(button);
+          });
+
+          shown.forEach(function (button, i) {
+            var sep = getSepForButton(button);
+            if (sep) sep.hidden = (i === shown.length - 1);
+          });
+
+          if (shown.length && shown.indexOf(document.querySelector('.portfolio-item.is-active')) === -1) {
+            activatePreview(shown[0]);
+          }
+        });
+      });
+
+      function step(direction) {
+        var shown = visibleItems();
+        if (!shown.length) return;
+        var current = shown.indexOf(document.querySelector('.portfolio-item.is-active'));
+        var nextIndex = (current + direction + shown.length) % shown.length;
+        var nextButton = shown[nextIndex];
+        activatePreview(nextButton);
+        nextButton.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+
+      if (prevBtn) prevBtn.addEventListener('click', function () { step(-1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { step(1); });
     });
   </script>
 </body>
