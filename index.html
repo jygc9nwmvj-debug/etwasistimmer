@@ -175,6 +175,18 @@
       padding: 0.15em 0;
     }
 
+    /* Als Logo-Zustand braucht der Titel einen eigenen Hintergrund, sonst
+       läuft der restliche Seiteninhalt beim Weiterscrollen ungebremst
+       darunter durch. Gilt nur im Logo-Zustand, die Gedicht-Optik bleibt
+       unangetastet. */
+    html.is-logo .hero-line {
+      padding: 0.25em 0.9em;
+      background-color: color-mix(in srgb, var(--bg) 82%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: background-color var(--fade);
+    }
+
     .poem-author {
       margin-top: 2.5rem;
       font-family: 'Inter', sans-serif;
