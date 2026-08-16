@@ -615,6 +615,7 @@
       width: 100%;
       max-height: 65vh;
       object-fit: contain;
+      transition: opacity 0.35s ease;
     }
 
     .lightbox-genre {
@@ -1273,7 +1274,10 @@
 
         previewImage.style.opacity = '0';
 
+        var faded = false;
         var onFade = function () {
+          if (faded) return;
+          faded = true;
           previewImage.removeEventListener('transitionend', onFade);
           previewImage.setAttribute('src', newSrc);
           previewImage.setAttribute('alt', newAlt);
@@ -1284,6 +1288,10 @@
           });
         };
         previewImage.addEventListener('transitionend', onFade);
+        // Fallback in case the transitionend event never fires (e.g. a
+        // future CSS change drops the opacity transition) -- without this,
+        // a missed event leaves the image stuck invisible indefinitely.
+        setTimeout(onFade, 400);
       }
 
       function togglePanel(button) {
@@ -1389,7 +1397,10 @@
           var still = currentStills[index];
 
           lbImage.style.opacity = '0';
+          var faded = false;
           var onFade = function () {
+            if (faded) return;
+            faded = true;
             lbImage.removeEventListener('transitionend', onFade);
             lbImage.setAttribute('src', still.src);
             lbImage.setAttribute('alt', still.alt);
@@ -1398,6 +1409,11 @@
             });
           };
           lbImage.addEventListener('transitionend', onFade);
+          // Fallback in case transitionend never fires (this exact bug
+          // happened once already: the lightbox image was missing its
+          // opacity transition, so the fade never completed and the big
+          // preview stayed invisible after the first autoplay step).
+          setTimeout(onFade, 400);
 
           lbFilmstrip.querySelectorAll('.filmstrip-thumb').forEach(function (t, i) {
             t.classList.toggle('is-active', i === index);
