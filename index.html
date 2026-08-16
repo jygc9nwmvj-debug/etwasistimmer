@@ -718,22 +718,44 @@
     }
 
     .lightbox-arrow {
-      position: fixed;
-      top: 50%;
-      transform: translateY(-50%);
       width: 2.75rem;
       height: 2.75rem;
       font-size: 1.4rem;
     }
 
-    .lightbox-prev { left: 1.5rem; }
-    .lightbox-next { right: 1.5rem; }
+    /* Eigener Wrapper, damit die Projekt-Pfeile eine immer sichtbare
+       Beschriftung tragen können -- reine Pfeile am Bildschirmrand lesen
+       sich sonst wie "nächstes Foto", meinen hier aber "nächstes Projekt". */
+    .lightbox-nav {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .lightbox-nav-prev { left: 1.5rem; }
+    .lightbox-nav-next { right: 1.5rem; }
+
+    .lightbox-nav-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1.3;
+      color: rgba(232, 230, 225, 0.55);
+    }
 
     @media (max-width: 768px) {
       .lightbox { padding: 5rem 1.25rem; }
       .lightbox-arrow { width: 2.25rem; height: 2.25rem; font-size: 1.2rem; }
-      .lightbox-prev { left: 0.5rem; }
-      .lightbox-next { right: 0.5rem; }
+      .lightbox-nav-label { font-size: 0.6rem; }
+      .lightbox-nav-prev { left: 0.5rem; }
+      .lightbox-nav-next { right: 0.5rem; }
     }
 
     .contact-section {
@@ -1095,8 +1117,14 @@
 
   <div class="lightbox" id="portfolioLightbox" aria-hidden="true">
     <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Schließen">×</button>
-    <button type="button" class="lightbox-arrow lightbox-prev" id="lightboxPrev" aria-label="Vorheriges Projekt">‹</button>
-    <button type="button" class="lightbox-arrow lightbox-next" id="lightboxNext" aria-label="Nächstes Projekt">›</button>
+    <div class="lightbox-nav lightbox-nav-prev">
+      <button type="button" class="lightbox-arrow" id="lightboxPrev" aria-label="Voriges Projekt">‹</button>
+      <span class="lightbox-nav-label" aria-hidden="true">Voriges<br>Projekt</span>
+    </div>
+    <div class="lightbox-nav lightbox-nav-next">
+      <button type="button" class="lightbox-arrow" id="lightboxNext" aria-label="Nächstes Projekt">›</button>
+      <span class="lightbox-nav-label" aria-hidden="true">Nächstes<br>Projekt</span>
+    </div>
     <div class="lightbox-content">
       <img id="lightboxImage" src="" alt="" class="lightbox-image">
       <div class="lightbox-info">
@@ -1336,24 +1364,66 @@
 
       if (media && lightbox) {
         var lastFocused = null;
+        var currentStills = [];
+        var currentStillIndex = 0;
+        var filmstripTimer = null;
+        var AUTOPLAY_DELAY = 4000;
+
+        var stopAutoplay = function () {
+          if (filmstripTimer) {
+            clearInterval(filmstripTimer);
+            filmstripTimer = null;
+          }
+        };
+
+        var startAutoplay = function () {
+          stopAutoplay();
+          if (currentStills.length <= 1) return;
+          filmstripTimer = setInterval(function () {
+            selectStill((currentStillIndex + 1) % currentStills.length);
+          }, AUTOPLAY_DELAY);
+        };
+
+        var selectStill = function (index, userInitiated) {
+          currentStillIndex = index;
+          var still = currentStills[index];
+
+          lbImage.style.opacity = '0';
+          var onFade = function () {
+            lbImage.removeEventListener('transitionend', onFade);
+            lbImage.setAttribute('src', still.src);
+            lbImage.setAttribute('alt', still.alt);
+            requestAnimationFrame(function () {
+              lbImage.style.opacity = '1';
+            });
+          };
+          lbImage.addEventListener('transitionend', onFade);
+
+          lbFilmstrip.querySelectorAll('.filmstrip-thumb').forEach(function (t, i) {
+            t.classList.toggle('is-active', i === index);
+          });
+
+          if (userInitiated) stopAutoplay();
+        };
 
         var buildFilmstrip = function (button) {
           var heroSrc = button.getAttribute('data-image');
           var heroAlt = button.getAttribute('data-alt') || '';
-          var stills = [{ src: heroSrc, alt: heroAlt }];
+          currentStills = [{ src: heroSrc, alt: heroAlt }];
 
           (button.getAttribute('data-stills') || '').split(',').forEach(function (part) {
             if (!part) return;
             var pieces = part.split('|');
-            stills.push({ src: pieces[0], alt: pieces[1] || '' });
+            currentStills.push({ src: pieces[0], alt: pieces[1] || '' });
           });
+          currentStillIndex = 0;
 
           lbFilmstrip.innerHTML = '';
-          stills.forEach(function (still, i) {
+          currentStills.forEach(function (still, i) {
             var thumb = document.createElement('button');
             thumb.type = 'button';
             thumb.className = 'filmstrip-thumb' + (i === 0 ? ' is-active' : '');
-            thumb.setAttribute('aria-label', 'Still ' + (i + 1) + ' von ' + stills.length);
+            thumb.setAttribute('aria-label', 'Still ' + (i + 1) + ' von ' + currentStills.length);
 
             var img = document.createElement('img');
             img.src = still.src;
@@ -1362,16 +1432,13 @@
             thumb.appendChild(img);
 
             thumb.addEventListener('click', function () {
-              lbImage.setAttribute('src', still.src);
-              lbImage.setAttribute('alt', still.alt);
-              lbFilmstrip.querySelectorAll('.filmstrip-thumb').forEach(function (t) {
-                t.classList.remove('is-active');
-              });
-              thumb.classList.add('is-active');
+              selectStill(i, true);
             });
 
             lbFilmstrip.appendChild(thumb);
           });
+
+          startAutoplay();
         };
 
         var fillLightbox = function (button) {
@@ -1385,8 +1452,8 @@
 
         var onKeydown = function (e) {
           if (e.key === 'Escape') { closeLightbox(); return; }
-          if (e.key === 'ArrowRight') { lightboxStep(1); return; }
-          if (e.key === 'ArrowLeft') { lightboxStep(-1); return; }
+          if (e.key === 'ArrowRight') { selectStill((currentStillIndex + 1) % currentStills.length, true); return; }
+          if (e.key === 'ArrowLeft') { selectStill((currentStillIndex - 1 + currentStills.length) % currentStills.length, true); return; }
           if (e.key === 'Tab') {
             var focusable = lightbox.querySelectorAll('button');
             var first = focusable[0];
@@ -1418,6 +1485,7 @@
           lightbox.setAttribute('aria-hidden', 'true');
           document.body.style.overflow = '';
           document.removeEventListener('keydown', onKeydown);
+          stopAutoplay();
           if (lastFocused) lastFocused.focus();
         };
 
