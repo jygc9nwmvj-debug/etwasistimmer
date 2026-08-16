@@ -213,30 +213,42 @@
       position: absolute;
       bottom: 3rem;
       left: 38vw;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
+      display: inline-block;
       appearance: none;
       background: none;
       border: 0;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--muted);
+      padding: 0;
       cursor: pointer;
       pointer-events: auto;
-      padding: 0.4em 0;
-      transition: color var(--fade);
     }
 
-    .scroll-hint:hover {
-      color: var(--text);
-    }
-
-    .scroll-hint-arrow {
-      flex-shrink: 0;
+    /* Zeigehand als Manicule-Ornament statt Pfeil+Text: Bild ist reines
+       Schwarz/Weiß (weiße Linien auf schwarzem Grund), deshalb per
+       CSS-Maske eingesetzt -- Weiß wird sichtbar, Schwarz ausgeblendet,
+       die tatsächliche Farbe kommt von background-color. Kein Freistellen
+       nötig. */
+    .scroll-hint-hand {
+      display: block;
+      height: 3.25rem;
+      width: auto;
+      aspect-ratio: 265 / 512;
+      background-color: var(--muted);
+      -webkit-mask-image: url('image.png');
+      mask-image: url('image.png');
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-source-type: luminance;
+      mask-mode: luminance;
+      transition: background-color var(--fade);
       animation: scroll-hint-bounce 1.6s ease-in-out infinite;
+    }
+
+    .scroll-hint:hover .scroll-hint-hand {
+      background-color: var(--text);
     }
 
     @keyframes scroll-hint-bounce {
@@ -245,7 +257,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .scroll-hint-arrow {
+      .scroll-hint-hand {
         animation: none;
       }
     }
@@ -907,10 +919,7 @@
       <p class="poem-author fade-line">— Kurt Tucholsky</p>
     </div>
     <button type="button" class="scroll-hint fade-line" id="scrollHint" aria-label="Nach unten scrollen">
-      <span>Scrollen</span>
-      <svg class="scroll-hint-arrow" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
-        <path d="M4 8 L12 16 L20 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <span class="scroll-hint-hand" aria-hidden="true"></span>
     </button>
   </div>
 
