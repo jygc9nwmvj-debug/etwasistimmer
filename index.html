@@ -192,11 +192,41 @@
       position: absolute;
       bottom: 3rem;
       left: 38vw;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      appearance: none;
+      background: none;
+      border: 0;
       font-family: 'Inter', sans-serif;
       font-size: 0.7rem;
       letter-spacing: 0.3em;
       text-transform: uppercase;
       color: var(--muted);
+      cursor: pointer;
+      pointer-events: auto;
+      padding: 0.4em 0;
+      transition: color var(--fade);
+    }
+
+    .scroll-hint:hover {
+      color: var(--text);
+    }
+
+    .scroll-hint-arrow {
+      flex-shrink: 0;
+      animation: scroll-hint-bounce 1.6s ease-in-out infinite;
+    }
+
+    @keyframes scroll-hint-bounce {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(4px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-hint-arrow {
+        animation: none;
+      }
     }
 
     /* CONTENT STAGE */
@@ -430,7 +460,12 @@
 
       <p class="poem-author fade-line">— Kurt Tucholsky</p>
     </div>
-    <div class="scroll-hint fade-line" aria-hidden="true">Scrollen ↓</div>
+    <button type="button" class="scroll-hint fade-line" id="scrollHint" aria-label="Nach unten scrollen">
+      <span>Scrollen</span>
+      <svg class="scroll-hint-arrow" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
+        <path d="M4 8 L12 16 L20 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
   </div>
 
   <div class="scroll-container">
@@ -563,6 +598,13 @@
 
       hero.addEventListener('click', function () {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      var scrollHint = document.getElementById('scrollHint');
+      var introSpacerEl = document.getElementById('introSpacer');
+      scrollHint.addEventListener('click', function () {
+        var rect = introSpacerEl.getBoundingClientRect();
+        window.scrollTo({ top: window.scrollY + rect.bottom, behavior: 'smooth' });
       });
 
       var resizeTimer;
