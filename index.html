@@ -79,12 +79,15 @@
     /* BRUTALISTISCHES MENÜ */
     .site-nav {
       position: fixed;
-      top: 10.5rem;
-      left: 5vw;
+      top: 8rem;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 30;
       display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem 2rem;
       list-style: none;
     }
 
@@ -108,7 +111,7 @@
     }
 
     .nav-divider {
-      margin-top: 1.2rem;
+      margin-left: 1.5rem;
     }
 
     /* GEDICHT BÜHNE */
@@ -196,9 +199,9 @@
       grid-template-columns: 1.1fr 0.9fr;
       gap: 3.5rem;
       align-items: flex-end;
-      padding: 8rem 0 5rem 0;
+      padding: 11rem 0 5rem 0;
       border-bottom: 1px solid var(--line);
-      scroll-margin-top: 8rem;
+      scroll-margin-top: 11rem;
     }
 
     .intro-text {
@@ -336,6 +339,7 @@
       .site-nav {
         top: auto;
         bottom: 0; left: 0;
+        transform: none;
         width: 100%;
         flex-direction: row;
         flex-wrap: wrap;
@@ -348,7 +352,7 @@
         border-top: 1px solid var(--line);
       }
       .site-nav a { font-size: 0.95rem; }
-      .nav-divider { margin-top: 0; }
+      .nav-divider { margin-left: 0; }
 
       .content-stage { padding-left: 6vw; padding-right: 6vw; padding-bottom: 10rem; }
       .main-intro { grid-template-columns: 1fr; gap: 2.5rem; padding-top: 2rem; align-items: center; }
@@ -492,10 +496,10 @@
         gsap.set(hero, { x: 0, y: 0 });
         var rect = hero.getBoundingClientRect();
         var isMobile = window.innerWidth <= 768;
-        var top  = isMobile ? window.innerWidth * 0.06 : 48;
-        var left = window.innerWidth * (isMobile ? 0.06 : 0.05);
+        var top = isMobile ? window.innerWidth * 0.06 : 48;
+        var rectCenter = rect.left + rect.width / 2;
 
-        target.x = isMobile ? 0 : left - rect.left;
+        target.x = (window.innerWidth / 2) - rectCenter;
         target.y = top - rect.top;
       }
       measure();
