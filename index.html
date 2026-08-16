@@ -406,7 +406,7 @@
     .portfolio-nav {
       display: flex;
       gap: 0.75rem;
-      margin-top: 1rem;
+      margin-top: 1.25rem;
     }
 
     .portfolio-arrow {
@@ -432,7 +432,7 @@
 
     .portfolio-genre {
       display: inline-block;
-      margin-top: 1.5rem;
+      margin-top: 0.75rem;
       font-family: 'Inter', sans-serif;
       font-size: 0.8rem;
       font-weight: 800;
@@ -442,7 +442,7 @@
     }
 
     .portfolio-desc {
-      margin-top: 0.75rem;
+      margin-top: 1.5rem;
       font-family: 'Inter', sans-serif;
       font-size: 0.95rem;
       font-weight: 300;
@@ -643,6 +643,49 @@
       color: #a9a8a3;
       line-height: 1.6;
       max-width: 640px;
+    }
+
+    .lightbox-filmstrip {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+    }
+
+    .filmstrip-thumb {
+      flex: 0 0 auto;
+      width: 6rem;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      appearance: none;
+      background: none;
+      border: 2px solid transparent;
+      padding: 0;
+      cursor: pointer;
+      opacity: 0.55;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+
+    .filmstrip-thumb:hover {
+      opacity: 0.85;
+    }
+
+    .filmstrip-thumb.is-active {
+      opacity: 1;
+      border-color: var(--accent);
+    }
+
+    .filmstrip-thumb-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%);
+      transition: filter 0.2s;
+    }
+
+    .filmstrip-thumb.is-active .filmstrip-thumb-image {
+      filter: grayscale(0%);
     }
 
     .lightbox-close,
@@ -860,12 +903,12 @@
                 alt="Nahaufnahme einer analogen Filmkamera"
                 class="portfolio-image">
             </div>
+            <p class="portfolio-desc" id="portfolioDesc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
+            <span class="portfolio-genre" id="portfolioGenre">Dokumentarfilm</span>
             <div class="portfolio-nav">
               <button type="button" class="portfolio-arrow" id="portfolioPrev" aria-label="Vorheriges Projekt">‹</button>
               <button type="button" class="portfolio-arrow" id="portfolioNext" aria-label="Nächstes Projekt">›</button>
             </div>
-            <span class="portfolio-genre" id="portfolioGenre">Dokumentarfilm</span>
-            <p class="portfolio-desc" id="portfolioDesc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
           </div>
 
           <div class="portfolio-list">
@@ -876,7 +919,7 @@
             </div>
 
             <div class="portfolio-flow" id="portfolioFlow">
-              <button type="button" class="portfolio-item is-active" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Nahaufnahme einer analogen Filmkamera" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Love Alien</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item is-active" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Nahaufnahme einer analogen Filmkamera" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Kinosaal mit beleuchteter Leinwand,https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Gestapelte Tageszeitungen,https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Notizblock und Stift auf einem Tisch">Love Alien</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Nahaufnahme einer analogen Filmkamera" class="portfolio-panel-image"></div>
@@ -885,7 +928,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Gestapelte Tageszeitungen" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Grenzgänger</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Gestapelte Tageszeitungen" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Notizblock und Stift auf einem Tisch,https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Nahaufnahme einer analogen Filmkamera,https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Kinosaal mit beleuchteter Leinwand">Grenzgänger</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Gestapelte Tageszeitungen" class="portfolio-panel-image"></div>
@@ -894,7 +937,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Kinosaal mit beleuchteter Leinwand" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Chefs</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Kinosaal mit beleuchteter Leinwand" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Gestapelte Tageszeitungen,https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Notizblock und Stift auf einem Tisch,https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Nahaufnahme einer analogen Filmkamera">Chefs</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Kinosaal mit beleuchteter Leinwand" class="portfolio-panel-image"></div>
@@ -903,7 +946,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Gestapelte Tageszeitungen" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Der Preis der Nähe</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Gestapelte Tageszeitungen" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Notizblock und Stift auf einem Tisch,https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Nahaufnahme einer analogen Filmkamera,https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Kinosaal mit beleuchteter Leinwand">Der Preis der Nähe</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Gestapelte Tageszeitungen" class="portfolio-panel-image"></div>
@@ -912,7 +955,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Nahaufnahme einer analogen Filmkamera" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Boden gut machen</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Nahaufnahme einer analogen Filmkamera" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Kinosaal mit beleuchteter Leinwand,https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Gestapelte Tageszeitungen,https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Notizblock und Stift auf einem Tisch">Boden gut machen</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Nahaufnahme einer analogen Filmkamera" class="portfolio-panel-image"></div>
@@ -921,7 +964,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Notizblock und Stift auf einem Tisch" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Zwischen den Schichten</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Notizblock und Stift auf einem Tisch" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Nahaufnahme einer analogen Filmkamera,https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Kinosaal mit beleuchteter Leinwand,https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Gestapelte Tageszeitungen">Zwischen den Schichten</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Notizblock und Stift auf einem Tisch" class="portfolio-panel-image"></div>
@@ -930,7 +973,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Kinosaal mit beleuchteter Leinwand" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Stiller Abtrag</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Kinosaal mit beleuchteter Leinwand" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Gestapelte Tageszeitungen,https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Notizblock und Stift auf einem Tisch,https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Nahaufnahme einer analogen Filmkamera">Stiller Abtrag</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Kinosaal mit beleuchteter Leinwand" class="portfolio-panel-image"></div>
@@ -939,7 +982,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Notizblock und Stift auf einem Tisch" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Kurz vor Redaktionsschluss</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Notizblock und Stift auf einem Tisch" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Nahaufnahme einer analogen Filmkamera,https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Kinosaal mit beleuchteter Leinwand,https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Gestapelte Tageszeitungen">Kurz vor Redaktionsschluss</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Notizblock und Stift auf einem Tisch" class="portfolio-panel-image"></div>
@@ -948,7 +991,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Nahaufnahme einer analogen Filmkamera" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Frohsinn e.V.</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Nahaufnahme einer analogen Filmkamera" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Kinosaal mit beleuchteter Leinwand,https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Gestapelte Tageszeitungen,https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Notizblock und Stift auf einem Tisch">Frohsinn e.V.</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Nahaufnahme einer analogen Filmkamera" class="portfolio-panel-image"></div>
@@ -957,7 +1000,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Gestapelte Tageszeitungen" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Was uns zusammenhält</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Gestapelte Tageszeitungen" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Notizblock und Stift auf einem Tisch,https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Nahaufnahme einer analogen Filmkamera,https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Kinosaal mit beleuchteter Leinwand">Was uns zusammenhält</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Gestapelte Tageszeitungen" class="portfolio-panel-image"></div>
@@ -966,7 +1009,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Kinosaal mit beleuchteter Leinwand" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Nachbarschaft</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Kinosaal mit beleuchteter Leinwand" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Gestapelte Tageszeitungen,https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Notizblock und Stift auf einem Tisch,https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Nahaufnahme einer analogen Filmkamera">Nachbarschaft</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Kinosaal mit beleuchteter Leinwand" class="portfolio-panel-image"></div>
@@ -975,7 +1018,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Notizblock und Stift auf einem Tisch" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Auf Sendung</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Notizblock und Stift auf einem Tisch" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Nahaufnahme einer analogen Filmkamera,https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Kinosaal mit beleuchteter Leinwand,https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Gestapelte Tageszeitungen">Auf Sendung</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Notizblock und Stift auf einem Tisch" class="portfolio-panel-image"></div>
@@ -984,7 +1027,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Nahaufnahme einer analogen Filmkamera" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Was bleibt</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Nahaufnahme einer analogen Filmkamera" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Kinosaal mit beleuchteter Leinwand,https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Gestapelte Tageszeitungen,https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Notizblock und Stift auf einem Tisch">Was bleibt</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Nahaufnahme einer analogen Filmkamera" class="portfolio-panel-image"></div>
@@ -993,7 +1036,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Gestapelte Tageszeitungen" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Ansichtssache</button><span class="portfolio-sep" aria-hidden="true">/</span>
+              <button type="button" class="portfolio-item" data-genre="TV" data-image="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Gestapelte Tageszeitungen" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Notizblock und Stift auf einem Tisch,https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Nahaufnahme einer analogen Filmkamera,https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Kinosaal mit beleuchteter Leinwand">Ansichtssache</button><span class="portfolio-sep" aria-hidden="true">/</span>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Gestapelte Tageszeitungen" class="portfolio-panel-image"></div>
@@ -1002,7 +1045,7 @@
                 </div>
               </div>
 
-              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Kinosaal mit beleuchteter Leinwand" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.">Feierabend</button>
+              <button type="button" class="portfolio-item" data-genre="Dokumentarfilm" data-image="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" data-alt="Kinosaal mit beleuchteter Leinwand" data-desc="Kurzbeschreibung folgt, sobald ein reales Projekt feststeht." data-stills="https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Gestapelte Tageszeitungen,https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Notizblock und Stift auf einem Tisch,https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop|Nahaufnahme einer analogen Filmkamera">Feierabend</button>
               <div class="portfolio-panel">
                 <div class="portfolio-panel-inner">
                   <div class="portfolio-panel-media"><img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" alt="Kinosaal mit beleuchteter Leinwand" class="portfolio-panel-image"></div>
@@ -1060,6 +1103,7 @@
         <span class="lightbox-genre" id="lightboxGenre"></span>
         <h3 class="lightbox-title" id="lightboxTitle"></h3>
         <p class="lightbox-desc" id="lightboxDesc"></p>
+        <div class="lightbox-filmstrip" id="lightboxFilmstrip"></div>
       </div>
     </div>
   </div>
@@ -1288,9 +1332,47 @@
       var lbClose = document.getElementById('lightboxClose');
       var lbPrev = document.getElementById('lightboxPrev');
       var lbNext = document.getElementById('lightboxNext');
+      var lbFilmstrip = document.getElementById('lightboxFilmstrip');
 
       if (media && lightbox) {
         var lastFocused = null;
+
+        var buildFilmstrip = function (button) {
+          var heroSrc = button.getAttribute('data-image');
+          var heroAlt = button.getAttribute('data-alt') || '';
+          var stills = [{ src: heroSrc, alt: heroAlt }];
+
+          (button.getAttribute('data-stills') || '').split(',').forEach(function (part) {
+            if (!part) return;
+            var pieces = part.split('|');
+            stills.push({ src: pieces[0], alt: pieces[1] || '' });
+          });
+
+          lbFilmstrip.innerHTML = '';
+          stills.forEach(function (still, i) {
+            var thumb = document.createElement('button');
+            thumb.type = 'button';
+            thumb.className = 'filmstrip-thumb' + (i === 0 ? ' is-active' : '');
+            thumb.setAttribute('aria-label', 'Still ' + (i + 1) + ' von ' + stills.length);
+
+            var img = document.createElement('img');
+            img.src = still.src;
+            img.alt = still.alt;
+            img.className = 'filmstrip-thumb-image';
+            thumb.appendChild(img);
+
+            thumb.addEventListener('click', function () {
+              lbImage.setAttribute('src', still.src);
+              lbImage.setAttribute('alt', still.alt);
+              lbFilmstrip.querySelectorAll('.filmstrip-thumb').forEach(function (t) {
+                t.classList.remove('is-active');
+              });
+              thumb.classList.add('is-active');
+            });
+
+            lbFilmstrip.appendChild(thumb);
+          });
+        };
 
         var fillLightbox = function (button) {
           lbImage.setAttribute('src', button.getAttribute('data-image'));
@@ -1298,6 +1380,7 @@
           lbGenre.textContent = button.getAttribute('data-genre') || '';
           lbTitle.textContent = button.textContent.trim();
           lbDesc.textContent = button.getAttribute('data-desc') || '';
+          buildFilmstrip(button);
         };
 
         var onKeydown = function (e) {
