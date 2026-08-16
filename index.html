@@ -84,7 +84,7 @@
     /* BRUTALISTISCHES MENÜ */
     .site-nav {
       position: fixed;
-      top: 8rem;
+      top: 7.25rem;
       left: 50%;
       transform: translateX(-50%);
       z-index: 30;
@@ -95,13 +95,8 @@
       align-items: baseline;
       gap: 0.6rem 2rem;
       list-style: none;
-      padding: 0.7rem 1.75rem;
-      background-color: color-mix(in srgb, var(--bg) 82%, transparent);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
       opacity: 0;
       pointer-events: none;
-      transition: background-color var(--fade);
     }
 
     /* Menü ist Teil des Logo-Zustands, nicht der Gedicht-Seite: erscheint
@@ -175,16 +170,17 @@
       padding: 0.15em 0;
     }
 
-    /* Durchgehende Kopfleiste im Logo-Zustand: deckt das komplette obere
-       Band ab (wie die mobile Menüleiste unten), egal was dahinter
-       durchläuft -- Foto, Überschriften, Trennlinien. Nur im Logo-Zustand
-       sichtbar, die Gedicht-Optik bleibt unangetastet. */
+    /* Durchgehende Kopfleiste im Logo-Zustand: deckt Titel UND Menüzeile
+       als eine nahtlose Fläche ab (wie die mobile Menüleiste unten),
+       damit keine eigene Menü-Box mehr eine sichtbare Kante über dem
+       Content erzeugt. Nur im Logo-Zustand sichtbar, die Gedicht-Optik
+       bleibt unangetastet. */
     .logo-bar {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      height: 8rem;
+      height: 10.5rem;
       z-index: 20;
       pointer-events: none;
       opacity: 0;
@@ -272,9 +268,9 @@
       grid-template-columns: 1.1fr 0.9fr;
       gap: 3.5rem;
       align-items: flex-end;
-      padding: 11rem 0 5rem 0;
+      padding: 12rem 0 5rem 0;
       border-bottom: 1px solid var(--line);
-      scroll-margin-top: 11rem;
+      scroll-margin-top: 12rem;
     }
 
     .intro-text {
