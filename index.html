@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wolfram Huke — Filmemacher, Journalist, Medienberatung</title>
+  <meta name="description" content="Wolfram Huke: Dokumentarfilm, TV-Reportage und Medienberatung. Geschichten entstehen dort, wo Reibung ist.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* ============================================================
+       FARB-TOKENS & AKZENTFARBE
+       ============================================================ */
+    :root {
+      --bg-dark:    #0d0d0c;
+      --text-dark:  #e8e6e1;
+      --muted-dark: #6e6d69;
+
+      --bg-light:    #f4f3ef;
+      --text-light:  #121211;
+      --muted-light: #706f6b;
+
+      /* AKZENTFARBE (SIGNAL-ORANGE) */
+      --accent:     #FF4D00;
+
+      --bg:    var(--bg-dark);
+      --text:  var(--text-dark);
+      --muted: var(--muted-dark);
+      --line:  rgba(120, 120, 115, 0.2);
+
+      --fade: 0.5s ease;
+    }
+
+    html.light {
+      --bg:    var(--bg-light);
+      --text:  var(--text-light);
+      --muted: var(--muted-light);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'EB Garamond', serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color var(--fade), color var(--fade);
+    }
+
+    ::selection { background: var(--accent); color: #fff; }
+
+    /* FILMKORN */
+    .film-grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 90;
+      opacity: 0.05;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    html.light .film-grain { opacity: 0.07; mix-blend-mode: multiply; }
+
+    /* BRUTALISTISCHES MENÜ */
+    .site-nav {
+      position: fixed;
+      top: 10.5rem;
+      left: 5vw;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      list-style: none;
+    }
+
+    .site-nav a {
+      color: var(--accent);
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: inline-block;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .site-nav a:hover {
+      opacity: 0.7;
+      text-decoration: underline;
+      text-decoration-thickness: 3px;
+      text-underline-offset: 4px;
+      transform: translateX(4px);
+    }
+
+    .nav-divider {
+      margin-top: 1.2rem;
+    }
+
+    /* GEDICHT BÜHNE */
+    .poem-stage {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100vh;
+      display: flex;
+      align-items: center;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    .poem-block {
+      position: absolute;
+      left: 38vw;
+      padding-right: 4vw;
+      text-align: left;
+    }
+
+    .poem-line {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(1.4rem, 2.5vw, 2.4rem);
+      font-weight: 400;
+      line-height: 1.6;
+      color: inherit;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    .hero-line-wrapper { display: block; margin-bottom: 2rem; }
+
+    .hero-line {
+      appearance: none;
+      background: none;
+      border: 0;
+      font-family: inherit;
+      line-height: inherit;
+      color: inherit;
+      font-weight: 500;
+      display: inline-block;
+      transform-origin: left top;
+      cursor: pointer;
+      pointer-events: auto;
+      will-change: transform;
+      padding: 0.15em 0;
+    }
+
+    .poem-author {
+      margin-top: 2.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color var(--fade);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 3rem;
+      left: 38vw;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* CONTENT STAGE */
+    .scroll-container { position: relative; }
+    .intro-spacer { height: 60vh; }
+
+    .content-stage {
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 5vw 8rem 5vw;
+    }
+
+    /* MAIN INTRO GRID */
+    .main-intro {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 3.5rem;
+      align-items: flex-end;
+      padding: 8rem 0 5rem 0;
+      border-bottom: 1px solid var(--line);
+      scroll-margin-top: 8rem;
+    }
+
+    .intro-text {
+      position: relative;
+      z-index: 2;
+      padding-bottom: 0.5rem;
+    }
+
+    .name-sub {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+      font-weight: 400;
+      color: var(--text);
+      max-width: 600px;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      transition: color var(--fade);
+    }
+
+    .name-sub strong {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* PORTRAIT INTEGRATION */
+    .intro-portrait {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+
+    .portrait-freistehend {
+      width: 100%;
+      max-width: 420px;
+      height: auto;
+      object-fit: contain;
+      opacity: 0.95;
+      will-change: transform, filter;
+      transition: filter 0.6s ease, transform 0.6s ease, opacity 0.6s ease;
+      transform-origin: bottom center;
+
+      mix-blend-mode: multiply; 
+    }
+
+    html:not(.light) .portrait-freistehend {
+      mix-blend-mode: normal;
+      filter: contrast(110%) brightness(95%);
+    }
+
+    .intro-portrait:hover .portrait-freistehend {
+      opacity: 1;
+      transform: scale(1.02);
+    }
+
+    .columns-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 4rem;
+      padding: 6rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .col-card { scroll-margin-top: 8rem; }
+
+    .col-card h2 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .col-card h3 {
+      font-size: 2.2rem;
+      font-weight: 400;
+      margin-bottom: 1rem;
+    }
+
+    .col-card p {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.6;
+      transition: color var(--fade);
+    }
+
+    .contact-section {
+      padding: 6rem 0 2rem;
+      scroll-margin-top: 8rem;
+    }
+
+    .contact-section h2 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2rem;
+    }
+
+    .contact-email {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      color: inherit;
+      text-decoration: none;
+      display: inline-block;
+      transition: opacity 0.3s;
+    }
+    .contact-email:hover { opacity: 0.6; }
+
+    .footer-meta {
+      margin-top: 4rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      transition: color var(--fade);
+    }
+    .footer-meta a { color: inherit; text-decoration: none; }
+    .footer-meta a:hover { color: var(--text); }
+
+    /* MOBIL RESPONSIVE */
+    @media (max-width: 768px) {
+      .poem-block { left: 6vw; right: 6vw; padding-right: 0; }
+      .poem-line { font-size: 1.35rem; white-space: normal; }
+      .scroll-hint { left: 6vw; }
+
+      .site-nav {
+        top: auto;
+        bottom: 0; left: 0;
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.4rem 1.4rem;
+        padding: 0.9rem 6vw calc(0.9rem + env(safe-area-inset-bottom));
+        background-color: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid var(--line);
+      }
+      .site-nav a { font-size: 0.95rem; }
+      .nav-divider { margin-top: 0; }
+
+      .content-stage { padding-left: 6vw; padding-right: 6vw; padding-bottom: 10rem; }
+      .main-intro { grid-template-columns: 1fr; gap: 2.5rem; padding-top: 2rem; align-items: center; }
+      .intro-text { padding-bottom: 0; }
+      .intro-portrait { justify-content: center; margin-left: 0; margin-top: 0; }
+      .portrait-freistehend { max-width: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="film-grain" aria-hidden="true"></div>
+
+  <!-- NAVIGATION -->
+  <nav aria-label="Hauptnavigation">
+    <ul class="site-nav" id="siteNav">
+      <li><a href="#film">Film</a></li>
+      <li><a href="#journalismus">Journalismus</a></li>
+      <li><a href="#beratung">Beratung</a></li>
+      <li class="nav-divider"><a href="#about">Profil</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
+    </ul>
+  </nav>
+
+  <!-- GEDICHT INTRO -->
+  <div class="poem-stage" id="poemStage">
+    <div class="poem-block">
+
+      <div class="poem-line fade-line">[...]</div>
+
+      <div class="hero-line-wrapper">
+        <button type="button" class="poem-line hero-line" id="heroTitle">Etwas ist immer.</button>
+      </div>
+
+      <div class="poem-line fade-line">Tröste dich.</div>
+      <div class="poem-line fade-line">Jedes Glück hat einen kleinen Stich.</div>
+      <div class="poem-line fade-line">Wir möchten so viel: Haben. Sein. Und gelten.</div>
+      <div class="poem-line fade-line">Daß einer alles hat –</div>
+      <div class="poem-line fade-line">das ist selten.</div>
+
+      <p class="poem-author fade-line">— Kurt Tucholsky</p>
+    </div>
+    <div class="scroll-hint fade-line" aria-hidden="true">Scrollen ↓</div>
+  </div>
+
+  <div class="scroll-container">
+    <div class="intro-spacer" id="introSpacer" aria-hidden="true"></div>
+
+    <main class="content-stage" id="inhalt">
+
+      <section class="main-intro" id="about">
+        <div class="intro-text" id="introText">
+          <p class="name-sub">
+            Ich bin <strong>Wolfram Huke</strong>. Offiziell stelle ich nur Fragen und höre zu. Meine Superpower ist es, Menschen die Scheu vor der Kamera zu nehmen.
+          </p>
+        </div>
+
+        <div class="intro-portrait" id="introPortrait">
+          <img
+            src="wolfram-huke.png"
+            alt="Porträt von Wolfram Huke"
+            class="portrait-freistehend"
+            loading="eager" decoding="async">
+        </div>
+      </section>
+
+      <section class="columns-grid" aria-label="Arbeitsfelder">
+        <article class="col-card" id="film">
+          <h2>Doku &amp; Regie</h2>
+          <h3>Filmemacher</h3>
+          <p>Dokumentarfilme, Kameraführung und visuelles Storytelling mit klarer, unaufgeregter Haltung.</p>
+        </article>
+
+        <article class="col-card" id="journalismus">
+          <h2>Recherche &amp; TV</h2>
+          <h3>Journalist</h3>
+          <p>Tiefgründige TV-Reportagen und redaktionelle Beiträge für öffentlich-rechtliche Formate (MDR, BR, ZDF).</p>
+        </article>
+
+        <article class="col-card" id="beratung">
+          <h2>Sparring &amp; Konzept</h2>
+          <h3>Medienberatung</h3>
+          <p>Analytische Beratung, Video-Strategien und narrative Konzeption für Redaktionen, Verlage und Projekte.</p>
+        </article>
+
+      </section>
+
+      <section class="contact-section" id="kontakt">
+        <h2>Kontakt</h2>
+        <a href="mailto:hallo@etwasistimmer.de" class="contact-email">hallo@etwasistimmer.de</a>
+
+        <div class="footer-meta">
+          <span>© Wolfram Huke</span>
+          <a href="/impressum.html">Impressum</a>
+          <a href="/datenschutz.html">Datenschutz</a>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      'use strict';
+
+      var root = document.documentElement;
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || reduceMotion) {
+        root.classList.add('no-anim', 'light');
+        return;
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      gsap.set('#introText',   { opacity: 0, y: 30 });
+      gsap.set('#introPortrait', { opacity: 0, y: 40 });
+      gsap.set('#siteNav li',  { opacity: 0, y: 15 });
+
+      var hero = document.getElementById('heroTitle');
+      var target = { x: 0, y: 0 };
+
+      function measure() {
+        gsap.set(hero, { x: 0, y: 0 });
+        var rect = hero.getBoundingClientRect();
+        var isMobile = window.innerWidth <= 768;
+        var top  = isMobile ? window.innerWidth * 0.06 : 48;
+        var left = window.innerWidth * (isMobile ? 0.06 : 0.05);
+
+        target.x = isMobile ? 0 : left - rect.left;
+        target.y = top - rect.top;
+      }
+      measure();
+
+      var isTouch = ScrollTrigger.isTouch === 1;
+
+      var tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '.intro-spacer',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.3,
+          invalidateOnRefresh: true,
+
+          snap: isTouch ? false : {
+            snapTo: function (progress) {
+              return progress < 0.2 ? 0 : 1;
+            },
+            duration: { min: 0.25, max: 0.6 },
+            delay: 0.05,
+            ease: 'power2.inOut',
+            inertia: false
+          },
+
+          onUpdate: function (self) {
+            var lit = self.progress > 0.45;
+            root.classList.toggle('light', lit);
+            root.classList.toggle('is-logo', lit);
+          }
+        }
+      });
+
+      tl.to('.fade-line', { opacity: 0, y: -15, duration: 0.2 }, 0)
+        .to(hero, {
+          x: function () { return target.x; },
+          y: function () { return target.y; },
+          duration: 0.6,
+          ease: 'power2.out'
+        }, 0)
+        .to('#introText',    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.15)
+        .to('#introPortrait',{ opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.2)
+        .to('#siteNav li',   { opacity: 1, y: 0, duration: 0.3, stagger: 0.06, ease: 'power2.out' }, 0.2);
+
+      hero.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      var resizeTimer;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          measure();
+          ScrollTrigger.refresh();
+        }, 150);
+      });
+    });
+  </script>
+</body>
+</html>
