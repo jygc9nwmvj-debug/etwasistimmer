@@ -116,10 +116,6 @@
       transform: translateX(4px);
     }
 
-    .nav-divider {
-      margin-left: 1.5rem;
-    }
-
     /* GEDICHT BÜHNE */
     .poem-stage {
       position: fixed;
@@ -393,7 +389,6 @@
         border-top: 1px solid var(--line);
       }
       .site-nav a { font-size: 0.95rem; }
-      .nav-divider { margin-left: 0; }
 
       .content-stage { padding-left: 6vw; padding-right: 6vw; padding-bottom: 10rem; }
       .main-intro { grid-template-columns: 1fr; gap: 2.5rem; padding-top: 2rem; align-items: center; }
@@ -430,7 +425,7 @@
       <li><a href="#film">Film</a></li>
       <li><a href="#journalismus">Journalismus</a></li>
       <li><a href="#beratung">Beratung</a></li>
-      <li class="nav-divider"><a href="#about">Profil</a></li>
+      <li><a href="#about">Profil</a></li>
       <li><a href="#kontakt">Kontakt</a></li>
     </ul>
   </nav>
@@ -533,7 +528,6 @@
 
       gsap.set('#introText',   { opacity: 0, y: 30 });
       gsap.set('#introPortrait', { opacity: 0, y: 40 });
-      gsap.set('#siteNav li',  { opacity: 0, y: 15 });
 
       var hero = document.getElementById('heroTitle');
       var target = { x: 0, y: 0 };
@@ -586,8 +580,7 @@
           ease: 'power2.out'
         }, 0)
         .to('#introText',    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.15)
-        .to('#introPortrait',{ opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.2)
-        .to('#siteNav li',   { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, 0.2);
+        .to('#introPortrait',{ opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.2);
 
       hero.addEventListener('click', function () {
         window.scrollTo({ top: 0, behavior: 'smooth' });
