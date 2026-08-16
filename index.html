@@ -102,7 +102,7 @@
       text-decoration: none;
       font-family: 'Inter', sans-serif;
       font-size: clamp(1.25rem, 1.8vw, 1.6rem);
-      font-weight: 800;
+      font-weight: 600;
       letter-spacing: -0.02em;
       display: inline-block;
       transition: opacity 0.2s, transform 0.2s, color var(--fade);
@@ -118,18 +118,6 @@
 
     .nav-divider {
       margin-left: 1.5rem;
-    }
-
-    /* Profil & Kontakt treten als nachrangige Gruppe zurück: kleiner,
-       gedeckter, statt gleichrangig neben den Hauptrubriken zu stehen. */
-    .nav-secondary a {
-      font-size: clamp(0.95rem, 1.3vw, 1.15rem);
-      font-weight: 700;
-      color: var(--muted);
-    }
-
-    .nav-secondary a:hover {
-      color: var(--accent);
     }
 
     /* GEDICHT BÜHNE */
@@ -184,6 +172,11 @@
       font-size: 0.75rem;
       letter-spacing: 0.25em;
       text-transform: uppercase;
+      color: var(--text);
+      transition: color var(--fade);
+    }
+
+    .poem-ellipsis {
       color: var(--muted);
       transition: color var(--fade);
     }
@@ -437,8 +430,8 @@
       <li><a href="#film">Film</a></li>
       <li><a href="#journalismus">Journalismus</a></li>
       <li><a href="#beratung">Beratung</a></li>
-      <li class="nav-divider nav-secondary"><a href="#about">Profil</a></li>
-      <li class="nav-secondary"><a href="#kontakt">Kontakt</a></li>
+      <li class="nav-divider"><a href="#about">Profil</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
     </ul>
   </nav>
 
@@ -446,7 +439,7 @@
   <div class="poem-stage" id="poemStage">
     <div class="poem-block">
 
-      <div class="poem-line fade-line">[...]</div>
+      <div class="poem-line fade-line poem-ellipsis">[...]</div>
 
       <div class="hero-line-wrapper">
         <button type="button" class="poem-line hero-line" id="heroTitle">Etwas ist immer.</button>
