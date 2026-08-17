@@ -27,6 +27,13 @@
          Kontrast zu schlecht lesbar. Gleicher Ton, den die Lightbox
          schon fuer ihren Fliesstext nutzt (~8:1 Kontrast). */
       --muted-on-dark: #a9a8a3;
+      /* Eigener, waermerer Dunkelton fuer die Portfolio-Section: sowohl
+         --bg-dark (#0d0d0c, fast reines Schwarz) als auch ein neutrales
+         Grau wirkten auf der Flaeche zu hart/konfrontativ. Warmes
+         Anthrazit statt reinem Schwarz, wie es z.B. Apple fuer dunkle
+         Sections nutzt. Bleibt bewusst getrennt von --bg-dark, damit der
+         native Dunkel-Zustand der Seite (Gedicht) unangetastet bleibt. */
+      --bg-portfolio-dark: #2a2724;
 
       --bg-light:    #f4f3ef;
       --text-light:  #121211;
@@ -362,7 +369,13 @@
       height: 100%;
       min-height: 0;
       object-fit: cover;
-      object-position: center 15%;
+      /* "top" statt eines Prozentwerts: der Kopf im Quellbild hat nur
+         ~5% Rand nach oben -- ein Prozentwert wie 15% schneidet ihn bei
+         abweichendem Container-Seitenverhaeltnis (andere Viewport-
+         Breite, andere Browser-Rundung bei Grid align-self:stretch)
+         wieder an. "top" garantiert, dass immer nur unten beschnitten
+         wird, nie oben. */
+      object-position: center top;
       opacity: 0.95;
       will-change: transform, filter;
       transition: filter 0.6s ease, transform 0.6s ease, opacity 0.6s ease;
@@ -421,21 +434,20 @@
        Prinzip wie die Lightbox (--bg-dark/--text-dark/--muted-dark sind
        im Gegensatz zu --bg/--text/--muted konstant, werden von
        html.light nicht ueberschrieben, daher als feste Werte
-       verwendbar statt neue Farben zu erfinden). Blutet ueber die volle
-       Viewportbreite (gleiche Technik wie beim Hero-Portrait), damit es
-       als eigener, in sich geschlossener Block wirkt statt als
-       Farbfläche innerhalb der Content-Spalte. Der Farbwechsel selbst
-       ersetzt die Trennlinie zum Hero -- kein border-top noetig, main-
-       intro's border-bottom entfaellt entsprechend. */
+       verwendbar statt neue Farben zu erfinden). Bewusst NICHT
+       randlos/vollbild (kein Bleed mehr): Apple-Prinzip fuer dunkle
+       Sections -- ein klar umrissenes Modul mit sichtbarem hellen Rand
+       links/rechts wirkt kontrollierter als "die ganze Seite wird
+       schwarz". Selbe max-width/Innenabstand wie der Rest des Contents
+       (kommt automatisch von content-stage, keine eigene Breite noetig).
+       Der Farbwechsel selbst ersetzt die Trennlinie zum Hero -- kein
+       border-top noetig, main-intro's border-bottom entfaellt
+       entsprechend. Harte Kante bewusst ohne Verlauf: das Portrait
+       darueber sitzt mit der Bildunterkante exakt auf dieser Linie
+       (Sockel-Prinzip), ein weicher Verlauf wuerde sie verwischen. */
     .portfolio-section {
-      width: 100vw;
-      margin-left: calc(50% - 50vw);
-      margin-right: calc(50% - 50vw);
-      background-color: var(--bg-dark);
-      padding-top: 6rem;
-      padding-bottom: 6rem;
-      padding-left: calc((100vw - min(100vw, 1200px)) / 2 + 5vw);
-      padding-right: calc((100vw - min(100vw, 1200px)) / 2 + 5vw);
+      background-color: var(--bg-portfolio-dark);
+      padding: 6rem 3rem;
       border-bottom: 1px solid var(--line);
       scroll-margin-top: 8rem;
     }
@@ -452,21 +464,6 @@
       top: 11.5rem;
     }
 
-    /* Dezenter Spotlight-Effekt hinter dem Vorschaubild -- Anspielung an
-       einen Kinosaal ueber Farbstimmung/Glow allein, ohne wörtliche
-       Requisiten. Sitzt auf dem Wrapper (nicht auf .portfolio-media
-       selbst), da dessen overflow:hidden fuer den 16:9-Zuschnitt sonst
-       den ueberstehenden Glow mit abschneiden wuerde. */
-    .portfolio-preview::before {
-      content: '';
-      position: absolute;
-      inset: -10%;
-      z-index: -1;
-      pointer-events: none;
-      background: radial-gradient(ellipse at center, rgba(255, 195, 140, 0.16) 0%, rgba(255, 150, 80, 0.07) 45%, transparent 72%);
-      filter: blur(28px);
-    }
-
     .portfolio-media {
       position: relative;
       width: 100%;
@@ -480,12 +477,10 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: grayscale(100%);
-      transition: opacity 0.35s ease, filter 0.4s ease, transform 0.4s ease;
+      transition: opacity 0.35s ease, transform 0.4s ease;
     }
 
     .portfolio-media:hover .portfolio-image {
-      filter: grayscale(0%);
       transform: scale(1.04);
     }
 
@@ -626,8 +621,8 @@
 
     @media (max-width: 768px) {
       .portfolio-section {
-        padding-left: calc((100vw - min(100vw, 1200px)) / 2 + 6vw);
-        padding-right: calc((100vw - min(100vw, 1200px)) / 2 + 6vw);
+        padding-left: 6vw;
+        padding-right: 6vw;
       }
 
       .portfolio-layout {
@@ -669,7 +664,6 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        filter: grayscale(100%);
       }
 
       .portfolio-panel-genre {
