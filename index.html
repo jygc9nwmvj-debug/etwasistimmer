@@ -180,6 +180,34 @@
       align-items: center;
       z-index: 40;
       pointer-events: none;
+      /* Eigener, theme-gekoppelter Hintergrund statt komplett transparent:
+         .poem-stage war bisher nur an den Textzeilen blickdicht, dazwischen
+         transparent -- es verliess sich also darauf, dass ALLES darunter
+         (body, jetzt auch die Content-Sections) waehrend der Gedicht-Phase
+         von sich aus dunkel bleibt. Jede neue Section mit eigener fester
+         Hintergrundfarbe konnte das erneut durchscheinen lassen. Mit einem
+         eigenen background-color (dieselbe --bg-Variable wie body) ist die
+         Buehne strukturell blickdicht, unabhaengig davon, was darunter
+         passiert. */
+      background-color: var(--bg);
+      transition: background-color var(--fade);
+    }
+
+    /* .poem-stage bleibt nach der Enthuellung (html.is-logo) permanent im
+       DOM (fixed, volle Viewport-Hoehe) -- ohne dieses Ausblenden wuerde
+       sein jetzt blickdichter Hintergrund fuer immer den Rest der Seite
+       verdecken. visibility statt opacity: opacity wuerde die gesamte
+       Buehne inkl. .hero-line auf 0 multiplizieren (nicht durch ein
+       Kind-Element aufhebbar), .hero-line muss aber dauerhaft sichtbar
+       bleiben, da er zum fixierten Seitentitel wird. visibility:visible
+       auf einem Kind kann dagegen visibility:hidden eines Vorfahren gezielt
+       aufheben -- exakt dieser Mechanismus wird hier genutzt. */
+    html.is-logo .poem-stage {
+      visibility: hidden;
+    }
+
+    html.is-logo .hero-line-wrapper {
+      visibility: visible;
     }
 
     .poem-block {
@@ -338,7 +366,11 @@
        Fuellfarbe plus Abstand zueinander -- der hellere --bg-page-Ton des
        Body (siehe html.light) wird dadurch als "Naht" zwischen den
        Sections sichtbar, statt dass Seite und Sections denselben Ton
-       teilen und optisch verschmelzen. */
+       teilen und optisch verschmelzen. Kein Abgleich mit dem Theme-
+       Zustand mehr noetig: .poem-stage (siehe dort) ist jetzt selbst
+       blickdicht waehrend der Gedicht-Phase und blendet sich danach
+       komplett aus -- das an der Quelle geloest, statt es an jeder
+       einzelnen Section reaktiv nachzuziehen. */
     .main-intro,
     .portfolio-section,
     .columns-grid,
