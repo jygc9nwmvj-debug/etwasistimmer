@@ -1497,6 +1497,39 @@
           ScrollTrigger.refresh();
         }, 150);
       });
+
+      // iOS Safari klappt die Adressleiste typischerweise erst beim ersten
+      // Scroll-Gesten-Start ein, nicht beim Laden -- das aendert die
+      // sichtbare Viewport-Hoehe, ohne dass dabei zuverlaessig ein
+      // resize-Event feuert (bekannte iOS-Eigenheit). ScrollTriggers
+      // einmalig beim Laden berechnete Start/Ende-Positionen fuer
+      // .intro-spacer koennen dadurch leicht von der tatsaechlichen
+      // Scroll-Position abweichen. Ein einmaliger Refresh kurz nach dem
+      // ersten Scroll gleicht das ab.
+      var firstScrollRefreshed = false;
+      window.addEventListener('scroll', function onFirstScroll() {
+        if (firstScrollRefreshed) return;
+        firstScrollRefreshed = true;
+        window.removeEventListener('scroll', onFirstScroll);
+        setTimeout(function () {
+          measure();
+          ScrollTrigger.refresh();
+        }, 300);
+      }, { passive: true });
+
+      // Sicherheitsnetz unabhaengig von ScrollTriggers exakter Berechnung:
+      // sollte die Timeline aus irgendeinem Grund nie ueber progress 0.45
+      // hinauskommen (is-logo wird dann nie gesetzt), bliebe .poem-stage
+      // -- seit es einen eigenen, theme-gekoppelten Hintergrund hat --
+      // dauerhaft blickdicht und wuerde den Rest der Seite fuer immer
+      // verdecken. Ab deutlichem Scroll-Abstand erzwingt dieser simple
+      // Fallback light/is-logo trotzdem, damit dieser Fall bestenfalls
+      // gar nicht erst sichtbar wird.
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > window.innerHeight * 1.5) {
+          root.classList.add('light', 'is-logo');
+        }
+      }, { passive: true });
     });
   </script>
 
