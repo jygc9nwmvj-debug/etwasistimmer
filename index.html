@@ -209,20 +209,14 @@
       transition: color var(--fade);
     }
 
-    /* Die letzte Gedichtzeile ist der Ankerpunkt für die Zeigehand:
-       sie steht linkerhand des Gedichts im Rand und schließt unten mit
-       dieser Zeile ab, wie ein klassisches Manicule-Ornament im
-       Buchsatz. */
-    .poem-line-final {
-      position: relative;
-    }
-
+    /* Die Zeigehand schließt das Gedicht unten ab, linksbündig mit dem
+       Textblock -- wie ein klassisches Manicule/Schlussornament im
+       Buchsatz, das an der Satzkante des Textes bleibt statt mittig zu
+       schweben. Normaler Flow-Fluss statt Absolute-Positionierung, das
+       funktioniert automatisch über alle Breakpoints. */
     .scroll-hint {
-      position: absolute;
-      right: 100%;
-      bottom: 0;
-      margin-right: 1.5rem;
-      display: inline-block;
+      display: block;
+      margin-top: 1.75rem;
       appearance: none;
       background: none;
       border: 0;
@@ -238,7 +232,7 @@
        background-color, kein weiteres Freistellen nötig. */
     .scroll-hint-hand {
       display: block;
-      height: clamp(9.75rem, 11vw, 12rem);
+      height: clamp(4.5rem, 6vw, 6rem);
       width: auto;
       aspect-ratio: 265 / 512;
       background-color: var(--muted);
@@ -842,20 +836,6 @@
       .poem-block { left: 6vw; right: 6vw; padding-right: 0; }
       .poem-line { font-size: 1.35rem; white-space: normal; }
 
-      /* Auf schmalen Bildschirmen hat das Gedicht keinen Rand mehr fuer
-         die Hand links -- sie rutscht stattdessen mittig unter die
-         letzte Zeile. */
-      .poem-line-final { position: static; }
-      .scroll-hint {
-        position: absolute;
-        right: auto;
-        left: 50%;
-        bottom: -4.75rem;
-        margin-right: 0;
-        transform: translateX(-50%);
-      }
-      .scroll-hint-hand { height: 4.5rem; }
-
       .logo-bar { height: 7rem; }
 
       .site-nav {
@@ -935,14 +915,13 @@
       <div class="poem-line fade-line">Jedes Glück hat einen kleinen Stich.</div>
       <div class="poem-line fade-line">Wir möchten so viel: Haben. Sein. Und gelten.</div>
       <div class="poem-line fade-line">Daß einer alles hat –</div>
-      <div class="poem-line fade-line poem-line-final">
-        das ist selten.
-        <button type="button" class="scroll-hint fade-line" id="scrollHint" aria-label="Nach unten scrollen">
-          <span class="scroll-hint-hand" aria-hidden="true"></span>
-        </button>
-      </div>
+      <div class="poem-line fade-line">das ist selten.</div>
 
       <p class="poem-author fade-line">— Kurt Tucholsky</p>
+
+      <button type="button" class="scroll-hint fade-line" id="scrollHint" aria-label="Nach unten scrollen">
+        <span class="scroll-hint-hand" aria-hidden="true"></span>
+      </button>
     </div>
   </div>
 
