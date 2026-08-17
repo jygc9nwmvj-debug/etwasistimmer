@@ -703,7 +703,11 @@
       display: none;
       align-items: center;
       justify-content: center;
-      background-color: rgba(13, 13, 12, 0.94);
+      /* Voll blickdicht statt 0.94: die 6% Transparenz liessen den
+         Seiteninhalt dahinter (z.B. das Genre-Label der Portfolio-
+         Vorschau) sichtbar durchscheinen -- wirkte wie ein Geister-
+         Duplikat hinter dem eigentlichen Lightbox-Text. */
+      background-color: rgba(13, 13, 12, 1);
       padding: 4rem 2rem;
     }
 
@@ -769,8 +773,15 @@
 
     /* Eigenes Element neben .lightbox-media statt darin verschachtelt,
        damit .lightbox-media's overflow:hidden (fuer 16:9-Crop und
-       Ken-Burns-Clipping) das Info-Panel nicht mit abschneidet. */
+       Ken-Burns-Clipping) das Info-Panel nicht mit abschneidet.
+       Dieselbe width-Formel wie .lightbox-media (nicht einfach 100% von
+       .lightbox-content): sonst spannt das Panel bei bindender
+       max-height-Grenze (das Bild wird dann schmaler als der 1100px-
+       Content-Rahmen) trotzdem die volle Content-Breite auf und die
+       Kanten liegen nicht mehr uebereinander. */
     .lightbox-info {
+      width: min(100%, 1100px, calc(58vh * 16 / 9));
+      margin: 0 auto;
       text-align: left;
       padding: 1.25rem 1.5rem 1.5rem;
       margin-top: 1.25rem;
@@ -857,20 +868,26 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
+      outline: none;
       transition: color 0.2s, text-shadow 0.2s, transform 0.2s;
     }
 
     /* Leichte Vergroesserung bei Hover statt nur Farbwechsel, passend
-       zum Rest der Seite (Nav-Unterstrich, Portrait-Hover-Zoom).
-       :focus statt Browser-Default-Outline -- openLightbox() fokussiert
-       den Close-Button automatisch beim Oeffnen, der Standard-Ring sah
-       dann wie ein neuer Rahmen aus, den wir bewusst entfernt hatten. */
-    .lightbox-close:hover,
-    .lightbox-close:focus {
+       zum Rest der Seite (Nav-Unterstrich, Portrait-Hover-Zoom). */
+    .lightbox-close:hover {
       color: var(--accent);
       text-shadow: 0 0 14px rgba(255, 77, 0, 0.6);
       transform: scale(1.12);
-      outline: none;
+    }
+
+    /* :focus-visible statt :focus: openLightbox() fokussiert den
+       Close-Button beim Oeffnen automatisch per Maus-Klick -- dafuer
+       soll kein Ring erscheinen, nur bei echter Tastatur-Navigation.
+       Eigener, dezenterer Indikator statt der Hover-Akzentfarbe, damit
+       Fokus und Hover unterscheidbar bleiben. */
+    .lightbox-close:focus-visible {
+      outline: 1px solid var(--muted-on-dark);
+      outline-offset: 3px;
     }
 
     .lightbox-close {
@@ -911,6 +928,7 @@
       border: none;
       color: inherit;
       cursor: pointer;
+      outline: none;
       position: absolute;
       z-index: 2;
       top: 50%;
@@ -920,6 +938,13 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.75rem 0;
+    }
+
+    /* :focus-visible statt :focus, dezenter Indikator statt der
+       Hover-Akzentfarbe -- siehe .lightbox-close fuer die Begruendung. */
+    .lightbox-nav:focus-visible {
+      outline: 1px solid var(--muted-on-dark);
+      outline-offset: 3px;
     }
 
     /* Padding nur auf der vom Bild abgewandten Seite: vergroessert die
@@ -956,22 +981,14 @@
 
     /* Hover auf dem ganzen Button (Pfeil ODER Schrift) bewegt beide
        gemeinsam -- leichte Vergroesserung des Pfeils, Aufhellung des
-       Labels, passend zum Hover-Verhalten im Rest der Seite. :focus
-       ersetzt den Browser-Default-Outline mit demselben Effekt. */
-    .lightbox-nav:hover,
-    .lightbox-nav:focus {
-      outline: none;
-    }
-
-    .lightbox-nav:hover .lightbox-arrow,
-    .lightbox-nav:focus .lightbox-arrow {
+       Labels, passend zum Hover-Verhalten im Rest der Seite. */
+    .lightbox-nav:hover .lightbox-arrow {
       color: var(--accent);
       text-shadow: 0 0 14px rgba(255, 77, 0, 0.6);
       transform: scale(1.12);
     }
 
-    .lightbox-nav:hover .lightbox-nav-label,
-    .lightbox-nav:focus .lightbox-nav-label {
+    .lightbox-nav:hover .lightbox-nav-label {
       color: rgba(232, 230, 225, 0.9);
     }
 
@@ -986,7 +1003,7 @@
 
       .lightbox { padding: 4rem 0.75rem; }
       .lightbox-media { width: min(100%, 1100px, calc(48vh * 16 / 9)); }
-      .lightbox-info { padding: 1rem 1.1rem 1.15rem; margin-top: 1rem; }
+      .lightbox-info { width: min(100%, 1100px, calc(48vh * 16 / 9)); padding: 1rem 1.1rem 1.15rem; margin-top: 1rem; }
       .lightbox-desc { font-size: 0.85rem; }
       .filmstrip-thumb { width: 4.5rem; }
       .lightbox-close { width: 2.75rem; height: 2.75rem; font-size: 1.6rem; }
