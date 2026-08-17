@@ -107,21 +107,40 @@
     }
 
     .site-nav a {
-      color: var(--accent);
+      position: relative;
+      color: var(--text);
       text-decoration: none;
       font-family: 'Inter', sans-serif;
       font-size: clamp(1.25rem, 1.8vw, 1.6rem);
       font-weight: 400;
       letter-spacing: -0.02em;
       display: inline-block;
-      transition: opacity 0.2s, color var(--fade);
+      transition: color 0.28s ease-out;
+    }
+
+    /* Unterstrich als eigenes Pseudo-Element statt text-decoration:
+       laeuft bei Hover per scaleX ein statt hart einzublenden, mit
+       leichtem Overshoot in der Easing-Kurve. */
+    .site-nav a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -0.3em;
+      height: 2px;
+      background-color: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
     }
 
     .site-nav a:hover {
-      opacity: 0.7;
-      text-decoration: underline;
-      text-decoration-thickness: 3px;
-      text-underline-offset: 4px;
+      color: var(--accent);
+    }
+
+    .site-nav a:hover::after {
+      transform: scaleX(1);
     }
 
     /* GEDICHT BÜHNE */
@@ -276,12 +295,23 @@
     }
 
     /* MAIN INTRO GRID */
+    /* Durchbricht content-stage's Padding/max-width nach rechts, damit
+       das Bild bis zum Viewport-Rand reicht -- bewusst ueber die Breite
+       der ganzen Section statt per negativem Margin auf dem
+       Bild-Container: negative Margins auf einem mix-blend-mode-Element
+       (bzw. dessen direktem Flex-Elternteil) rendern in Chromium
+       zusammen mit body's overflow-x:hidden unsichtbar, sobald sie ueber
+       die eigene Box hinausragen. So bleibt das Bild vollstaendig
+       innerhalb seiner eigenen Box. */
     .main-intro {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 0.9fr 1.1fr;
       gap: 2.5rem;
-      align-items: end;
-      padding: 12rem 0 5rem 0;
+      align-items: start;
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+      padding: 12rem 0 5rem calc((100vw - min(100vw, 1200px)) / 2 + 5vw);
       border-bottom: 1px solid var(--line);
       scroll-margin-top: 12rem;
     }
@@ -637,7 +667,20 @@
       width: auto;
       height: auto;
       margin: 0 auto;
-      transition: opacity 0.35s ease;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      transform: scale(1);
+      /* Weicher Verlauf am oberen Bildrand statt hartem Schnitt --
+         das Bild laeuft oben ins dunkle Overlay aus. */
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 100%);
+    }
+
+    /* Dezenter Scale-In beim Oeffnen: startet leicht vergroessert ohne
+       Transition, wird im naechsten Frame per JS entfernt, sodass der
+       Uebergang auf scale(1) animiert ablaeuft. */
+    .lightbox-image.is-opening {
+      transform: scale(1.05);
+      transition: none;
     }
 
     .lightbox-info {
@@ -856,9 +899,18 @@
       .site-nav a { font-size: 0.95rem; }
 
       .content-stage { padding-left: 6vw; padding-right: 6vw; padding-bottom: 10rem; }
-      .main-intro { grid-template-columns: 1fr; gap: 2.5rem; padding-top: 7rem; scroll-margin-top: 7rem; align-items: center; }
+      .main-intro {
+        width: auto;
+        margin-left: 0;
+        margin-right: 0;
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        padding: 7rem 0 5rem 0;
+        scroll-margin-top: 7rem;
+        align-items: center;
+      }
       .intro-text { padding-bottom: 0; }
-      .intro-portrait { justify-content: center; margin-left: 0; margin-top: 0; }
+      .intro-portrait { justify-content: center; margin-left: 0; margin-top: 0; margin-right: 0; }
       .portrait-freistehend { max-width: 300px; }
     }
   </style>
@@ -1529,6 +1581,13 @@
           document.body.style.overflow = 'hidden';
           lbClose.focus();
           document.addEventListener('keydown', onKeydown);
+
+          lbImage.classList.add('is-opening');
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              lbImage.classList.remove('is-opening');
+            });
+          });
         };
 
         var closeLightbox = function () {
