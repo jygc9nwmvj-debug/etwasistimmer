@@ -1523,6 +1523,49 @@
       document.getElementById('siteTitle').addEventListener('click', function () {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
+
+      // Der Uebergang war bisher zu versteckt/spezifisch angebunden (nur
+      // #heroTitle und #scrollHint) -- ein Klick irgendwo im Gedicht-
+      // Bereich loest ihn jetzt genauso aus. Die einzelnen Listener oben
+      // bleiben trotzdem bestehen: sie ueberschneiden sich jetzt mit
+      // dieser Flaeche, aber playIntroTransition() ist durch
+      // transitionStarted bereits gegen doppeltes Ausloesen geschuetzt,
+      // also unschaedlich.
+      var poemSection = document.getElementById('poemSection');
+      poemSection.addEventListener('click', function () {
+        if (!document.body.classList.contains('poem-active')) return;
+        playIntroTransition();
+      });
+
+      // Ebenso faengt ein normaler Scroll-/Wisch-Versuch waehrend der
+      // Gedicht-Phase (obwohl body.poem-active das eigentliche Scrollen
+      // sperrt) denselben Uebergang ab -- genau die Leute, die aus
+      // Gewohnheit reflexartig scrollen, statt bewusst Hand oder Titel zu
+      // suchen. triggerIfActive() prueft selbst, ob poem-active noch
+      // gesetzt ist, die Listener koennen also dauerhaft bestehen bleiben
+      // und tun nach dem Uebergang einfach nichts mehr.
+      function triggerIfActive() {
+        if (!document.body.classList.contains('poem-active')) return;
+        playIntroTransition();
+      }
+
+      window.addEventListener('wheel', triggerIfActive, { passive: true, once: false });
+
+      // Touch-Swipe: erst bei touchend ausloesen (nicht touchstart), damit
+      // ein einfacher Tap (der ohnehin schon per click-Listener greift)
+      // nicht doppelt feuert, und ein echter Wisch-Versuch eindeutig
+      // erkannt wird.
+      var touchStartY = null;
+      poemSection.addEventListener('touchstart', function (e) {
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+
+      poemSection.addEventListener('touchend', function (e) {
+        if (touchStartY === null) return;
+        var deltaY = touchStartY - (e.changedTouches[0].clientY || touchStartY);
+        touchStartY = null;
+        if (Math.abs(deltaY) > 10) triggerIfActive(); // echter Wisch, kein Tap
+      }, { passive: true });
     });
   </script>
 
