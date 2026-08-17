@@ -209,10 +209,19 @@
       transition: color var(--fade);
     }
 
+    /* Die letzte Gedichtzeile ist der Ankerpunkt für die Zeigehand:
+       sie steht linkerhand des Gedichts im Rand und schließt unten mit
+       dieser Zeile ab, wie ein klassisches Manicule-Ornament im
+       Buchsatz. */
+    .poem-line-final {
+      position: relative;
+    }
+
     .scroll-hint {
       position: absolute;
-      bottom: 3rem;
-      left: 38vw;
+      right: 100%;
+      bottom: 0;
+      margin-right: 1.5rem;
       display: inline-block;
       appearance: none;
       background: none;
@@ -222,27 +231,25 @@
       pointer-events: auto;
     }
 
-    /* Zeigehand als Manicule-Ornament statt Pfeil+Text: Bild ist reines
-       Schwarz/Weiß (weiße Linien auf schwarzem Grund), deshalb per
-       CSS-Maske eingesetzt -- Weiß wird sichtbar, Schwarz ausgeblendet,
-       die tatsächliche Farbe kommt von background-color. Kein Freistellen
-       nötig. */
+    /* Zeigehand als Manicule-Ornament statt Pfeil+Text. image-neu.png
+       ist bereits mit echtem Alpha-Kanal freigestellt, daher genügt
+       eine normale Alpha-Maske -- browserübergreifend zuverlässiger
+       als CSS mask-mode:luminance. Die sichtbare Farbe kommt von
+       background-color, kein weiteres Freistellen nötig. */
     .scroll-hint-hand {
       display: block;
-      height: 3.25rem;
+      height: clamp(9.75rem, 11vw, 12rem);
       width: auto;
       aspect-ratio: 265 / 512;
       background-color: var(--muted);
-      -webkit-mask-image: url('image.png');
-      mask-image: url('image.png');
+      -webkit-mask-image: url('image-neu.png');
+      mask-image: url('image-neu.png');
       -webkit-mask-size: contain;
       mask-size: contain;
       -webkit-mask-repeat: no-repeat;
       mask-repeat: no-repeat;
       -webkit-mask-position: center;
       mask-position: center;
-      -webkit-mask-source-type: luminance;
-      mask-mode: luminance;
       transition: background-color var(--fade);
       animation: scroll-hint-bounce 1.6s ease-in-out infinite;
     }
@@ -834,7 +841,21 @@
     @media (max-width: 768px) {
       .poem-block { left: 6vw; right: 6vw; padding-right: 0; }
       .poem-line { font-size: 1.35rem; white-space: normal; }
-      .scroll-hint { left: 6vw; }
+
+      /* Auf schmalen Bildschirmen hat das Gedicht keinen Rand mehr fuer
+         die Hand links -- sie rutscht stattdessen mittig unter die
+         letzte Zeile. */
+      .poem-line-final { position: static; }
+      .scroll-hint {
+        position: absolute;
+        right: auto;
+        left: 50%;
+        bottom: -4.75rem;
+        margin-right: 0;
+        transform: translateX(-50%);
+      }
+      .scroll-hint-hand { height: 4.5rem; }
+
       .logo-bar { height: 7rem; }
 
       .site-nav {
@@ -914,13 +935,15 @@
       <div class="poem-line fade-line">Jedes Glück hat einen kleinen Stich.</div>
       <div class="poem-line fade-line">Wir möchten so viel: Haben. Sein. Und gelten.</div>
       <div class="poem-line fade-line">Daß einer alles hat –</div>
-      <div class="poem-line fade-line">das ist selten.</div>
+      <div class="poem-line fade-line poem-line-final">
+        das ist selten.
+        <button type="button" class="scroll-hint fade-line" id="scrollHint" aria-label="Nach unten scrollen">
+          <span class="scroll-hint-hand" aria-hidden="true"></span>
+        </button>
+      </div>
 
       <p class="poem-author fade-line">— Kurt Tucholsky</p>
     </div>
-    <button type="button" class="scroll-hint fade-line" id="scrollHint" aria-label="Nach unten scrollen">
-      <span class="scroll-hint-hand" aria-hidden="true"></span>
-    </button>
   </div>
 
   <div class="scroll-container">
