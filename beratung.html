@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="de" class="light is-logo">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medienberatung — Wolfram Huke</title>
+  <meta name="description" content="Medienberatung von Wolfram Huke: analytisches Sparring, Video-Strategien und narrative Konzeption für Redaktionen, Verlage und Projekte.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-light:    #f4f3ef;
+      --text-light:  #121211;
+      --muted-light: #706f6b;
+      --accent:      #FF4D00;
+
+      --bg:    var(--bg-light);
+      --text:  var(--text-light);
+      --muted: var(--muted-light);
+      --line:  rgba(120, 120, 115, 0.2);
+
+      --fade: 0.5s ease;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'EB Garamond', serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection { background: var(--accent); color: #fff; }
+
+    .film-grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 90;
+      opacity: 0.07;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* KOPFLEISTE -- identischer Look wie der Logo-Zustand der Startseite,
+       aber statisch (kein Gedicht, keine Scroll-Animation): Titel und Nav
+       sitzen von Anfang an an derselben Position, an der sie auf der
+       Startseite nach dem Scroll-Übergang landen. */
+    .logo-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 10.5rem;
+      z-index: 20;
+      pointer-events: none;
+      background-color: color-mix(in srgb, var(--bg) 82%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .site-title {
+      position: fixed;
+      top: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 25;
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(1.4rem, 2.5vw, 2.4rem);
+      font-weight: 400;
+      color: var(--text);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .site-nav {
+      position: fixed;
+      top: 7.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: baseline;
+      gap: 0.6rem 2rem;
+      list-style: none;
+    }
+
+    .site-nav a {
+      position: relative;
+      color: var(--text);
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      display: inline-block;
+      transition: color 0.28s ease-out;
+    }
+
+    .site-nav a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -0.3em;
+      height: 2px;
+      background-color: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .site-nav a:hover { color: var(--accent); }
+    .site-nav a:hover::after { transform: scaleX(1); }
+    .site-nav a[aria-current="page"] { color: var(--accent); }
+
+    /* SEITENINHALT */
+    .content-stage {
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14rem 5vw 8rem 5vw;
+    }
+
+    .page-kicker {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .page-heading {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 400;
+      margin-bottom: 2rem;
+    }
+
+    .page-lead {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 640px;
+    }
+
+    .page-sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 4rem;
+      margin-top: 6rem;
+      padding-top: 6rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .page-section h2 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .page-section p {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .contact-section {
+      padding: 6rem 0 2rem;
+    }
+
+    .contact-section h2 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2rem;
+    }
+
+    .contact-email {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      color: inherit;
+      text-decoration: none;
+      display: inline-block;
+      transition: opacity 0.3s;
+    }
+    .contact-email:hover { opacity: 0.6; }
+
+    .footer-meta {
+      margin-top: 4rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    .footer-meta a { color: inherit; text-decoration: none; }
+    .footer-meta a:hover { color: var(--text); }
+
+    @media (max-width: 768px) {
+      .logo-bar { height: 7rem; }
+      .site-title { top: 6vw; font-size: 1.35rem; }
+
+      .site-nav {
+        top: auto;
+        bottom: 0; left: 0;
+        transform: none;
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.4rem 1.4rem;
+        padding: 0.9rem 6vw calc(0.9rem + env(safe-area-inset-bottom));
+        background-color: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid var(--line);
+      }
+      .site-nav a { font-size: 0.95rem; }
+
+      .content-stage { padding: 8rem 6vw 10rem 6vw; }
+      .page-sections { gap: 2.5rem; margin-top: 4rem; padding-top: 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="film-grain" aria-hidden="true"></div>
+  <div class="logo-bar" aria-hidden="true"></div>
+  <a href="index.html" class="site-title">Etwas ist immer.</a>
+
+  <nav aria-label="Hauptnavigation">
+    <ul class="site-nav">
+      <li><a href="index.html#portfolio">Film &amp; TV</a></li>
+      <li><a href="beratung.html" aria-current="page">Beratung</a></li>
+      <li><a href="profil.html">Profil</a></li>
+      <li><a href="index.html#kontakt">Kontakt</a></li>
+    </ul>
+  </nav>
+
+  <main class="content-stage">
+    <section>
+      <span class="page-kicker">Sparring &amp; Konzept</span>
+      <h1 class="page-heading">Medienberatung</h1>
+      <p class="page-lead">Analytische Beratung, Video-Strategien und narrative Konzeption für Redaktionen, Verlage und Projekte.</p>
+
+      <div class="page-sections">
+        <div class="page-section">
+          <h2>Leistungen</h2>
+          <p>Beratung entlang des gesamten Prozesses — von der ersten Konzeptidee über Formatentwicklung bis zur redaktionellen Umsetzung. Ausführliche Beschreibung folgt.</p>
+        </div>
+
+        <div class="page-section">
+          <h2>Ablauf</h2>
+          <p>Ein typisches Beratungsprojekt in einzelnen Schritten, von Erstgespräch bis Ergebnis. Details folgen.</p>
+        </div>
+
+        <div class="page-section">
+          <h2>Zielgruppe</h2>
+          <p>Für Redaktionen, Verlage und Medienschaffende, die ihre Formate und Erzählweisen weiterentwickeln wollen. Details folgen.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-section" id="kontakt">
+      <h2>Kontakt</h2>
+      <a href="mailto:hallo@etwasistimmer.de" class="contact-email">hallo@etwasistimmer.de</a>
+
+      <div class="footer-meta">
+        <span>© Wolfram Huke</span>
+        <a href="index.html">Startseite</a>
+        <a href="/impressum.html">Impressum</a>
+        <a href="/datenschutz.html">Datenschutz</a>
+      </div>
+    </section>
+  </main>
+
+</body>
+</html>
