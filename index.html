@@ -602,17 +602,24 @@
     }
 
     /* .section-inner (siehe dort) liefert max-width/margin/horizontales
-       Padding, hier nur noch das Grid-Layout. */
+       Padding. Gestapeltes Layout statt zweispaltigem Grid: Liste zuerst
+       (Headline/Subline, Filter, Titel-Flow), Bildvorschau in voller
+       Breite darunter -- dadurch kann die Vorschau deutlich groesser
+       wirken, ohne die Liste in eine schmale Spalte zu zwingen. */
     .portfolio-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: start;
+      display: block;
+    }
+
+    .portfolio-list {
+      margin-bottom: 3rem;
     }
 
     .portfolio-preview {
-      position: sticky;
-      top: 11.5rem;
+      /* Kein sticky mehr: das ergab nur Sinn, solange Liste und Vorschau
+         nebeneinander standen und die Liste laenger als das Bild werden
+         konnte. Gestapelt gibt es keine gemeinsame Scroll-Situation mehr. */
+      position: static;
+      width: 100%;
     }
 
     .portfolio-media {
@@ -725,7 +732,6 @@
        beginnen buendig auf gleicher Hoehe. */
     .portfolio-headline {
       display: block;
-      grid-column: 1 / -1;
       font-family: 'EB Garamond', serif;
       font-weight: 400;
       font-size: 2.2rem;
@@ -734,7 +740,6 @@
 
     .portfolio-subline {
       display: block;
-      grid-column: 1 / -1;
       font-family: 'Inter', sans-serif;
       font-size: 0.95rem;
       font-weight: 300;
@@ -1228,11 +1233,6 @@
       .intro-portrait { justify-content: center; align-self: auto; margin-left: 0; margin-top: 0; margin-right: 0; }
       .portrait-freistehend { height: auto; width: 100%; max-width: 300px; max-height: none; object-fit: contain; }
 
-      .portfolio-layout {
-        grid-template-columns: 1fr;
-        gap: 0;
-      }
-
       .portfolio-preview {
         display: none;
       }
@@ -1399,8 +1399,18 @@
            folgen. -->
       <section class="portfolio-section" id="portfolio" aria-label="Arbeiten">
         <div class="portfolio-layout section-inner">
-          <h2 class="portfolio-headline">Meistens hinter, manchmal vor der Kamera.</h2>
-          <p class="portfolio-subline">Reportagen, Berichte, Dokumentarfilm — für MDR, ZDF, BR, SWR u.a.</p>
+          <div class="portfolio-list">
+            <h2 class="portfolio-headline">Meistens hinter, manchmal vor der Kamera.</h2>
+            <p class="portfolio-subline">Reportagen, Berichte, Dokumentarfilm — für MDR, ZDF, BR, SWR u.a.</p>
+
+            <div class="portfolio-filters" role="group" aria-label="Nach Format filtern">
+              <button type="button" class="portfolio-filter is-active" data-filter="all">Alle</button>
+              <button type="button" class="portfolio-filter" data-filter="Dokumentarfilm">Dokumentarfilm</button>
+              <button type="button" class="portfolio-filter" data-filter="TV">TV</button>
+            </div>
+
+            <div class="portfolio-flow" id="portfolioFlow"><!-- wird per JS befüllt, siehe portfolioItems --></div>
+          </div>
 
           <div class="portfolio-preview">
             <div class="portfolio-media">
@@ -1417,16 +1427,6 @@
               <button type="button" class="portfolio-arrow" id="portfolioPrev" aria-label="Vorheriges Projekt">‹</button>
               <button type="button" class="portfolio-arrow" id="portfolioNext" aria-label="Nächstes Projekt">›</button>
             </div>
-          </div>
-
-          <div class="portfolio-list">
-            <div class="portfolio-filters" role="group" aria-label="Nach Format filtern">
-              <button type="button" class="portfolio-filter is-active" data-filter="all">Alle</button>
-              <button type="button" class="portfolio-filter" data-filter="Dokumentarfilm">Dokumentarfilm</button>
-              <button type="button" class="portfolio-filter" data-filter="TV">TV</button>
-            </div>
-
-            <div class="portfolio-flow" id="portfolioFlow"><!-- wird per JS befüllt, siehe portfolioItems --></div>
           </div>
         </div>
       </section>
@@ -2008,6 +2008,12 @@
       var PORTFOLIO_AUTOPLAY_DELAY = 6000;
       var portfolioAutoplayTimer = null;
       var reduceMotionPortfolio = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // Deckt sich mit dem @media (max-width: 768px)-Breakpoint, unter dem
+      // .portfolio-preview per CSS ausgeblendet ist (Akkordeon-Panels
+      // stattdessen) -- ein automatischer step() wuerde dort keinen
+      // sichtbaren Bildwechsel zeigen, nur ein unmotiviertes Scrollen zum
+      // naechsten Listeneintrag.
+      var portfolioPreviewHiddenMQ = window.matchMedia('(max-width: 768px)');
 
       function stopPortfolioAutoplay() {
         if (portfolioAutoplayTimer) {
@@ -2019,6 +2025,7 @@
       function startPortfolioAutoplay() {
         stopPortfolioAutoplay();
         if (reduceMotionPortfolio) return;
+        if (portfolioPreviewHiddenMQ.matches) return;
         // Verlaesst die Maus .portfolio-layout waehrend die Lightbox
         // offen ist (z.B. beim Klick auf das Vorschaubild selbst), darf
         // das nicht erneut anlaufen -- sonst wechselt das Projekt im
