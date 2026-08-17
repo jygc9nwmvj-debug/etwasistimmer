@@ -640,7 +640,7 @@
       display: none;
       align-items: center;
       justify-content: center;
-      background-color: rgb(13, 13, 12);
+      background-color: rgba(13, 13, 12, 0.94);
       padding: 4rem 2rem;
     }
 
@@ -652,40 +652,35 @@
       width: 100%;
       max-width: 1100px;
       max-height: 100%;
-      /* margin:auto zentriert den Content selbst innerhalb von
-         .lightbox-frame (das breiter sein kann, siehe dort) -- ohne das
-         faellt der Content per Default-Blockverhalten an den linken
-         Frame-Rand statt mittig zu bleiben, wie es vorher "gratis" als
-         Flex-Kind von .lightbox kam. text-align:center zentriert
-         zusaetzlich .lightbox-media, das sich (display:inline-block) auf
-         die tatsaechliche Bildbreite schrumpft -- siehe .lightbox-media. */
       margin: 0 auto;
-      text-align: center;
     }
 
-    /* display:inline-block statt width:100%: bei hochkant-formatigen
-       Stills (schmaler als .lightbox-content) spannte .lightbox-info
-       vorher trotzdem ueber die volle Content-Breite -- Bild und
-       (darunter normal fliessendes) Info-Panel wirkten dann nicht wie
-       eine Einheit. Jetzt schrumpft der Container auf die tatsaechliche
-       Bildbreite, das Info-Panel darunter matcht sie exakt. */
+    /* Feste 16:9-Box mit overflow:hidden -- alle Vorschau- und
+       Still-Bilder (Portfolio-Vorschau, Filmstrip, jetzt auch die
+       Lightbox-Grossansicht) zeigen einheitlich 16:9, per
+       object-fit:cover zugeschnitten. overflow:hidden ist ausserdem
+       noetig, damit der Ken-Burns-Zoom unten das Bild innerhalb dieser
+       gleichbleibenden Box vergroessert (reines Reinzoomen in den
+       Bildausschnitt), statt dass die ganze Box beim Zoomen mitwaechst. */
     .lightbox-media {
-      display: inline-block;
-      max-width: 100%;
+      position: relative;
+      /* width als alleinige Steuergroesse statt zusaetzlich max-height:
+         aspect-ratio + width + max-height gleichzeitig wuerde bei
+         bindendem max-height NICHT automatisch die Breite nachziehen
+         (das Verhaeltnis wuerde dann verzerren) -- calc() rechnet die
+         Hoehen-Grenze (58vh) stattdessen in eine aequivalente
+         Breiten-Grenze um, damit aspect-ratio garantiert 16:9 liefert. */
+      width: min(100%, 1100px, calc(58vh * 16 / 9));
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      margin: 0 auto;
     }
 
-    /* Bild bleibt scharf, keine Verlaufskante -- max-height reduziert
-       gegenueber vorher, damit unter dem Bild noch Platz fuer das
-       (wieder normal fliessende statt ueberlagernde) Info-Panel bleibt,
-       ohne dass der Filmstrip auf hohen/schmalen Bildschirmen (iPad)
-       unten aus dem sichtbaren Bereich faellt. */
     .lightbox-image {
       display: block;
-      max-width: 100%;
-      max-height: 58vh;
-      width: auto;
-      height: auto;
-      margin: 0 auto;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       transition: opacity 0.35s ease, transform 0.35s ease;
       transform: scale(1);
     }
@@ -701,19 +696,17 @@
     /* Ken-Burns-Zoom waehrend der Autoplay-Anzeigedauer: startet bei
        scale(1) ohne Transition (per JS gesetzt), wird im naechsten Frame
        auf is-kenburns umgeschaltet, wodurch der Zoom auf scale(1.06)
-       ueber die volle 4s-Anzeigedauer ablaeuft. */
+       ueber die volle 4s-Anzeigedauer ablaeuft. Durch .lightbox-media's
+       overflow:hidden bleibt die sichtbare Box dabei konstant -- es
+       zoomt in den Bildinhalt, ohne dass das Gesamtbild groesser wird. */
     .lightbox-image.is-kenburns {
       transition: opacity 0.35s ease, transform 4s linear;
       transform: scale(1.06);
     }
 
-    /* Sitzt wieder normal fliessend unter dem Bild statt darueber zu
-       liegen -- ragt dadurch nicht mehr ins Bild hinein. Textausrichtung
-       explizit links, da .lightbox-content (fuer die Bildzentrierung)
-       text-align:center setzt. Kein eigener Hintergrund mehr: der sass
-       schon fast farbgleich auf der Lightbox-Flaeche (rgba(13,13,12,0.94)
-       vs. 0.9) und war als Box nicht mehr wahrnehmbar -- reine Flaeche
-       reicht. */
+    /* Eigenes Element neben .lightbox-media statt darin verschachtelt,
+       damit .lightbox-media's overflow:hidden (fuer 16:9-Crop und
+       Ken-Burns-Clipping) das Info-Panel nicht mit abschneidet. */
     .lightbox-info {
       text-align: left;
       padding: 1.25rem 1.5rem 1.5rem;
@@ -791,8 +784,7 @@
       filter: grayscale(0%);
     }
 
-    .lightbox-close,
-    .lightbox-arrow {
+    .lightbox-close {
       appearance: none;
       background: none;
       border: none;
@@ -802,13 +794,20 @@
       align-items: center;
       justify-content: center;
       line-height: 1;
-      transition: color 0.2s, text-shadow 0.2s;
+      transition: color 0.2s, text-shadow 0.2s, transform 0.2s;
     }
 
+    /* Leichte Vergroesserung bei Hover statt nur Farbwechsel, passend
+       zum Rest der Seite (Nav-Unterstrich, Portrait-Hover-Zoom).
+       :focus statt Browser-Default-Outline -- openLightbox() fokussiert
+       den Close-Button automatisch beim Oeffnen, der Standard-Ring sah
+       dann wie ein neuer Rahmen aus, den wir bewusst entfernt hatten. */
     .lightbox-close:hover,
-    .lightbox-arrow:hover {
+    .lightbox-close:focus {
       color: var(--accent);
       text-shadow: 0 0 14px rgba(255, 77, 0, 0.6);
+      transform: scale(1.12);
+      outline: none;
     }
 
     .lightbox-close {
@@ -816,15 +815,9 @@
       z-index: 2;
       top: 1.5rem;
       right: 1.5rem;
-      width: 2.5rem;
-      height: 2.5rem;
-      font-size: 1.4rem;
-    }
-
-    .lightbox-arrow {
-      width: 2.75rem;
-      height: 2.75rem;
-      font-size: 1.4rem;
+      width: 3.25rem;
+      height: 3.25rem;
+      font-size: 2rem;
     }
 
     /* Umschliesst Content + Steuerelemente, damit Pfeile/Close-Button an
@@ -843,10 +836,18 @@
       margin: 0 auto;
     }
 
-    /* Eigener Wrapper, damit die Projekt-Pfeile eine immer sichtbare
-       Beschriftung tragen können -- reine Pfeile am Bildschirmrand lesen
-       sich sonst wie "nächstes Foto", meinen hier aber "nächstes Projekt". */
+    /* .lightbox-nav ist jetzt selbst der Button (statt ein Div, das
+       einen separaten Pfeil-Button + Label-Span umschliesst) -- Pfeil
+       und Beschriftung sind dadurch ein einziges Klick-/Hover-Ziel statt
+       nur der kleine Pfeil allein. Eigener Wrapper/Beschriftung, damit
+       die Projekt-Pfeile nicht wie "naechstes Foto" wirken, sondern
+       eindeutig "naechstes Projekt" sagen. */
     .lightbox-nav {
+      appearance: none;
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
       position: absolute;
       z-index: 2;
       top: 50%;
@@ -855,10 +856,28 @@
       flex-direction: column;
       align-items: center;
       gap: 0.5rem;
+      padding: 0.75rem 0;
     }
 
-    .lightbox-nav-prev { left: 1.5rem; }
-    .lightbox-nav-next { right: 1.5rem; }
+    /* Padding nur auf der vom Bild abgewandten Seite: vergroessert die
+       Klickflaeche nach aussen, ohne (wie bei symmetrischem Padding)
+       auf der Bild-Seite ins Bild hineinzuragen. Inset knapper als beim
+       Close-Button, da die Beschriftung ("VORIGES PROJEKT" etc.) breiter
+       ist als der reine Pfeil und sonst trotzdem ins Bild ragt. */
+    .lightbox-nav-prev { left: 0.5rem; padding-left: 1rem; }
+    .lightbox-nav-next { right: 0.5rem; padding-right: 1rem; }
+
+    .lightbox-arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 3.25rem;
+      height: 3.25rem;
+      font-size: 2.2rem;
+      color: #e8e6e1;
+      line-height: 1;
+      transition: color 0.2s, text-shadow 0.2s, transform 0.2s;
+    }
 
     .lightbox-nav-label {
       font-family: 'Inter', sans-serif;
@@ -869,6 +888,28 @@
       text-align: center;
       line-height: 1.3;
       color: rgba(232, 230, 225, 0.55);
+      transition: color 0.2s;
+    }
+
+    /* Hover auf dem ganzen Button (Pfeil ODER Schrift) bewegt beide
+       gemeinsam -- leichte Vergroesserung des Pfeils, Aufhellung des
+       Labels, passend zum Hover-Verhalten im Rest der Seite. :focus
+       ersetzt den Browser-Default-Outline mit demselben Effekt. */
+    .lightbox-nav:hover,
+    .lightbox-nav:focus {
+      outline: none;
+    }
+
+    .lightbox-nav:hover .lightbox-arrow,
+    .lightbox-nav:focus .lightbox-arrow {
+      color: var(--accent);
+      text-shadow: 0 0 14px rgba(255, 77, 0, 0.6);
+      transform: scale(1.12);
+    }
+
+    .lightbox-nav:hover .lightbox-nav-label,
+    .lightbox-nav:focus .lightbox-nav-label {
+      color: rgba(232, 230, 225, 0.9);
     }
 
     @media (max-width: 768px) {
@@ -881,14 +922,15 @@
       }
 
       .lightbox { padding: 4rem 0.75rem; }
-      .lightbox-image { max-height: 48vh; }
+      .lightbox-media { width: min(100%, 1100px, calc(48vh * 16 / 9)); }
       .lightbox-info { padding: 1rem 1.1rem 1.15rem; margin-top: 1rem; }
       .lightbox-desc { font-size: 0.85rem; }
       .filmstrip-thumb { width: 4.5rem; }
-      .lightbox-arrow { width: 2.25rem; height: 2.25rem; font-size: 1.2rem; }
+      .lightbox-close { width: 2.75rem; height: 2.75rem; font-size: 1.6rem; }
+      .lightbox-arrow { width: 2.75rem; height: 2.75rem; font-size: 1.8rem; }
       .lightbox-nav-label { font-size: 0.6rem; }
-      .lightbox-nav-prev { left: 0.5rem; }
-      .lightbox-nav-next { right: 0.5rem; }
+      .lightbox-nav-prev { left: 0.25rem; }
+      .lightbox-nav-next { right: 0.25rem; }
     }
 
     .contact-section {
@@ -1255,23 +1297,23 @@
   <div class="lightbox" id="portfolioLightbox" aria-hidden="true">
     <div class="lightbox-frame">
       <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Schließen">×</button>
-      <div class="lightbox-nav lightbox-nav-prev">
-        <button type="button" class="lightbox-arrow" id="lightboxPrev" aria-label="Voriges Projekt">‹</button>
+      <button type="button" class="lightbox-nav lightbox-nav-prev" id="lightboxPrev" aria-label="Voriges Projekt">
+        <span class="lightbox-arrow" aria-hidden="true">‹</span>
         <span class="lightbox-nav-label" aria-hidden="true">Voriges<br>Projekt</span>
-      </div>
-      <div class="lightbox-nav lightbox-nav-next">
-        <button type="button" class="lightbox-arrow" id="lightboxNext" aria-label="Nächstes Projekt">›</button>
+      </button>
+      <button type="button" class="lightbox-nav lightbox-nav-next" id="lightboxNext" aria-label="Nächstes Projekt">
+        <span class="lightbox-arrow" aria-hidden="true">›</span>
         <span class="lightbox-nav-label" aria-hidden="true">Nächstes<br>Projekt</span>
-      </div>
+      </button>
       <div class="lightbox-content">
         <div class="lightbox-media">
           <img id="lightboxImage" src="" alt="" class="lightbox-image">
-          <div class="lightbox-info">
-            <span class="lightbox-genre" id="lightboxGenre"></span>
-            <h3 class="lightbox-title" id="lightboxTitle"></h3>
-            <p class="lightbox-desc" id="lightboxDesc"></p>
-            <div class="lightbox-filmstrip" id="lightboxFilmstrip"></div>
-          </div>
+        </div>
+        <div class="lightbox-info">
+          <span class="lightbox-genre" id="lightboxGenre"></span>
+          <h3 class="lightbox-title" id="lightboxTitle"></h3>
+          <p class="lightbox-desc" id="lightboxDesc"></p>
+          <div class="lightbox-filmstrip" id="lightboxFilmstrip"></div>
         </div>
       </div>
     </div>
@@ -1509,6 +1551,7 @@
       var lbPrev = document.getElementById('lightboxPrev');
       var lbNext = document.getElementById('lightboxNext');
       var lbFilmstrip = document.getElementById('lightboxFilmstrip');
+      var lbMedia = document.querySelector('.lightbox-media');
 
       if (media && lightbox) {
         var lastFocused = null;
@@ -1606,6 +1649,29 @@
           startAutoplay();
         };
 
+        // Zentriert die Projekt-Pfeile vertikal auf dem Bild selbst statt
+        // auf dem Gesamtblock (Bild + Info-Panel): top:50% ueber CSS
+        // wuerde je nach Beschreibungslaenge/Filmstrip-Hoehe variieren
+        // und dann teils mit dem Info-Panel darunter kollidieren --
+        // besonders auf Mobile (position:fixed, ueber den ganzen
+        // Viewport zentriert). getBoundingClientRect ist unabhaengig von
+        // fixed/absolute immer Viewport-relativ, bei position:absolute
+        // rechnen wir das auf den jeweiligen Bezugsrahmen um.
+        var positionNavArrows = function () {
+          if (!lbMedia) return;
+          var mediaRect = lbMedia.getBoundingClientRect();
+          var centerY = mediaRect.top + mediaRect.height / 2;
+          [lbPrev, lbNext].forEach(function (el) {
+            if (getComputedStyle(el).position === 'fixed') {
+              el.style.top = centerY + 'px';
+            } else {
+              var parent = el.offsetParent;
+              var parentTop = parent ? parent.getBoundingClientRect().top : 0;
+              el.style.top = (centerY - parentTop) + 'px';
+            }
+          });
+        };
+
         var fillLightbox = function (button) {
           lbImage.setAttribute('src', button.getAttribute('data-image'));
           lbImage.setAttribute('alt', button.getAttribute('data-alt') || '');
@@ -1643,6 +1709,10 @@
           document.body.style.overflow = 'hidden';
           lbClose.focus();
           document.addEventListener('keydown', onKeydown);
+          // Erst jetzt (nach is-open) hat .lightbox-media ein Layout --
+          // vorher waere getBoundingClientRect() innerhalb von
+          // fillLightbox noch ein Nullrechteck gewesen (display:none).
+          positionNavArrows();
 
           lbImage.classList.add('is-opening');
           requestAnimationFrame(function () {
@@ -1669,6 +1739,7 @@
           var nextButton = shown[nextIndex];
           nextButton.click();
           fillLightbox(nextButton);
+          positionNavArrows();
         };
 
         media.addEventListener('click', openLightbox);
@@ -1678,6 +1749,10 @@
         });
         lbPrev.addEventListener('click', function () { lightboxStep(-1); });
         lbNext.addEventListener('click', function () { lightboxStep(1); });
+
+        window.addEventListener('resize', function () {
+          if (lightbox.classList.contains('is-open')) positionNavArrows();
+        });
       }
     });
   </script>
