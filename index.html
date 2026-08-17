@@ -640,7 +640,7 @@
       display: none;
       align-items: center;
       justify-content: center;
-      background-color: rgba(13, 13, 12, 0.94);
+      background-color: rgb(13, 13, 12);
       padding: 4rem 2rem;
     }
 
@@ -652,30 +652,42 @@
       width: 100%;
       max-width: 1100px;
       max-height: 100%;
+      /* margin:auto zentriert den Content selbst innerhalb von
+         .lightbox-frame (das breiter sein kann, siehe dort) -- ohne das
+         faellt der Content per Default-Blockverhalten an den linken
+         Frame-Rand statt mittig zu bleiben, wie es vorher "gratis" als
+         Flex-Kind von .lightbox kam. text-align:center zentriert
+         zusaetzlich .lightbox-media, das sich (display:inline-block) auf
+         die tatsaechliche Bildbreite schrumpft -- siehe .lightbox-media. */
+      margin: 0 auto;
+      text-align: center;
     }
 
-    /* Bild + Info-Panel liegen übereinander statt untereinander, damit die
-       Gesamthöhe nie über die eines einzelnen (moderat gedeckelten) Bildes
-       hinauswächst -- sonst fällt der Filmstrip auf schmalen/hohen
-       Bildschirmen (iPad) unten aus dem sichtbaren Bereich raus. */
+    /* display:inline-block statt width:100%: bei hochkant-formatigen
+       Stills (schmaler als .lightbox-content) spannte .lightbox-info
+       vorher trotzdem ueber die volle Content-Breite -- Bild und
+       (darunter normal fliessendes) Info-Panel wirkten dann nicht wie
+       eine Einheit. Jetzt schrumpft der Container auf die tatsaechliche
+       Bildbreite, das Info-Panel darunter matcht sie exakt. */
     .lightbox-media {
-      position: relative;
-      width: 100%;
+      display: inline-block;
+      max-width: 100%;
     }
 
+    /* Bild bleibt scharf, keine Verlaufskante -- max-height reduziert
+       gegenueber vorher, damit unter dem Bild noch Platz fuer das
+       (wieder normal fliessende statt ueberlagernde) Info-Panel bleibt,
+       ohne dass der Filmstrip auf hohen/schmalen Bildschirmen (iPad)
+       unten aus dem sichtbaren Bereich faellt. */
     .lightbox-image {
       display: block;
       max-width: 100%;
-      max-height: 78vh;
+      max-height: 58vh;
       width: auto;
       height: auto;
       margin: 0 auto;
       transition: opacity 0.35s ease, transform 0.35s ease;
       transform: scale(1);
-      /* Weicher Verlauf am oberen Bildrand statt hartem Schnitt --
-         das Bild laeuft oben ins dunkle Overlay aus. */
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 100%);
-      mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 100%);
     }
 
     /* Dezenter Scale-In beim Oeffnen: startet leicht vergroessert ohne
@@ -686,13 +698,26 @@
       transition: none;
     }
 
+    /* Ken-Burns-Zoom waehrend der Autoplay-Anzeigedauer: startet bei
+       scale(1) ohne Transition (per JS gesetzt), wird im naechsten Frame
+       auf is-kenburns umgeschaltet, wodurch der Zoom auf scale(1.06)
+       ueber die volle 4s-Anzeigedauer ablaeuft. */
+    .lightbox-image.is-kenburns {
+      transition: opacity 0.35s ease, transform 4s linear;
+      transform: scale(1.06);
+    }
+
+    /* Sitzt wieder normal fliessend unter dem Bild statt darueber zu
+       liegen -- ragt dadurch nicht mehr ins Bild hinein. Textausrichtung
+       explizit links, da .lightbox-content (fuer die Bildzentrierung)
+       text-align:center setzt. Kein eigener Hintergrund mehr: der sass
+       schon fast farbgleich auf der Lightbox-Flaeche (rgba(13,13,12,0.94)
+       vs. 0.9) und war als Box nicht mehr wahrnehmbar -- reine Flaeche
+       reicht. */
     .lightbox-info {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(13, 13, 12, 0.9);
+      text-align: left;
       padding: 1.25rem 1.5rem 1.5rem;
+      margin-top: 1.25rem;
     }
 
     .lightbox-genre {
@@ -770,24 +795,25 @@
     .lightbox-arrow {
       appearance: none;
       background: none;
-      border: 1px solid rgba(232, 230, 225, 0.3);
+      border: none;
       color: #e8e6e1;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       line-height: 1;
-      transition: border-color 0.2s, color 0.2s;
+      transition: color 0.2s, text-shadow 0.2s;
     }
 
     .lightbox-close:hover,
     .lightbox-arrow:hover {
-      border-color: var(--accent);
       color: var(--accent);
+      text-shadow: 0 0 14px rgba(255, 77, 0, 0.6);
     }
 
     .lightbox-close {
-      position: fixed;
+      position: absolute;
+      z-index: 2;
       top: 1.5rem;
       right: 1.5rem;
       width: 2.5rem;
@@ -801,11 +827,28 @@
       font-size: 1.4rem;
     }
 
+    /* Umschliesst Content + Steuerelemente, damit Pfeile/Close-Button an
+       diesem (gedeckelten) Rahmen kleben statt am nackten Viewport-Rand --
+       vorher liefen sie bei .lightbox-content's max-width:1100px auf
+       breiten Bildschirmen weit auseinander. */
+    .lightbox-frame {
+      position: relative;
+      width: 100%;
+      /* Etwas breiter als .lightbox-content (1100px), damit die an den
+         Frame-Kanten verankerten Controls knapp neben statt direkt auf
+         dem Bild sitzen -- da Stills ausschliesslich 16:9 sind, fuellt
+         das Bild die Content-Breite in den meisten Viewport-Groessen
+         fast komplett aus. */
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
     /* Eigener Wrapper, damit die Projekt-Pfeile eine immer sichtbare
        Beschriftung tragen können -- reine Pfeile am Bildschirmrand lesen
        sich sonst wie "nächstes Foto", meinen hier aber "nächstes Projekt". */
     .lightbox-nav {
-      position: fixed;
+      position: absolute;
+      z-index: 2;
       top: 50%;
       transform: translateY(-50%);
       display: flex;
@@ -829,9 +872,17 @@
     }
 
     @media (max-width: 768px) {
+      /* Auf Mobile bleibt es bei fest am Viewport verankerten Controls
+         statt am (dort ohnehin viewportbreiten) Frame -- unveraendertes
+         Verhalten gegenueber vorher. */
+      .lightbox-close,
+      .lightbox-nav {
+        position: fixed;
+      }
+
       .lightbox { padding: 4rem 0.75rem; }
-      .lightbox-image { max-height: 72vh; }
-      .lightbox-info { padding: 1rem 1.1rem 1.15rem; }
+      .lightbox-image { max-height: 48vh; }
+      .lightbox-info { padding: 1rem 1.1rem 1.15rem; margin-top: 1rem; }
       .lightbox-desc { font-size: 0.85rem; }
       .filmstrip-thumb { width: 4.5rem; }
       .lightbox-arrow { width: 2.25rem; height: 2.25rem; font-size: 1.2rem; }
@@ -1202,23 +1253,25 @@
   </div>
 
   <div class="lightbox" id="portfolioLightbox" aria-hidden="true">
-    <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Schließen">×</button>
-    <div class="lightbox-nav lightbox-nav-prev">
-      <button type="button" class="lightbox-arrow" id="lightboxPrev" aria-label="Voriges Projekt">‹</button>
-      <span class="lightbox-nav-label" aria-hidden="true">Voriges<br>Projekt</span>
-    </div>
-    <div class="lightbox-nav lightbox-nav-next">
-      <button type="button" class="lightbox-arrow" id="lightboxNext" aria-label="Nächstes Projekt">›</button>
-      <span class="lightbox-nav-label" aria-hidden="true">Nächstes<br>Projekt</span>
-    </div>
-    <div class="lightbox-content">
-      <div class="lightbox-media">
-        <img id="lightboxImage" src="" alt="" class="lightbox-image">
-        <div class="lightbox-info">
-          <span class="lightbox-genre" id="lightboxGenre"></span>
-          <h3 class="lightbox-title" id="lightboxTitle"></h3>
-          <p class="lightbox-desc" id="lightboxDesc"></p>
-          <div class="lightbox-filmstrip" id="lightboxFilmstrip"></div>
+    <div class="lightbox-frame">
+      <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Schließen">×</button>
+      <div class="lightbox-nav lightbox-nav-prev">
+        <button type="button" class="lightbox-arrow" id="lightboxPrev" aria-label="Voriges Projekt">‹</button>
+        <span class="lightbox-nav-label" aria-hidden="true">Voriges<br>Projekt</span>
+      </div>
+      <div class="lightbox-nav lightbox-nav-next">
+        <button type="button" class="lightbox-arrow" id="lightboxNext" aria-label="Nächstes Projekt">›</button>
+        <span class="lightbox-nav-label" aria-hidden="true">Nächstes<br>Projekt</span>
+      </div>
+      <div class="lightbox-content">
+        <div class="lightbox-media">
+          <img id="lightboxImage" src="" alt="" class="lightbox-image">
+          <div class="lightbox-info">
+            <span class="lightbox-genre" id="lightboxGenre"></span>
+            <h3 class="lightbox-title" id="lightboxTitle"></h3>
+            <p class="lightbox-desc" id="lightboxDesc"></p>
+            <div class="lightbox-filmstrip" id="lightboxFilmstrip"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1483,6 +1536,10 @@
           currentStillIndex = index;
           var still = currentStills[index];
 
+          // Ken-Burns-Zoom immer zuruecksetzen -- neu gestartet wird er
+          // unten nur fuer automatische (nicht manuelle) Wechsel.
+          lbImage.classList.remove('is-kenburns');
+
           lbImage.style.opacity = '0';
           var faded = false;
           var onFade = function () {
@@ -1493,6 +1550,11 @@
             lbImage.setAttribute('alt', still.alt);
             requestAnimationFrame(function () {
               lbImage.style.opacity = '1';
+              if (!userInitiated) {
+                requestAnimationFrame(function () {
+                  lbImage.classList.add('is-kenburns');
+                });
+              }
             });
           };
           lbImage.addEventListener('transitionend', onFade);
