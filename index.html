@@ -48,6 +48,15 @@
       --line:  rgba(120, 120, 115, 0.2);
 
       --fade: 0.5s ease;
+
+      /* .logo-bar's Hoehe und .main-intro's padding-top muessen so
+         gekoppelt sein, dass Letzteres IMMER groesser bleibt -- sonst
+         rutscht der Content (insb. das Portrait) unter die fixierte,
+         teiltransparente Logo-Bar und wirkt oben angeschnitten. Als
+         Variable statt zweier unabhaengiger Werte, die bei einem
+         Redesign leise auseinanderlaufen koennen. */
+      --logo-bar-height: 10.5rem;
+      --logo-bar-height-mobile: 7rem;
     }
 
     html.light {
@@ -212,7 +221,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 10.5rem;
+      height: var(--logo-bar-height);
       z-index: 20;
       pointer-events: none;
       opacity: 0;
@@ -323,7 +332,10 @@
       grid-template-columns: 0.9fr 1.1fr;
       gap: 2.5rem;
       align-items: end;
-      padding: 5rem 0 0 0;
+      /* An --logo-bar-height gekoppelt statt eines unabhaengigen Werts --
+         garantiert, dass der Content immer unterhalb der fixierten
+         Logo-Bar beginnt, siehe Kommentar bei --logo-bar-height. */
+      padding: calc(var(--logo-bar-height) + 1.5rem) 0 0 0;
       scroll-margin-top: 12rem;
     }
 
@@ -1065,7 +1077,7 @@
       .poem-block { left: 6vw; right: 6vw; padding-right: 0; }
       .poem-line { font-size: 1.35rem; white-space: normal; }
 
-      .logo-bar { height: 7rem; }
+      .logo-bar { height: var(--logo-bar-height-mobile); }
 
       .site-nav {
         top: auto;
@@ -1088,7 +1100,7 @@
       .main-intro {
         grid-template-columns: 1fr;
         gap: 2.5rem;
-        padding: 3rem 0 5rem 0;
+        padding: calc(var(--logo-bar-height-mobile) + 1.5rem) 0 5rem 0;
         scroll-margin-top: 7rem;
         align-items: center;
       }
