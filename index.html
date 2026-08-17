@@ -758,18 +758,21 @@
       inset: 0;
       z-index: 100;
       display: none;
-      align-items: center;
-      justify-content: center;
       /* Voll blickdicht statt 0.94: die 6% Transparenz liessen den
          Seiteninhalt dahinter (z.B. das Genre-Label der Portfolio-
          Vorschau) sichtbar durchscheinen -- wirkte wie ein Geister-
          Duplikat hinter dem eigentlichen Lightbox-Text. */
       background-color: rgba(13, 13, 12, 1);
-      padding: 4rem 2rem;
     }
 
+    /* display:block statt flex: die Zentrierung/Breitenbegrenzung
+       liegt jetzt komplett bei .lightbox-frame (position:absolute +
+       inset + max-width + margin:auto). Vermeidet Safari/Chrome-
+       Uneinigkeiten bei der Breitenberechnung von Flex-Kindern mit
+       width:100% (genau das verursachte den asymmetrischen Abstand
+       zwischen "Voriges"/"Naechstes Projekt" und dem Bild). */
     .lightbox.is-open {
-      display: flex;
+      display: block;
     }
 
     .lightbox-content {
@@ -969,17 +972,26 @@
     /* Umschliesst Content + Steuerelemente, damit Pfeile/Close-Button an
        diesem (gedeckelten) Rahmen kleben statt am nackten Viewport-Rand --
        vorher liefen sie bei .lightbox-content's max-width:1100px auf
-       breiten Bildschirmen weit auseinander. */
+       breiten Bildschirmen weit auseinander. Etwas breiter als
+       .lightbox-content (1100px), damit die an den Frame-Kanten
+       verankerten Controls knapp neben statt direkt auf dem Bild sitzen.
+       position:absolute + inset statt .lightbox's frueherem
+       display:flex/align-items/justify-content: die Breite ergibt sich
+       deterministisch aus max-width + margin:auto innerhalb der per
+       inset verankerten Flaeche, unabhaengig von Flexbox-internen
+       Rundungs-/Berechnungsunterschieden zwischen Browser-Engines (Ursache
+       fuer den frueheren asymmetrischen Abstand von "Naechstes Projekt"
+       zum Bild in Safari). inset uebernimmt .lightbox's vorheriges
+       padding (4rem 2rem), justify-content:center die vertikale
+       Zentrierung. */
     .lightbox-frame {
-      position: relative;
-      width: 100%;
-      /* Etwas breiter als .lightbox-content (1100px), damit die an den
-         Frame-Kanten verankerten Controls knapp neben statt direkt auf
-         dem Bild sitzen -- da Stills ausschliesslich 16:9 sind, fuellt
-         das Bild die Content-Breite in den meisten Viewport-Groessen
-         fast komplett aus. */
+      position: absolute;
+      inset: 4rem 2rem;
       max-width: 1200px;
       margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     /* .lightbox-nav ist jetzt selbst der Button (statt ein Div, das
@@ -1074,7 +1086,7 @@
         position: fixed;
       }
 
-      .lightbox { padding: 4rem 0.75rem; }
+      .lightbox-frame { inset: 4rem 0.75rem; }
       .lightbox-media { width: min(100%, 1100px, calc(48vh * 16 / 9)); }
       .lightbox-info { width: min(100%, 1100px, calc(48vh * 16 / 9)); padding: 1rem 1.1rem 1.15rem; margin-top: 1rem; }
       .lightbox-desc { font-size: 0.85rem; }
