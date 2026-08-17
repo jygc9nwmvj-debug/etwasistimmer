@@ -22,19 +22,17 @@
       --text-dark:  #e8e6e1;
       --muted-dark: #6e6d69;
       /* Heller als --muted-dark: das ist fuer dezente Kontraste auf
-         wechselndem Theme-Hintergrund gedacht, nicht fuer feste dunkle
-         Flaechen wie die Portfolio-Section -- dort waere es mit ~3.6:1
-         Kontrast zu schlecht lesbar. Gleicher Ton, den die Lightbox
-         schon fuer ihren Fliesstext nutzt (~8:1 Kontrast). */
+         wechselndem Theme-Hintergrund gedacht. Wird von der Lightbox
+         genutzt, deren dunkler Zustand (anders als die Portfolio-
+         Section) fest bleibt, unabhaengig vom Seiten-Theme. */
       --muted-on-dark: #a9a8a3;
-      /* Eigener, waermerer Dunkelton fuer die Portfolio-Section: sowohl
-         --bg-dark (#0d0d0c, fast reines Schwarz) als auch ein neutrales
-         Grau wirkten auf der Flaeche zu hart/konfrontativ. Warmes
-         Anthrazit statt reinem Schwarz, wie es z.B. Apple fuer dunkle
-         Sections nutzt. Bleibt bewusst getrennt von --bg-dark, damit der
-         native Dunkel-Zustand der Seite (Gedicht) unangetastet bleibt. */
-      --bg-portfolio-dark: #2a2724;
 
+      /* Seiten-Grundton, sichtbar nur in den Luecken zwischen den
+         Content-Sections -- --bg-light bleibt daneben bestehen, wird
+         aber nur noch als explizite Section-Fuellfarbe verwendet, nicht
+         mehr als Body-Hintergrund. Erzeugt den "Naht"-Abstand zwischen
+         Hero/Portfolio/Kacheln/Kontakt. */
+      --bg-page:     #fdfcfa;
       --bg-light:    #f4f3ef;
       --text-light:  #121211;
       --muted-light: #706f6b;
@@ -60,7 +58,7 @@
     }
 
     html.light {
-      --bg:    var(--bg-light);
+      --bg:    var(--bg-page);
       --text:  var(--text-light);
       --muted: var(--muted-light);
     }
@@ -308,35 +306,88 @@
     .scroll-container { position: relative; }
     .intro-spacer { height: 60vh; }
 
+    /* Kein horizontales Padding/max-width mehr fuer den Inhalt: alle vier
+       Kind-Sections sind jetzt selbst randlos (100vw) und zentrieren
+       ihren Content per .section-inner. Nur noch als Stacking-Context
+       (z-index) und fuer den Abstand nach der letzten Section relevant. */
     .content-stage {
       position: relative;
       z-index: 10;
+      padding-bottom: 8rem;
+    }
+
+    /* Die vier Content-Bloecke bekommen explizit --bg-light als eigene
+       Fuellfarbe plus Abstand zueinander -- der hellere --bg-page-Ton des
+       Body (siehe html.light) wird dadurch als "Naht" zwischen den
+       Sections sichtbar, statt dass Seite und Sections denselben Ton
+       teilen und optisch verschmelzen. */
+    .main-intro,
+    .portfolio-section,
+    .columns-grid,
+    .contact-section {
+      background-color: var(--bg-light);
+      margin-bottom: 3rem;
+      /* Randlose Hintergrundflaeche: die Section selbst waechst auf volle
+         Bildschirmbreite, unabhaengig von .content-stage's max-width.
+         Ihr Inhalt bleibt trotzdem bei 1200px zentriert -- siehe
+         .section-inner (bzw. .portfolio-layout, das dieselbe Rolle
+         schon erfuellt). Body braucht overflow-x:hidden, damit die
+         100vw-Breite (bei vorhandener Scrollbar minimal breiter als der
+         sichtbare Viewport) keinen horizontalen Scrollbalken erzeugt. */
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+    }
+
+    /* Gemeinsamer Innen-Wrapper, der den Inhalt der randlosen Sections
+       wieder auf die bekannte Content-Breite zentriert -- dieselbe
+       max-width/Innenabstand-Formel, die vorher .content-stage fuer
+       diese Sections uebernommen hat, jetzt pro Section repliziert, weil
+       die Sections nicht mehr in content-stage's Breite eingeschraenkt
+       sind. */
+    /* Nur horizontales Padding als Longhand (padding-left/-right statt
+       Shorthand padding): so kann eine Section, die zusaetzlich eigenes
+       vertikales Padding braucht (z.B. .columns-grid-inner), das per
+       padding-top/-bottom ergaenzen, ohne dass sich beide Regeln beim
+       Zusammenspiel der beiden Klassen auf demselben Element gegenseitig
+       ueberschreiben. */
+    .section-inner {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 5vw 8rem 5vw;
+      padding-left: 5vw;
+      padding-right: 5vw;
     }
 
     /* MAIN INTRO GRID */
     /* Kein padding-bottom: das Portrait sitzt (via align-self:stretch +
        object-fit:cover) direkt an der Unterkante der Section, jeder
-       Bottom-Padding hier wuerde eine Luecke erzeugen. align-items:end
-       setzt den Text ebenfalls unten an -- .intro-portrait ueberschreibt
-       das ohnehin per align-self:stretch, das Bild bleibt unveraendert
-       am unteren Rand. Der freie Weißraum liegt dadurch oben (zwischen
-       Nav und Textanfang), nicht zwischen Textende und Rand. Kein
-       border-bottom mehr als Trennlinie -- der Farbwechsel zur fest
-       dunklen Portfolio-Section direkt darunter uebernimmt diese
-       Funktion. */
+       Bottom-Padding hier wuerde eine Luecke INNERHALB der Section
+       erzeugen und den Sockel-Bezug zerstoeren. align-items:end setzt
+       den Text ebenfalls unten an -- .intro-portrait ueberschreibt das
+       ohnehin per align-self:stretch, das Bild bleibt unveraendert am
+       unteren Rand. Der freie Weißraum liegt dadurch oben (zwischen Nav
+       und Textanfang), nicht zwischen Textende und Rand. Der Abstand ZUR
+       naechsten Section kommt stattdessen von margin-bottom (siehe
+       .main-intro, .portfolio-section, .columns-grid, .contact-section
+       weiter unten) -- der hellere --bg-page-Ton der Seite wird dort
+       sichtbar. */
     .main-intro {
-      display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 2.5rem;
-      align-items: end;
       /* An --logo-bar-height gekoppelt statt eines unabhaengigen Werts --
          garantiert, dass der Content immer unterhalb der fixierten
          Logo-Bar beginnt, siehe Kommentar bei --logo-bar-height. */
       padding: calc(var(--logo-bar-height) + 1.5rem) 0 0 0;
       scroll-margin-top: 12rem;
+    }
+
+    /* Das eigentliche Grid-Layout sitzt jetzt im .section-inner-Wrapper
+       statt direkt auf .main-intro, weil Letzteres fuer den randlosen
+       Hintergrund auf 100vw gewachsen ist -- das Grid soll aber weiter
+       bei 1200px zentriert bleiben. */
+    .main-intro-inner {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 2.5rem;
+      align-items: end;
     }
 
     .intro-text {
@@ -406,11 +457,22 @@
       transform: scale(1.02);
     }
 
-    .columns-grid {
+    /* Grid-Layout, vertikales Padding und die Trennlinie komplett im
+       Wrapper statt auf .columns-grid selbst -- sonst wuerde
+       border-bottom auf voller 100vw-Breite laufen statt (wie vorher)
+       nur ueber die 1200px-Content-Spalte. Die Gesamthoehe der Section
+       -- und damit die sichtbare Hintergrundflaeche -- bleibt dadurch
+       unveraendert, sie wird nur vom Wrapper statt von .columns-grid
+       selbst aufgespannt. Nur padding-top/-bottom als Longhand (nicht
+       das padding-Shorthand): sitzt zusammen mit .section-inner auf
+       demselben Element, dessen padding-left/-right sonst ueberschrieben
+       wuerde. */
+    .columns-grid-inner {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 4rem;
-      padding: 6rem 0;
+      padding-top: 6rem;
+      padding-bottom: 6rem;
       border-bottom: 1px solid var(--line);
     }
 
@@ -442,28 +504,22 @@
     }
 
     /* PORTFOLIO: Bildvorschau + fließende Titelliste */
-    /* Fest dunkler Hintergrund, unabhaengig vom Seiten-Theme -- gleiches
-       Prinzip wie die Lightbox (--bg-dark/--text-dark/--muted-dark sind
-       im Gegensatz zu --bg/--text/--muted konstant, werden von
-       html.light nicht ueberschrieben, daher als feste Werte
-       verwendbar statt neue Farben zu erfinden). Bewusst NICHT
-       randlos/vollbild (kein Bleed mehr): Apple-Prinzip fuer dunkle
-       Sections -- ein klar umrissenes Modul mit sichtbarem hellen Rand
-       links/rechts wirkt kontrollierter als "die ganze Seite wird
-       schwarz". Selbe max-width/Innenabstand wie der Rest des Contents
-       (kommt automatisch von content-stage, keine eigene Breite noetig).
-       Der Farbwechsel selbst ersetzt die Trennlinie zum Hero -- kein
-       border-top noetig, main-intro's border-bottom entfaellt
-       entsprechend. Harte Kante bewusst ohne Verlauf: das Portrait
-       darueber sitzt mit der Bildunterkante exakt auf dieser Linie
-       (Sockel-Prinzip), ein weicher Verlauf wuerde sie verwischen. */
+    /* Kein eigener Dark-Mode mehr: background-color kommt jetzt von der
+       gemeinsamen Regel (.main-intro, .portfolio-section, .columns-grid,
+       .contact-section), genau wie bei den anderen Content-Bloecken,
+       inklusive randlosem 100vw-Hintergrund. Kein border-bottom mehr als
+       Trennlinie zur naechsten Section -- der margin-bottom-Abstand
+       (--bg-page scheint durch) uebernimmt diese Funktion. Kein eigenes
+       horizontales Padding hier: .portfolio-layout traegt zusaetzlich
+       die .section-inner-Klasse und zentriert den Inhalt dadurch selbst
+       wieder auf 1200px. */
     .portfolio-section {
-      background-color: var(--bg-portfolio-dark);
-      padding: 6rem 3rem;
-      border-bottom: 1px solid var(--line);
+      padding: 7rem 0;
       scroll-margin-top: 8rem;
     }
 
+    /* .section-inner (siehe dort) liefert max-width/margin/horizontales
+       Padding, hier nur noch das Grid-Layout. */
     .portfolio-layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -481,7 +537,7 @@
       width: 100%;
       aspect-ratio: 16 / 9;
       overflow: hidden;
-      background-color: rgba(255, 255, 255, 0.06);
+      background-color: var(--line);
       cursor: pointer;
     }
 
@@ -506,7 +562,7 @@
       appearance: none;
       background: none;
       border: 1px solid var(--line);
-      color: var(--text-dark);
+      color: var(--text);
       width: 2.25rem;
       height: 2.25rem;
       display: inline-flex;
@@ -539,7 +595,7 @@
       font-family: 'Inter', sans-serif;
       font-size: 0.95rem;
       font-weight: 300;
-      color: var(--muted-on-dark);
+      color: var(--muted);
       line-height: 1.6;
     }
 
@@ -557,7 +613,7 @@
       font-family: 'Inter', sans-serif;
       font-size: clamp(0.95rem, 1.3vw, 1.05rem);
       font-weight: 500;
-      color: var(--muted-on-dark);
+      color: var(--muted);
       line-height: 1.5;
       margin-bottom: 2rem;
     }
@@ -580,12 +636,12 @@
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--muted-on-dark);
+      color: var(--muted);
       transition: color 0.2s;
     }
 
     .portfolio-filter:hover {
-      color: var(--text-dark);
+      color: var(--text);
     }
 
     .portfolio-filter.is-active {
@@ -609,12 +665,12 @@
       font-family: 'EB Garamond', serif;
       font-size: 1.3rem;
       font-weight: 400;
-      color: var(--muted-on-dark);
+      color: var(--muted);
       transition: color 0.2s;
     }
 
     .portfolio-item:hover {
-      color: var(--text-dark);
+      color: var(--text);
     }
 
     .portfolio-item.is-active {
@@ -624,7 +680,7 @@
     .portfolio-sep {
       font-family: 'EB Garamond', serif;
       font-size: 1.3rem;
-      color: var(--muted-on-dark);
+      color: var(--muted);
     }
 
     .portfolio-panel {
@@ -632,11 +688,6 @@
     }
 
     @media (max-width: 768px) {
-      .portfolio-section {
-        padding-left: 6vw;
-        padding-right: 6vw;
-      }
-
       .portfolio-layout {
         grid-template-columns: 1fr;
         gap: 0;
@@ -694,7 +745,7 @@
         font-family: 'Inter', sans-serif;
         font-size: 0.95rem;
         font-weight: 300;
-        color: var(--muted-on-dark);
+        color: var(--muted);
         line-height: 1.6;
       }
     }
@@ -1038,6 +1089,9 @@
     .contact-section {
       padding: 6rem 0 2rem;
       scroll-margin-top: 8rem;
+      /* Letzter Block auf der Seite -- kein Abstand zur "naechsten"
+         Section noetig, .content-stage's eigenes padding-bottom reicht. */
+      margin-bottom: 0;
     }
 
     .contact-section h2 {
@@ -1096,12 +1150,15 @@
       }
       .site-nav a { font-size: 0.95rem; }
 
-      .content-stage { padding-left: 6vw; padding-right: 6vw; padding-bottom: 10rem; }
+      .content-stage { padding-bottom: 10rem; }
+      .section-inner { padding-left: 6vw; padding-right: 6vw; }
       .main-intro {
-        grid-template-columns: 1fr;
-        gap: 2.5rem;
         padding: calc(var(--logo-bar-height-mobile) + 1.5rem) 0 5rem 0;
         scroll-margin-top: 7rem;
+      }
+      .main-intro-inner {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
         align-items: center;
       }
       .intro-text { padding-bottom: 0; }
@@ -1116,7 +1173,7 @@
          helle, statische Fassung springen und das fixierte Gedicht-Overlay
          ausblenden, statt es dauerhaft über dem Content hängen zu lassen. */
       :root {
-        --bg:    var(--bg-light);
+        --bg:    var(--bg-page);
         --text:  var(--text-light);
         --muted: var(--muted-light);
       }
@@ -1177,18 +1234,20 @@
     <main class="content-stage" id="inhalt">
 
       <section class="main-intro" id="about">
-        <div class="intro-text" id="introText">
-          <p class="name-sub">
-            Ich bin <strong>Wolfram Huke</strong>. Ich mache Dokumentarfilme, Primetime-Fernsehen, relativ viel Quatsch und gehe gern mit dem Hund raus.
-          </p>
-        </div>
+        <div class="main-intro-inner section-inner">
+          <div class="intro-text" id="introText">
+            <p class="name-sub">
+              Ich bin <strong>Wolfram Huke</strong>. Ich mache Dokumentarfilme, Primetime-Fernsehen, relativ viel Quatsch und gehe gern mit dem Hund raus.
+            </p>
+          </div>
 
-        <div class="intro-portrait" id="introPortrait">
-          <img
-            src="wolfram-huke.png"
-            alt="Porträt von Wolfram Huke"
-            class="portrait-freistehend"
-            loading="eager" decoding="async">
+          <div class="intro-portrait" id="introPortrait">
+            <img
+              src="wolfram-huke.png"
+              alt="Porträt von Wolfram Huke"
+              class="portrait-freistehend"
+              loading="eager" decoding="async">
+          </div>
         </div>
       </section>
 
@@ -1196,7 +1255,7 @@
            ohne das Wort "Platzhalter" im sichtbaren Text -- echte Projekte
            folgen. -->
       <section class="portfolio-section" id="portfolio" aria-label="Arbeiten">
-        <div class="portfolio-layout">
+        <div class="portfolio-layout section-inner">
           <div class="portfolio-preview">
             <div class="portfolio-media">
               <img
@@ -1366,27 +1425,31 @@
            Unterseite); hier bleiben nur die beiden Kacheln, die weiterhin
            auf der Startseite selbst beschrieben werden. -->
       <section class="columns-grid" aria-label="Arbeitsfelder">
-        <article class="col-card" id="film">
-          <h2>Doku &amp; Regie</h2>
-          <h3>Filmemacher</h3>
-          <p>Dokumentarfilme, Kameraführung und visuelles Storytelling mit klarer, unaufgeregter Haltung.</p>
-        </article>
+        <div class="columns-grid-inner section-inner">
+          <article class="col-card" id="film">
+            <h2>Doku &amp; Regie</h2>
+            <h3>Filmemacher</h3>
+            <p>Dokumentarfilme, Kameraführung und visuelles Storytelling mit klarer, unaufgeregter Haltung.</p>
+          </article>
 
-        <article class="col-card" id="journalismus">
-          <h2>Recherche &amp; TV</h2>
-          <h3>Journalist</h3>
-          <p>Tiefgründige TV-Reportagen und redaktionelle Beiträge für öffentlich-rechtliche Formate (MDR, ZDF, SWR).</p>
-        </article>
+          <article class="col-card" id="journalismus">
+            <h2>Recherche &amp; TV</h2>
+            <h3>Journalist</h3>
+            <p>Tiefgründige TV-Reportagen und redaktionelle Beiträge für öffentlich-rechtliche Formate (MDR, ZDF, SWR).</p>
+          </article>
+        </div>
       </section>
 
       <section class="contact-section" id="kontakt">
-        <h2>Kontakt</h2>
-        <a href="mailto:hallo@etwasistimmer.de" class="contact-email">hallo@etwasistimmer.de</a>
+        <div class="section-inner">
+          <h2>Kontakt</h2>
+          <a href="mailto:hallo@etwasistimmer.de" class="contact-email">hallo@etwasistimmer.de</a>
 
-        <div class="footer-meta">
-          <span>© Wolfram Huke</span>
-          <a href="/impressum.html">Impressum</a>
-          <a href="/datenschutz.html">Datenschutz</a>
+          <div class="footer-meta">
+            <span>© Wolfram Huke</span>
+            <a href="/impressum.html">Impressum</a>
+            <a href="/datenschutz.html">Datenschutz</a>
+          </div>
         </div>
       </section>
 
