@@ -21,10 +21,9 @@
       --bg-dark:    #0d0d0c;
       --text-dark:  #e8e6e1;
       --muted-dark: #6e6d69;
-      /* Heller als --muted-dark: das ist fuer dezente Kontraste auf
-         wechselndem Theme-Hintergrund gedacht. Wird von der Lightbox
-         genutzt, deren dunkler Zustand (anders als die Portfolio-
-         Section) fest bleibt, unabhaengig vom Seiten-Theme. */
+      /* Heller als --muted-dark: das ist fuer dezente Kontraste auf dem
+         fest dunklen Gedicht-Hintergrund gedacht. Wird auch von der
+         Lightbox genutzt, deren dunkler Zustand ebenfalls fest bleibt. */
       --muted-on-dark: #a9a8a3;
 
       /* Seiten-Grundton, sichtbar nur in den Luecken zwischen den
@@ -40,9 +39,6 @@
       /* AKZENTFARBE (SIGNAL-ORANGE) */
       --accent:     #FF4D00;
 
-      --bg:    var(--bg-dark);
-      --text:  var(--text-dark);
-      --muted: var(--muted-dark);
       --line:  rgba(120, 120, 115, 0.2);
 
       --fade: 0.5s ease;
@@ -57,20 +53,10 @@
       --logo-bar-height-mobile: 7rem;
     }
 
-    html.light {
-      --bg:    var(--bg-page);
-      --text:  var(--text-light);
-      --muted: var(--muted-light);
-    }
-
     /* Fallback ohne GSAP / bei prefers-reduced-motion: die Scroll-Animation
-       läuft nie an, also das fixierte Gedicht-Overlay sofort ausblenden
-       statt es dauerhaft über dem Content hängen zu lassen. */
-    html.no-anim .poem-stage,
-    html.no-anim .intro-spacer {
-      display: none;
-    }
-
+       läuft nie an, also Nav/Logo-Bar direkt zeigen statt auf den nie
+       eintretenden Scroll-Trigger zu warten. Das Gedicht bleibt einfach
+       als normale, statische Section stehen. */
     html.no-anim .site-nav {
       opacity: 1;
       pointer-events: auto;
@@ -80,12 +66,11 @@
     html { scroll-behavior: smooth; }
 
     body {
-      background-color: var(--bg);
-      color: var(--text);
+      background-color: var(--bg-page);
+      color: var(--text-light);
       font-family: 'EB Garamond', serif;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
-      transition: background-color var(--fade), color var(--fade);
     }
 
     ::selection { background: var(--accent); color: #fff; }
@@ -96,10 +81,10 @@
       inset: 0;
       pointer-events: none;
       z-index: 90;
-      opacity: 0.05;
+      opacity: 0.07;
+      mix-blend-mode: multiply;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
     }
-    html.light .film-grain { opacity: 0.07; mix-blend-mode: multiply; }
 
     /* BRUTALISTISCHES MENÜ */
     .site-nav {
@@ -119,16 +104,16 @@
       pointer-events: none;
     }
 
-    /* Menü ist Teil des Logo-Zustands, nicht der Gedicht-Seite: erscheint
-       hart zusammen mit dem Farbwechsel, keine eigene Einblend-Animation. */
-    html.is-logo .site-nav {
+    /* Menü erscheint hart, sobald die Gedicht-Section durchgescrollt ist --
+       keine eigene Einblend-Animation. */
+    html.nav-visible .site-nav {
       opacity: 1;
       pointer-events: auto;
     }
 
     .site-nav a {
       position: relative;
-      color: var(--text);
+      color: var(--text-light);
       text-decoration: none;
       font-family: 'Inter', sans-serif;
       font-size: clamp(1.25rem, 1.8vw, 1.6rem);
@@ -163,50 +148,32 @@
       transform: scaleX(1);
     }
 
-    /* GEDICHT BÜHNE */
-    .poem-stage {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      /* 100vh bleibt starr, waehrend iOS Safaris ein-/ausklappende
-         Adressleiste die tatsaechlich sichtbare Hoehe aendert -- dadurch
-         entstand unten eine Luecke, durch die (seit dem helleren
-         --bg-page-Body-Grundton) ein heller Streifen durchschimmerte.
-         100dvh folgt der echten sichtbaren Hoehe; 100vh bleibt als
-         Fallback fuer Browser ohne dvh-Unterstuetzung stehen. */
-      height: 100vh;
-      height: 100dvh;
+    /* GEDICHT SEKTION -- normale Block-Section im Dokumentfluss, keine
+       fixierte Overlay-Konstruktion mehr. Die Fixierung waehrend des
+       Scroll-Uebergangs uebernimmt jetzt ScrollTriggers eingebauter
+       pin-Mechanismus (siehe JS weiter unten), der die noetige Scroll-
+       Distanz automatisch aus der tatsaechlichen Section-Hoehe berechnet
+       und bei jedem refresh() selbst neu misst -- kein manuelles
+       vh/dvh-Abgleichen mit einem separaten Spacer-Element mehr noetig,
+       und kein eigenes Fade-Overlay mehr, um den Hintergrund zwischen
+       Gedicht- und Content-Phase umzuschalten (die Section hat einfach
+       durchgehend ihre eigene, feste Farbe). position:relative bleibt als
+       Containing Block fuer .poem-block (position:absolute) im
+       ungepinnten Zustand stehen; waehrend des Pins ersetzt GSAP das
+       ohnehin per Inline-Style durch position:fixed. */
+    .poem-section {
+      position: relative;
       display: flex;
       align-items: center;
-      z-index: 40;
-      pointer-events: none;
-    }
-
-    /* Eigenes, blattfoermiges Element nur fuer die Hintergrundfarbe statt
-       den Hintergrund direkt auf .poem-stage zu setzen: .poem-stage
-       enthaelt .hero-line, der dauerhaft sichtbar bleiben muss (wird zum
-       fixierten Seitentitel). Ein vorheriger Versuch loeste das per
-       visibility:hidden auf .poem-stage + visibility:visible-Override auf
-       den Hero-Wrapper -- das haengt aber davon ab, dass die Compositing-
-       Schicht eines position:fixed-Elements mit eigenem Hintergrund beim
-       visibility-Wechsel zuverlaessig neu gemalt wird, was sich als nicht
-       robust genug erwiesen hat. Mit einem separaten Hintergrund-Element
-       ohne eigene Kinder kann stattdessen das simple, ueberall zuverlaessig
-       unterstuetzte display:none verwendet werden -- kein Vorfahre von
-       .hero-line wird dadurch je versteckt, also ist auch kein Override
-       noetig. */
-    .poem-overlay-bg {
-      position: absolute;
-      inset: 0;
-      background-color: var(--bg);
-      transition: background-color var(--fade);
-    }
-
-    /* Sobald die Gedicht-Phase endet (html.is-logo), verschwindet nur die
-       Hintergrundflaeche -- .poem-block mit .hero-line bleibt komplett
-       unangetastet im normalen Fluss. */
-    html.is-logo .poem-overlay-bg {
-      display: none;
+      /* Nur Wunschgroesse fuer den ersten Eindruck, keine pixelgenaue
+         Abhaengigkeit mehr: faellt die tatsaechliche Hoehe auf einem
+         Geraet mal kleiner oder groesser aus (90dvh, 105dvh, ...),
+         passiert nichts Kaputtes -- ScrollTriggers pin misst bei jedem
+         refresh() die echte Hoehe neu. */
+      min-height: 100vh;
+      min-height: 100dvh;
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
     }
 
     .poem-block {
@@ -244,11 +211,79 @@
       padding: 0.15em 0;
     }
 
-    /* Durchgehende Kopfleiste im Logo-Zustand: deckt Titel UND Menüzeile
-       als eine nahtlose Fläche ab (wie die mobile Menüleiste unten),
-       damit keine eigene Menü-Box mehr eine sichtbare Kante über dem
-       Content erzeugt. Nur im Logo-Zustand sichtbar, die Gedicht-Optik
-       bleibt unangetastet. */
+    /* .hero-line wandert waehrend des Scroll-Uebergangs aus dem dunklen
+       Gedicht-Bereich in die helle, fixierte Kopfleiste -- braucht dort
+       also eine eigene Farb-Umschaltung, statt (wie die uebrigen
+       Gedichtzeilen) einfach --text-dark von .poem-section zu erben.
+       Erscheint hart zusammen mit Nav/Logo-Bar, keine eigene Fade-
+       Animation (siehe html.nav-visible .site-nav weiter oben). */
+    html.nav-visible .hero-line {
+      color: var(--text-light);
+    }
+
+    /* Solange .poem-section gepinnt ist, positioniert GSAPs Scrub-Timeline
+       .hero-line per Transform relativ zu ihr (siehe JS: measure()
+       + tl.to(hero, {x,y,...})) -- das funktioniert, weil die Section
+       waehrend des Pins selbst position:fixed ist. Sobald der Pin sich
+       loest (onLeave im Script), wird die Section wieder ein normales
+       Fluss-Element und wuerde beim Weiterscrollen aus dem Bild wandern,
+       den (nur relativ zu ihr transformierten) Titel gleich mit.
+
+       .hero-line SELBST kann dafuer nicht einfach auf position:fixed
+       wechseln: GSAPs Pin-Mechanismus laesst auf .poem-section auch nach
+       dem Entpinnen dauerhaft ein inline transform stehen (verschiebt die
+       Section innerhalb ihres Pin-Spacers, statt einen echten Reflow
+       auszuloesen) -- und JEDER Vorfahre mit transform != none wird per
+       Spezifikation zum Containing Block fuer position:fixed-Nachfahren.
+       .hero-line waere dann relativ zu .poem-section (laengst weg-
+       gescrollt) fixiert statt zum Viewport, nicht zu erwischen ueber
+       !important o.ae., weil es keine Spezifitaets-/Timing-Frage ist,
+       sondern ein grundsaetzliches Containing-Block-Problem.
+
+       Deshalb uebernimmt stattdessen .site-title (siehe unten) die Rolle
+       des dauerhaften Seitentitels -- ein eigenstaendiges Element AUSSER-
+       HALB von .poem-section, genau wie .site-nav/.logo-bar. .hero-line
+       landet exakt an derselben Stelle (48px/zentriert), bevor sie
+       verschwindet -- der Wechsel ist deshalb unsichtbar. */
+    html.hero-fixed .hero-line-wrapper {
+      display: none;
+    }
+
+    /* Uebernimmt .hero-lines Rolle als dauerhaft fixierter Seitentitel,
+       sobald der Pin sich loest (html.hero-fixed) -- siehe Begruendung
+       oben bei html.hero-fixed .hero-line-wrapper. Gleiche Position/Optik
+       wie .hero-line in ihrem gelandeten Zustand, plus derselbe
+       Klick-zu-Seitenanfang wie .hero-line (siehe JS). */
+    .site-title {
+      position: fixed;
+      top: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 25;
+      appearance: none;
+      background: none;
+      border: 0;
+      padding: 0.15em 0;
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(1.4rem, 2.5vw, 2.4rem);
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      line-height: 1.6;
+      color: var(--text-light);
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.hero-fixed .site-title {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Durchgehende Kopfleiste, sobald die Gedicht-Section durchgescrollt
+       ist: deckt Titel UND Menüzeile als eine nahtlose Fläche ab (wie die
+       mobile Menüleiste unten), damit keine eigene Menü-Box eine
+       sichtbare Kante über dem Content erzeugt. */
     .logo-bar {
       position: fixed;
       top: 0;
@@ -258,13 +293,12 @@
       z-index: 20;
       pointer-events: none;
       opacity: 0;
-      background-color: color-mix(in srgb, var(--bg) 82%, transparent);
+      background-color: color-mix(in srgb, var(--bg-page) 82%, transparent);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      transition: background-color var(--fade);
     }
 
-    html.is-logo .logo-bar {
+    html.nav-visible .logo-bar {
       opacity: 1;
     }
 
@@ -274,13 +308,11 @@
       font-size: 0.75rem;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: var(--text);
-      transition: color var(--fade);
+      color: var(--text-dark);
     }
 
     .poem-ellipsis {
-      color: var(--muted);
-      transition: color var(--fade);
+      color: var(--muted-dark);
     }
 
     /* Die Zeigehand schließt das Gedicht unten ab, linksbündig mit dem
@@ -309,7 +341,7 @@
       height: clamp(4.5rem, 6vw, 6rem);
       width: auto;
       aspect-ratio: 265 / 512;
-      background-color: var(--muted);
+      background-color: var(--muted-dark);
       -webkit-mask-image: url('image-neu.png');
       mask-image: url('image-neu.png');
       -webkit-mask-size: contain;
@@ -323,7 +355,7 @@
     }
 
     .scroll-hint:hover .scroll-hint-hand {
-      background-color: var(--text);
+      background-color: var(--text-dark);
     }
 
     @keyframes scroll-hint-bounce {
@@ -339,17 +371,6 @@
 
     /* CONTENT STAGE */
     .scroll-container { position: relative; }
-    /* Gleiche vh/dvh-Problematik wie .poem-stage, andere Auswirkung:
-       .intro-spacer ist nicht fixed/sichtbar, sondern definiert nur die
-       Scroll-Distanz fuer den ScrollTrigger (trigger: '.intro-spacer').
-       Ohne dvh koennte diese Distanz beim Ein-/Ausklappen der Safari-
-       Adressleiste leicht von der tatsaechlich sichtbaren Hoehe
-       abweichen und den Scroll-Uebergang minimal verschieben. dvh mit
-       vh-Fallback macht sie konsistent mit der echten Viewport-Hoehe. */
-    .intro-spacer {
-      height: 60vh;
-      height: 60dvh;
-    }
 
     /* Kein horizontales Padding/max-width mehr fuer den Inhalt: alle vier
        Kind-Sections sind jetzt selbst randlos (100vw) und zentrieren
@@ -363,13 +384,10 @@
 
     /* Die vier Content-Bloecke bekommen explizit --bg-light als eigene
        Fuellfarbe plus Abstand zueinander -- der hellere --bg-page-Ton des
-       Body (siehe html.light) wird dadurch als "Naht" zwischen den
-       Sections sichtbar, statt dass Seite und Sections denselben Ton
-       teilen und optisch verschmelzen. Kein Abgleich mit dem Theme-
-       Zustand mehr noetig: .poem-stage (siehe dort) ist jetzt selbst
-       blickdicht waehrend der Gedicht-Phase und blendet sich danach
-       komplett aus -- das an der Quelle geloest, statt es an jeder
-       einzelnen Section reaktiv nachzuziehen. */
+       Body wird dadurch als "Naht" zwischen den Sections sichtbar, statt
+       dass Seite und Sections denselben Ton teilen und optisch
+       verschmelzen. Kein Theme-Zustand mehr, an den sich das koppeln
+       koennte: die Seite hat nur noch diese eine, feste Farbwelt. */
     .main-intro,
     .portfolio-section,
     .columns-grid,
@@ -449,16 +467,15 @@
       font-family: 'EB Garamond', serif;
       font-size: clamp(1.5rem, 2.4vw, 2.2rem);
       font-weight: 400;
-      color: var(--text);
+      color: var(--text-light);
       max-width: 600px;
       line-height: 1.35;
       letter-spacing: -0.01em;
-      transition: color var(--fade);
     }
 
     .name-sub strong {
       font-weight: 600;
-      color: var(--text);
+      color: var(--text-light);
     }
 
     /* PORTRAIT INTEGRATION */
@@ -493,12 +510,7 @@
       transition: filter 0.6s ease, transform 0.6s ease, opacity 0.6s ease;
       transform-origin: bottom center;
 
-      mix-blend-mode: multiply; 
-    }
-
-    html:not(.light) .portrait-freistehend {
-      mix-blend-mode: normal;
-      filter: contrast(110%) brightness(95%);
+      mix-blend-mode: multiply;
     }
 
     .intro-portrait:hover .portrait-freistehend {
@@ -547,9 +559,8 @@
       font-family: 'Inter', sans-serif;
       font-size: 0.95rem;
       font-weight: 300;
-      color: var(--muted);
+      color: var(--muted-light);
       line-height: 1.6;
-      transition: color var(--fade);
     }
 
     /* PORTFOLIO: Bildvorschau + fließende Titelliste */
@@ -611,7 +622,7 @@
       appearance: none;
       background: none;
       border: 1px solid var(--line);
-      color: var(--text);
+      color: var(--text-light);
       width: 2.25rem;
       height: 2.25rem;
       display: inline-flex;
@@ -644,7 +655,7 @@
       font-family: 'Inter', sans-serif;
       font-size: 0.95rem;
       font-weight: 300;
-      color: var(--muted);
+      color: var(--muted-light);
       line-height: 1.6;
     }
 
@@ -654,15 +665,15 @@
        Inter statt der Garamond-Fliesstext-Optik des Hero-Absatzes, kein
        Uppercase/Letterspacing wie die kurzen 2-3-Wort-Kicker -- bei einem
        ganzen Satz waere das schwer lesbar. Farbe wie der inaktive
-       Listentext (var(--muted)) statt Akzentfarbe: sonst konkurriert die
-       Zeile optisch mit dem aktiven (orangenen) Listeneintrag direkt
+       Listentext (var(--muted-light)) statt Akzentfarbe: sonst konkurriert
+       die Zeile optisch mit dem aktiven (orangenen) Listeneintrag direkt
        darunter. */
     .portfolio-kicker {
       display: block;
       font-family: 'Inter', sans-serif;
       font-size: clamp(0.95rem, 1.3vw, 1.05rem);
       font-weight: 500;
-      color: var(--muted);
+      color: var(--muted-light);
       line-height: 1.5;
       margin-bottom: 2rem;
     }
@@ -685,12 +696,12 @@
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--muted-light);
       transition: color 0.2s;
     }
 
     .portfolio-filter:hover {
-      color: var(--text);
+      color: var(--text-light);
     }
 
     .portfolio-filter.is-active {
@@ -714,12 +725,12 @@
       font-family: 'EB Garamond', serif;
       font-size: 1.3rem;
       font-weight: 400;
-      color: var(--muted);
+      color: var(--muted-light);
       transition: color 0.2s;
     }
 
     .portfolio-item:hover {
-      color: var(--text);
+      color: var(--text-light);
     }
 
     .portfolio-item.is-active {
@@ -729,77 +740,14 @@
     .portfolio-sep {
       font-family: 'EB Garamond', serif;
       font-size: 1.3rem;
-      color: var(--muted);
+      color: var(--muted-light);
     }
 
     .portfolio-panel {
       display: none;
     }
 
-    @media (max-width: 768px) {
-      .portfolio-layout {
-        grid-template-columns: 1fr;
-        gap: 0;
-      }
-
-      .portfolio-preview {
-        display: none;
-      }
-
-      .portfolio-flow {
-        row-gap: 0;
-      }
-
-      .portfolio-panel {
-        display: block;
-        flex-basis: 100%;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.35s ease;
-      }
-
-      .portfolio-panel.is-open {
-        max-height: 32rem;
-      }
-
-      .portfolio-panel-inner {
-        padding: 1rem 0 1.5rem;
-      }
-
-      .portfolio-panel-media {
-        width: 100%;
-        aspect-ratio: 16 / 9;
-        overflow: hidden;
-      }
-
-      .portfolio-panel-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .portfolio-panel-genre {
-        display: inline-block;
-        margin-top: 1rem;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.8rem;
-        font-weight: 800;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--accent);
-      }
-
-      .portfolio-panel-desc {
-        margin-top: 0.5rem;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.95rem;
-        font-weight: 300;
-        color: var(--muted);
-        line-height: 1.6;
-      }
-    }
-
-    /* PORTFOLIO-LIGHTBOX: eigener, vom Seiten-Theme unabhängiger dunkler
+    /* PORTFOLIO-LIGHTBOX: eigener, dauerhaft dunkler
        Vollbild-Layer -- bewusst immer dunkel, unabhängig von hell/dunkel
        Zustand der restlichen Seite, wie bei Bildbetrachtern üblich. */
     .lightbox {
@@ -1126,27 +1074,6 @@
       color: rgba(232, 230, 225, 0.9);
     }
 
-    @media (max-width: 768px) {
-      /* Auf Mobile bleibt es bei fest am Viewport verankerten Controls
-         statt am (dort ohnehin viewportbreiten) Frame -- unveraendertes
-         Verhalten gegenueber vorher. */
-      .lightbox-close,
-      .lightbox-nav {
-        position: fixed;
-      }
-
-      .lightbox-frame { inset: 4rem 0.75rem; }
-      .lightbox-media { width: min(100%, 1100px, calc(48vh * 16 / 9)); }
-      .lightbox-info { width: min(100%, 1100px, calc(48vh * 16 / 9)); padding: 1rem 1.1rem 1.15rem; margin-top: 1rem; }
-      .lightbox-desc { font-size: 0.85rem; }
-      .filmstrip-thumb { width: 4.5rem; }
-      .lightbox-close { width: 2.75rem; height: 2.75rem; font-size: 1.6rem; }
-      .lightbox-arrow { width: 2.75rem; height: 2.75rem; font-size: 1.8rem; }
-      .lightbox-nav-label { font-size: 0.6rem; }
-      .lightbox-nav-prev { left: 0.25rem; }
-      .lightbox-nav-next { right: 0.25rem; }
-    }
-
     .contact-section {
       padding: 6rem 0 2rem;
       scroll-margin-top: 8rem;
@@ -1178,19 +1105,20 @@
       margin-top: 4rem;
       font-family: 'Inter', sans-serif;
       font-size: 0.8rem;
-      color: var(--muted);
+      color: var(--muted-light);
       display: flex;
       flex-wrap: wrap;
       gap: 2rem;
-      transition: color var(--fade);
     }
     .footer-meta a { color: inherit; text-decoration: none; }
-    .footer-meta a:hover { color: var(--text); }
+    .footer-meta a:hover { color: var(--text-light); }
 
-    /* MOBIL RESPONSIVE */
+    /* MOBIL RESPONSIVE -- ein einziger Breakpoint-Block statt vormals drei
+       ueber die Datei verstreuter @media (max-width: 768px)-Regeln. */
     @media (max-width: 768px) {
       .poem-block { left: 6vw; right: 6vw; padding-right: 0; }
       .poem-line { font-size: 1.35rem; white-space: normal; }
+      .site-title { top: 6vw; font-size: 1.35rem; }
 
       .logo-bar { height: var(--logo-bar-height-mobile); }
 
@@ -1204,7 +1132,7 @@
         justify-content: center;
         gap: 0.4rem 1.4rem;
         padding: 0.9rem 6vw calc(0.9rem + env(safe-area-inset-bottom));
-        background-color: color-mix(in srgb, var(--bg) 88%, transparent);
+        background-color: color-mix(in srgb, var(--bg-page) 88%, transparent);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-top: 1px solid var(--line);
@@ -1225,23 +1153,95 @@
       .intro-text { padding-bottom: 0; }
       .intro-portrait { justify-content: center; align-self: auto; margin-left: 0; margin-top: 0; margin-right: 0; }
       .portrait-freistehend { height: auto; width: 100%; max-width: 300px; max-height: none; object-fit: contain; }
+
+      .portfolio-layout {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .portfolio-preview {
+        display: none;
+      }
+
+      .portfolio-flow {
+        row-gap: 0;
+      }
+
+      .portfolio-panel {
+        display: block;
+        flex-basis: 100%;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease;
+      }
+
+      .portfolio-panel.is-open {
+        max-height: 32rem;
+      }
+
+      .portfolio-panel-inner {
+        padding: 1rem 0 1.5rem;
+      }
+
+      .portfolio-panel-media {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+      }
+
+      .portfolio-panel-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .portfolio-panel-genre {
+        display: inline-block;
+        margin-top: 1rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .portfolio-panel-desc {
+        margin-top: 0.5rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 300;
+        color: var(--muted-light);
+        line-height: 1.6;
+      }
+
+      /* Auf Mobile bleibt es bei fest am Viewport verankerten
+         Lightbox-Controls statt am (dort ohnehin viewportbreiten)
+         Frame -- unveraendertes Verhalten gegenueber vorher. */
+      .lightbox-close,
+      .lightbox-nav {
+        position: fixed;
+      }
+
+      .lightbox-frame { inset: 4rem 0.75rem; }
+      .lightbox-media { width: min(100%, 1100px, calc(48vh * 16 / 9)); }
+      .lightbox-info { width: min(100%, 1100px, calc(48vh * 16 / 9)); padding: 1rem 1.1rem 1.15rem; margin-top: 1rem; }
+      .lightbox-desc { font-size: 0.85rem; }
+      .filmstrip-thumb { width: 4.5rem; }
+      .lightbox-close { width: 2.75rem; height: 2.75rem; font-size: 1.6rem; }
+      .lightbox-arrow { width: 2.75rem; height: 2.75rem; font-size: 1.8rem; }
+      .lightbox-nav-label { font-size: 0.6rem; }
+      .lightbox-nav-prev { left: 0.25rem; }
+      .lightbox-nav-next { right: 0.25rem; }
     }
   </style>
 
   <noscript>
     <style>
-      /* Ohne JavaScript läuft die Scroll-Animation nie an: sofort auf die
-         helle, statische Fassung springen und das fixierte Gedicht-Overlay
-         ausblenden, statt es dauerhaft über dem Content hängen zu lassen. */
-      :root {
-        --bg:    var(--bg-page);
-        --text:  var(--text-light);
-        --muted: var(--muted-light);
-      }
-      .poem-stage,
-      .intro-spacer {
-        display: none;
-      }
+      /* Ohne JavaScript läuft die Scroll-Animation nie an: das Menü direkt
+         zeigen statt auf den nie eintretenden Scroll-Trigger zu warten.
+         Die Gedicht-Section bleibt einfach als normale, statische Section
+         stehen -- sie braucht dafür keine Sonderbehandlung mehr. */
       .site-nav {
         opacity: 1;
         pointer-events: auto;
@@ -1255,6 +1255,12 @@
 
   <div class="logo-bar" aria-hidden="true"></div>
 
+  <!-- Uebernimmt .hero-lines Rolle als dauerhafter Seitentitel, sobald
+       .poem-section entpinnt ist (siehe CSS/JS: html.hero-fixed) --
+       ausserhalb von .poem-section, damit sie nie von deren transform
+       betroffen sein kann. -->
+  <button type="button" class="site-title" id="siteTitle">Etwas ist immer.</button>
+
   <!-- NAVIGATION -->
   <nav aria-label="Hauptnavigation">
     <ul class="site-nav" id="siteNav">
@@ -1266,8 +1272,7 @@
   </nav>
 
   <!-- GEDICHT INTRO -->
-  <div class="poem-stage" id="poemStage">
-    <div class="poem-overlay-bg" aria-hidden="true"></div>
+  <div class="poem-section" id="poemSection">
     <div class="poem-block">
 
       <div class="poem-line fade-line poem-ellipsis">[...]</div>
@@ -1291,8 +1296,6 @@
   </div>
 
   <div class="scroll-container">
-    <div class="intro-spacer" id="introSpacer" aria-hidden="true"></div>
-
     <main class="content-stage" id="inhalt">
 
       <section class="main-intro" id="about">
@@ -1416,7 +1419,7 @@
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || reduceMotion) {
-        root.classList.add('no-anim', 'light');
+        root.classList.add('no-anim', 'nav-visible');
         return;
       }
 
@@ -1442,11 +1445,23 @@
 
       var isTouch = ScrollTrigger.isTouch === 1;
 
+      // trigger + pin:true statt eines separaten .intro-spacer-Elements:
+      // ScrollTrigger pinnt .poem-section selbst (setzt intern
+      // position:fixed, sobald 'top top' erreicht ist) und erzeugt seinen
+      // eigenen Spacer im Layout, dessen Hoehe es aus der tatsaechlichen
+      // Section-Groesse berechnet -- bei jedem refresh() neu. end:'+=60%'
+      // ist relativ zur Hoehe von .poem-section (Ersatz fuer die vorige
+      // .intro-spacer{height:60vh} -- gleiche Distanz, jetzt automatisch
+      // hergeleitet statt manuell dupliziert). Kein eigenes Hintergrund-
+      // Fade-Overlay mehr noetig: .poem-section hat ihre Farbe fest, und
+      // sobald der Pin sich loest, scrollt sie ganz normal aus dem
+      // sichtbaren Bereich -- kein Zustand, der "haengen bleiben" kann.
       var tl = gsap.timeline({
         scrollTrigger: {
-          trigger: '.intro-spacer',
+          trigger: '.poem-section',
           start: 'top top',
-          end: 'bottom top',
+          end: '+=60%',
+          pin: true,
           scrub: 0.3,
           invalidateOnRefresh: true,
 
@@ -1458,6 +1473,31 @@
             delay: isTouch ? 0.15 : 0.05,
             ease: isTouch ? 'power1.out' : 'power2.inOut',
             inertia: false
+          },
+
+          // Steuert jetzt ausschliesslich die Sichtbarkeit von
+          // .site-nav/.logo-bar (siehe html.nav-visible im CSS) -- keine
+          // Hintergrundfarbe haengt mehr daran, die "haengen bleiben"
+          // koennte. Ein self.progress, der um ein paar Prozent daneben
+          // liegt, verschiebt die Nav-Einblendung hoechstens ein wenig,
+          // erzeugt aber keinen sichtbaren Bug mehr.
+          onUpdate: function (self) {
+            root.classList.toggle('nav-visible', self.progress > 0.45);
+          },
+
+          // Sobald der Pin sich in Scroll-Richtung nach unten loest,
+          // wuerde .hero-line (bisher nur per Transform relativ zu
+          // .poem-section positioniert) mit der jetzt normal scrollenden
+          // Section aus dem Bild wandern -- html.hero-fixed schaltet dann
+          // auf eine eigene, unabhaengige position:fixed-Positionierung um
+          // (siehe CSS, inkl. Begruendung fuers dortige !important).
+          // onEnterBack (zurueck nach oben gescrollt) macht das rueckgaengig,
+          // damit die Scrub-Animation beim erneuten Eintritt wieder greift.
+          onLeave: function () {
+            root.classList.add('hero-fixed');
+          },
+          onEnterBack: function () {
+            root.classList.remove('hero-fixed');
           }
         }
       });
@@ -1472,15 +1512,15 @@
         .to('#introText',    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.15)
         .to('#introPortrait',{ opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.2);
 
-      hero.addEventListener('click', function () {
+      function scrollToStart() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
+      }
+      hero.addEventListener('click', scrollToStart);
+      document.getElementById('siteTitle').addEventListener('click', scrollToStart);
 
       var scrollHint = document.getElementById('scrollHint');
-      var introSpacerEl = document.getElementById('introSpacer');
       scrollHint.addEventListener('click', function () {
-        var rect = introSpacerEl.getBoundingClientRect();
-        window.scrollTo({ top: window.scrollY + rect.bottom, behavior: 'smooth' });
+        window.scrollTo({ top: tl.scrollTrigger.end, behavior: 'smooth' });
       });
 
       var resizeTimer;
@@ -1489,34 +1529,8 @@
         resizeTimer = setTimeout(function () {
           measure();
           ScrollTrigger.refresh();
-          updateRevealState();
         }, 150);
       });
-
-      // light/is-logo haengen jetzt an nichts anderem mehr als der
-      // tatsaechlichen, live gemessenen Position von .intro-spacer --
-      // nicht mehr an ScrollTriggers self.progress aus onUpdate. Grund:
-      // self.progress kombiniert mehrere interne Mechanismen (gecachte
-      // Start/Ende-Positionen, der scrub-Glaettungsfaktor, das per snap
-      // programmatisch nachgezogene Scrollen), und mindestens die
-      // Kombination aus scrub + snap hat sich beim langsamen Scrollen mit
-      // Einschnappen als unzuverlaessig erwiesen (bestaetigt: nur in
-      // Safari reproduzierbar, nicht in Chrome -- passt zu WebKit-
-      // spezifischen Eigenheiten in genau diesem Zusammenspiel). Diese
-      // Funktion misst stattdessen bei jedem Scroll-Event frisch nach:
-      // sobald die Unterkante von .intro-spacer den oberen Viewport-Rand
-      // erreicht (== ScrollTriggers eigene end:'bottom top'-Bedingung,
-      // nur live statt gecacht berechnet), ist die Reveal-Phase fertig.
-      // GSAPs Scrub-Timeline bleibt fuer die rein kosmetische Animation
-      // (Titel wandert, Text faded) unveraendert bestehen -- nur der
-      // binaere Hell/Dunkel-Schalter ist davon jetzt entkoppelt.
-      function updateRevealState() {
-        var lit = introSpacerEl.getBoundingClientRect().bottom <= 0;
-        root.classList.toggle('light', lit);
-        root.classList.toggle('is-logo', lit);
-      }
-      updateRevealState();
-      window.addEventListener('scroll', updateRevealState, { passive: true });
     });
   </script>
 
