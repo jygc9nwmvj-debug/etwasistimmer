@@ -1447,21 +1447,32 @@
 
       // trigger + pin:true statt eines separaten .intro-spacer-Elements:
       // ScrollTrigger pinnt .poem-section selbst (setzt intern
-      // position:fixed, sobald 'top top' erreicht ist) und erzeugt seinen
-      // eigenen Spacer im Layout, dessen Hoehe es aus der tatsaechlichen
-      // Section-Groesse berechnet -- bei jedem refresh() neu. end:'+=60%'
-      // ist relativ zur Hoehe von .poem-section (Ersatz fuer die vorige
-      // .intro-spacer{height:60vh} -- gleiche Distanz, jetzt automatisch
-      // hergeleitet statt manuell dupliziert). Kein eigenes Hintergrund-
-      // Fade-Overlay mehr noetig: .poem-section hat ihre Farbe fest, und
-      // sobald der Pin sich loest, scrollt sie ganz normal aus dem
-      // sichtbaren Bereich -- kein Zustand, der "haengen bleiben" kann.
+      // position:fixed, sobald 'top top' erreicht ist).
+      //
+      // pinSpacing:false -- sonst reserviert ScrollTrigger IMMER
+      // zusaetzlich zur Pin-Dauer (end-start) NOCH EINMAL die volle
+      // natuerliche Hoehe der Section als Leerraum danach (Standard-
+      // verhalten von pinSpacing:true, unabhaengig vom end-Wert -- ein
+      // erster Versuch mit end:'+=100%' aenderte deshalb nichts an der
+      // dunklen Leerflaeche nach der Kopfleiste, auf dem iPhone
+      // reproduziert: 100% Pin-Dauer + nochmal 100% natuerliche Hoehe
+      // ergab sogar eine LAENGERE Luecke als vorher). Mit pinSpacing:false
+      // reserviert die Section nur noch ihre eigene natuerliche Hoehe
+      // (100dvh) im Dokument -- .main-intro folgt direkt danach, wie jede
+      // andere Section-Grenze auf der Seite auch. Waehrend des Pins
+      // deckt die (fixierte, blickdichte) Section ohnehin alles ab, was
+      // darunter vorbeiscrollt.
+      //
+      // end:'+=60%' ist damit wieder die reine Halte-/Animationsdauer
+      // (Titel wandert, Zeilen faden) -- keine Scroll-Distanz-Buchhaltung
+      // mehr fuer einen Leerraum, der ohnehin nicht mehr entsteht.
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: '.poem-section',
           start: 'top top',
           end: '+=60%',
           pin: true,
+          pinSpacing: false,
           scrub: 0.3,
           invalidateOnRefresh: true,
 
