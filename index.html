@@ -163,6 +163,18 @@
        ohnehin per Inline-Style durch position:fixed. */
     .poem-section {
       position: relative;
+      /* Ohne eigenes z-index rangiert .poem-section unter jedem spaeteren
+         Element mit explizitem z-index (z.B. .content-stage: z-index:10)
+         -- unabhaengig von der DOM-Reihenfolge und davon, ob sie gerade
+         gepinnt/fixiert ist. Waehrend des Pins wuerde .content-stage
+         (mit .main-intro etc., die im Hintergrund normal vorbeiscrollen)
+         die eigentlich blickdichte, fixierte Section optisch ueberdecken.
+         15 liegt bewusst zwischen .content-stage (10) und .logo-bar (20):
+         ueber jedem normalen Seiteninhalt, aber unter Kopfleiste/Menue/
+         Titel, die waehrend der letzten Pin-Phase schon ueber ihr
+         erscheinen sollen (html.nav-visible/hero-fixed greifen vor dem
+         eigentlichen Pin-Ende). */
+      z-index: 15;
       display: flex;
       align-items: center;
       /* Nur Wunschgroesse fuer den ersten Eindruck, keine pixelgenaue
@@ -172,8 +184,31 @@
          refresh() die echte Hoehe neu. */
       min-height: 100vh;
       min-height: 100dvh;
-      background-color: var(--bg-dark);
       color: var(--text-dark);
+      /* Kein eigener background-color mehr hier -- siehe .poem-overlay-bg:
+         den Hintergrund braucht ein eigenes Element, das unabhaengig von
+         .hero-line ausgeblendet werden kann (siehe dort). */
+    }
+
+    /* Eigenes, kindloses Element nur fuer die Hintergrundfarbe statt sie
+       direkt auf .poem-section zu setzen: .poem-section enthaelt
+       .hero-line, die waehrend des Pins ihre eigene Landing-Animation
+       durchlaeuft und dabei die ganze Zeit voll sichtbar bleiben muss --
+       ein opacity-Fade direkt auf .poem-section wuerde sie mit ausblenden.
+       Der Grund fuer den Fade ueberhaupt: egal wie pin/end konfiguriert
+       sind, braucht eine ueber die volle Viewport-Hoehe gepinnte Section
+       nach dem Entpinnen zwangslaeufig noch einmal ihre eigene Hoehe an
+       normalem Scrollen, um aus dem Bild zu verschwinden (sie verliert
+       ihre Hoehe im Dokument nicht dadurch, dass man an ihr vorbei-
+       gescrollt ist) -- auf dem iPhone als dunkle Flaeche nach der
+       Kopfleiste reproduziert. Blendet dieser Hintergrund rechtzeitig
+       (siehe tl.to weiter unten, Teil derselben Scrub-Timeline wie die
+       Titel-Animation) auf 0 aus, ist beim Entpinnen nichts Blickdichtes
+       mehr da, das man erst wegscrollen muesste. */
+    .poem-overlay-bg {
+      position: absolute;
+      inset: 0;
+      background-color: var(--bg-dark);
     }
 
     .poem-block {
@@ -1273,6 +1308,7 @@
 
   <!-- GEDICHT INTRO -->
   <div class="poem-section" id="poemSection">
+    <div class="poem-overlay-bg" aria-hidden="true"></div>
     <div class="poem-block">
 
       <div class="poem-line fade-line poem-ellipsis">[...]</div>
@@ -1449,28 +1485,42 @@
       // ScrollTrigger pinnt .poem-section selbst (setzt intern
       // position:fixed, sobald 'top top' erreicht ist).
       //
-      // pinSpacing:false -- sonst reserviert ScrollTrigger IMMER
-      // zusaetzlich zur Pin-Dauer (end-start) NOCH EINMAL die volle
-      // natuerliche Hoehe der Section als Leerraum danach (Standard-
-      // verhalten von pinSpacing:true, unabhaengig vom end-Wert -- ein
-      // erster Versuch mit end:'+=100%' aenderte deshalb nichts an der
-      // dunklen Leerflaeche nach der Kopfleiste, auf dem iPhone
-      // reproduziert: 100% Pin-Dauer + nochmal 100% natuerliche Hoehe
-      // ergab sogar eine LAENGERE Luecke als vorher). Mit pinSpacing:false
-      // reserviert die Section nur noch ihre eigene natuerliche Hoehe
-      // (100dvh) im Dokument -- .main-intro folgt direkt danach, wie jede
-      // andere Section-Grenze auf der Seite auch. Waehrend des Pins
-      // deckt die (fixierte, blickdichte) Section ohnehin alles ab, was
-      // darunter vorbeiscrollt.
+      // Ziel: sobald der Snap fertig ist (Titel/Menue erscheinen), soll
+      // moeglichst SOFORT die Hero-Section (.main-intro) folgen -- nicht
+      // erst nach einer weiteren, leeren Bildschirmhoehe Scrollen. Eine
+      // ueber die volle Viewport-Hoehe gepinnte Section verliert ihre
+      // Hoehe im Dokument aber nicht dadurch, dass man an ihr vorbei-
+      // gescrollt ist -- sie muss zwangslaeufig noch einmal komplett
+      // weggescrollt werden, EGAL wie end/pinSpacing gewaehlt sind. Zwei
+      // Zutaten zusammen minimieren diese Distanz auf null:
       //
-      // end:'+=60%' ist damit wieder die reine Halte-/Animationsdauer
-      // (Titel wandert, Zeilen faden) -- keine Scroll-Distanz-Buchhaltung
-      // mehr fuer einen Leerraum, der ohnehin nicht mehr entsteht.
+      // 1) pinSpacing:false -- ohne das reserviert ScrollTrigger nach der
+      //    Pin-Dauer NOCH EINMAL die volle natuerliche Hoehe der Section
+      //    als Leerraum, bevor .main-intro ueberhaupt beginnt (macht die
+      //    Distanz LAENGER statt kuerzer). Mit pinSpacing:false bleibt
+      //    .main-intro an ihrer natuerlichen Position direkt nach
+      //    .poem-section (kein zusaetzlicher Leerraum).
+      //
+      // 2) end:'+=100%' -- die Pin-Dauer muss GENAU der natuerlichen
+      //    Hoehe der Section entsprechen: ScrollTrigger haelt eine
+      //    entpinnte pinSpacing:false-Section per Transform exakt an der
+      //    Stelle "eingefroren", an der der Pin endete (siehe end-Wert),
+      //    ueber eine Distanz von genau ihrer eigenen Hoehe. Nur wenn
+      //    Pin-Dauer und Section-Hoehe exakt uebereinstimmen, faellt
+      //    dieser "eingefrorene" Bereich exakt mit der natuerlichen
+      //    Position von .main-intro zusammen -- null Distanz dazwischen.
+      //
+      // Was in diesem "eingefrorenen" Bereich noch sichtbar waere (die
+      // Section selbst, jetzt exakt ueber .main-intro liegend) blendet
+      // .poem-overlay-bg (siehe CSS + tl.to weiter unten) rechtzeitig
+      // auf 0 aus, bevor der Pin sich loest -- dadurch scheint
+      // .main-intro direkt durch, statt dass man sie erst separat
+      // wegscrollen muesste.
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: '.poem-section',
           start: 'top top',
-          end: '+=60%',
+          end: '+=100%',
           pin: true,
           pinSpacing: false,
           scrub: 0.3,
@@ -1499,11 +1549,13 @@
           // Sobald der Pin sich in Scroll-Richtung nach unten loest,
           // wuerde .hero-line (bisher nur per Transform relativ zu
           // .poem-section positioniert) mit der jetzt normal scrollenden
-          // Section aus dem Bild wandern -- html.hero-fixed schaltet dann
-          // auf eine eigene, unabhaengige position:fixed-Positionierung um
-          // (siehe CSS, inkl. Begruendung fuers dortige !important).
-          // onEnterBack (zurueck nach oben gescrollt) macht das rueckgaengig,
-          // damit die Scrub-Animation beim erneuten Eintritt wieder greift.
+          // Section aus dem Bild wandern -- .site-title (eigenes, von
+          // .poem-section unabhaengiges Element, siehe CSS/HTML)
+          // uebernimmt deshalb ab hier ihre Rolle als dauerhaft fixierter
+          // Seitentitel, exakt an der Stelle, an die der Transform sie
+          // ohnehin schon bewegt hat. onEnterBack (zurueck nach oben
+          // gescrollt) macht das rueckgaengig, damit die Scrub-Animation
+          // beim erneuten Eintritt wieder greift.
           onLeave: function () {
             root.classList.add('hero-fixed');
           },
@@ -1521,7 +1573,16 @@
           ease: 'power2.out'
         }, 0)
         .to('#introText',    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.15)
-        .to('#introPortrait',{ opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.2);
+        .to('#introPortrait',{ opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.2)
+        // Blendet den Gedicht-Hintergrund aus, BEVOR der Pin sich loest
+        // (endet bei 0.9, mit Puffer vor progress:1 fuer scrub:0.3s
+        // Nachlauf) -- Teil derselben Scrub-Timeline wie die Titel-
+        // Animation, kein separater, self.progress-getriggerter Toggle
+        // (der hat sich in einer frueheren Version dieser Seite als
+        // unzuverlaessig erwiesen). .hero-line selbst ist davon
+        // unberuehrt: der Fade sitzt auf .poem-overlay-bg, einem eigenen
+        // Element ohne Kinder, nicht auf .poem-section.
+        .to('.poem-overlay-bg', { opacity: 0, duration: 0.3 }, 0.6);
 
       function scrollToStart() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
