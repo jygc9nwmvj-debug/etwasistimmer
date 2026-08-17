@@ -226,7 +226,7 @@
 
   <div class="film-grain" aria-hidden="true"></div>
   <div class="logo-bar" aria-hidden="true"></div>
-  <a href="index.html" class="site-title">Etwas ist immer.</a>
+  <a href="index.html" class="site-title" id="siteTitle">Etwas ist immer.</a>
 
   <nav aria-label="Hauptnavigation">
     <ul class="site-nav">
@@ -257,5 +257,15 @@
     </section>
   </main>
 
+  <script>
+    // Markiert den direkten Wechsel von dieser Unterseite zur Startseite,
+    // damit dort das Gedicht uebersprungen wird (siehe index.html) -- ein
+    // normaler Reload von index.html selbst setzt dieses Flag nie, das
+    // Gedicht erscheint dann wie gewohnt.
+    document.getElementById('siteTitle').addEventListener('click', function () {
+      sessionStorage.setItem('skipPoemOnce', '1');
+      window.location.href = 'index.html';
+    });
+  </script>
 </body>
 </html>

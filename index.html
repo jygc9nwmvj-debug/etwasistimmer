@@ -623,6 +623,40 @@
       transform: scale(1.04);
     }
 
+    /* Dezenter Hover-Hinweis: leichte Verdunklung statt vollflaechigem
+       Overlay, umrandeter Pill-Button statt harter Flaeche, reine
+       Opacity-Transition. Nur ueber :hover erreichbar -- auf Touch-
+       Geraeten (kein Hover-Zustand) bleibt das bestehende Tap-Verhalten
+       (oeffnet die Lightbox) unveraendert, der Hinweis erscheint dort
+       schlicht nie. */
+    .portfolio-media-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(13, 13, 12, 0.35);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .portfolio-media:hover .portfolio-media-hint {
+      opacity: 1;
+    }
+
+    .portfolio-media-hint span {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 999px;
+      padding: 0.6rem 1.4rem;
+    }
+
     .portfolio-nav {
       display: flex;
       gap: 0.75rem;
@@ -670,23 +704,26 @@
       line-height: 1.6;
     }
 
-    /* Eigenstaendiges Section-Label direkt ueber der Titelliste (nicht
-       ueber dem gesamten zweispaltigen Layout) -- bezieht sich inhaltlich
-       auf die Liste, das Vorschaubild links bleibt unbeeinflusst. Bewusst
-       Inter statt der Garamond-Fliesstext-Optik des Hero-Absatzes, kein
-       Uppercase/Letterspacing wie die kurzen 2-3-Wort-Kicker -- bei einem
-       ganzen Satz waere das schwer lesbar. Farbe wie der inaktive
-       Listentext (var(--muted-light)) statt Akzentfarbe: sonst konkurriert
-       die Zeile optisch mit dem aktiven (orangenen) Listeneintrag direkt
-       darunter. */
+    /* Eigenstaendige Zeile ueber dem gesamten zweispaltigen Layout
+       (Vorschau + Liste), nicht mehr nur ueber der Liste -- grid-column
+       spannt beide Spalten von .portfolio-layout, .portfolio-preview und
+       .portfolio-list ruecken dadurch automatisch in eine gemeinsame
+       zweite Grid-Reihe und beginnen buendig auf gleicher Hoehe. Typografie
+       bewusst identisch zu .name-sub (Hero-Copy) statt einer eigenen,
+       kleineren Kicker-Optik -- max-width:600px sorgt trotz grid-column:
+       1/-1 dafuer, dass die Zeile schmal umbricht statt ueber die volle
+       Grid-Breite zu laufen. */
     .portfolio-kicker {
       display: block;
-      font-family: 'Inter', sans-serif;
-      font-size: clamp(0.95rem, 1.3vw, 1.05rem);
-      font-weight: 500;
-      color: var(--muted-light);
-      line-height: 1.5;
-      margin-bottom: 2rem;
+      grid-column: 1 / -1;
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+      font-weight: 400;
+      color: var(--text-light);
+      max-width: 600px;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      margin-bottom: 2.5rem;
     }
 
     .portfolio-filters {
@@ -1317,7 +1354,7 @@
         <div class="main-intro-inner section-inner">
           <div class="intro-text" id="introText">
             <p class="name-sub">
-              Ich bin <strong>Wolfram Huke</strong>. Ich mache Dokumentarfilme, Primetime-Fernsehen, relativ viel Quatsch und gehe gern mit dem Hund raus.
+              Ich bin <strong>Wolfram Huke</strong>. Ich mache Dokumentarfilme, Primetime-Fernsehen und gehe gern mit dem Hund raus.
             </p>
           </div>
 
@@ -1336,6 +1373,8 @@
            folgen. -->
       <section class="portfolio-section" id="portfolio" aria-label="Arbeiten">
         <div class="portfolio-layout section-inner">
+          <p class="portfolio-kicker">Meistens hinter, manchmal vor der Kamera: Reportagen, Berichte, Dokumentarfilm. Für MDR, ZDF, BR, SWR u.a.</p>
+
           <div class="portfolio-preview">
             <div class="portfolio-media">
               <img
@@ -1343,6 +1382,7 @@
                 src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop"
                 alt="Nahaufnahme einer analogen Filmkamera"
                 class="portfolio-image">
+              <div class="portfolio-media-hint" aria-hidden="true"><span>Mehr Info</span></div>
             </div>
             <p class="portfolio-desc" id="portfolioDesc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
             <span class="portfolio-genre" id="portfolioGenre">Dokumentarfilm</span>
@@ -1353,8 +1393,6 @@
           </div>
 
           <div class="portfolio-list">
-            <p class="portfolio-kicker">Meistens hinter, manchmal vor der Kamera: Reportagen, Berichte, Dokumentarfilm. Für MDR, ZDF, BR, SWR u.a.</p>
-
             <div class="portfolio-filters" role="group" aria-label="Nach Format filtern">
               <button type="button" class="portfolio-filter is-active" data-filter="all">Alle</button>
               <button type="button" class="portfolio-filter" data-filter="Dokumentarfilm">Dokumentarfilm</button>
@@ -1448,10 +1486,28 @@
       // active sperrt Scrollen waehrenddessen, und playIntroTransition()
       // spielt eine normale (nicht scrub-gesteuerte) GSAP-Timeline fixer
       // Laenge ab.
-      document.body.classList.add('poem-active');
-
-      gsap.set('#introText',   { opacity: 0, y: 30 });
-      gsap.set('#introPortrait', { opacity: 0, y: 40 });
+      //
+      // Ausnahme: kommt man per Klick auf den Seitentitel direkt von
+      // beratung.html/profil.html (siehe dortiges skipPoemOnce-Flag),
+      // wird das Gedicht uebersprungen -- man hat es ja gerade erst auf
+      // der Startseite gesehen. Ein normaler Reload von index.html setzt
+      // dieses Flag nie, das Gedicht erscheint dann wie gewohnt. Betrifft
+      // auch die introText/introPortrait-Startwerte: im Skip-Fall muessen
+      // sie sofort im fertigen (sichtbaren) Zustand stehen, weil
+      // playIntroTransition() (die sie sonst einblendet) hier nie laeuft.
+      var skipPoem = sessionStorage.getItem('skipPoemOnce') === '1';
+      if (skipPoem) {
+        sessionStorage.removeItem('skipPoemOnce');
+        document.body.classList.remove('poem-active');
+        document.getElementById('poemSection').style.visibility = 'hidden';
+        root.classList.add('nav-visible', 'hero-fixed');
+        gsap.set('#introText',    { opacity: 1, y: 0 });
+        gsap.set('#introPortrait', { opacity: 1, y: 0 });
+      } else {
+        document.body.classList.add('poem-active');
+        gsap.set('#introText',   { opacity: 0, y: 30 });
+        gsap.set('#introPortrait', { opacity: 0, y: 40 });
+      }
 
       var hero = document.getElementById('heroTitle');
       var target = { x: 0, y: 0 };
