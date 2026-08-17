@@ -855,7 +855,15 @@
     .lightbox-close {
       appearance: none;
       background: none;
-      border: none;
+      /* Fest sichtbares, feines Kaestchen statt gar keinem Rahmen: vorher
+         tauchte gelegentlich (browserabhaengig) ein Fokus-Rahmen auf, weil
+         openLightbox() den Button per JS fokussiert und Safaris
+         :focus-visible-Heuristik einen programmatischen Fokus nach
+         Maus-Klick anders behandelt als Chrome -- das Kaestchen war also
+         mal da, mal nicht. Ein permanenter, dezenter Rahmen macht daraus
+         eine bewusste Gestaltung statt eines Zufallsprodukts. */
+      border: 1px solid rgba(232, 230, 225, 0.22);
+      border-radius: 0.65rem;
       color: #e8e6e1;
       cursor: pointer;
       display: inline-flex;
@@ -863,22 +871,23 @@
       justify-content: center;
       line-height: 1;
       outline: none;
-      transition: color 0.2s, text-shadow 0.2s, transform 0.2s;
+      transition: color 0.2s, text-shadow 0.2s, transform 0.2s, border-color 0.2s;
     }
 
     /* Leichte Vergroesserung bei Hover statt nur Farbwechsel, passend
        zum Rest der Seite (Nav-Unterstrich, Portrait-Hover-Zoom). */
     .lightbox-close:hover {
       color: var(--accent);
+      border-color: var(--accent);
       text-shadow: 0 0 14px rgba(255, 77, 0, 0.6);
       transform: scale(1.12);
     }
 
     /* :focus-visible statt :focus: openLightbox() fokussiert den
        Close-Button beim Oeffnen automatisch per Maus-Klick -- dafuer
-       soll kein Ring erscheinen, nur bei echter Tastatur-Navigation.
-       Eigener, dezenterer Indikator statt der Hover-Akzentfarbe, damit
-       Fokus und Hover unterscheidbar bleiben. */
+       soll kein zusaetzlicher Ring erscheinen, nur bei echter
+       Tastatur-Navigation. Eigener, dezenterer Indikator (Outline statt
+       Kaestchen-Farbe), damit Fokus und Hover unterscheidbar bleiben. */
     .lightbox-close:focus-visible {
       outline: 1px solid var(--muted-on-dark);
       outline-offset: 3px;
@@ -932,6 +941,15 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.75rem 0;
+      /* Feste Breite statt content-basierter Auto-Breite: "NÄCHSTES"
+         ist ein Zeichen laenger als "VORIGES" und rendert je nach
+         Browser/Schriftglaettung unterschiedlich breit (in Safari
+         beobachtet) -- bei rechts/links verankerten Buttons mit
+         Auto-Breite verschiebt das die bildzugewandte Kante und
+         "Naechstes Projekt" klebt dadurch naeher am Bild als "Voriges
+         Projekt". Feste Breite macht den Abstand zum Bild auf beiden
+         Seiten unabhaengig vom Beschriftungstext identisch. */
+      width: 5.5rem;
     }
 
     /* :focus-visible statt :focus, dezenter Indikator statt der
@@ -942,10 +960,8 @@
     }
 
     /* Padding nur auf der vom Bild abgewandten Seite: vergroessert die
-       Klickflaeche nach aussen, ohne (wie bei symmetrischem Padding)
-       auf der Bild-Seite ins Bild hineinzuragen. Inset knapper als beim
-       Close-Button, da die Beschriftung ("VORIGES PROJEKT" etc.) breiter
-       ist als der reine Pfeil und sonst trotzdem ins Bild ragt. */
+       Klickflaeche nach aussen, ohne auf der Bild-Seite ins Bild
+       hineinzuragen. */
     .lightbox-nav-prev { left: 0.5rem; padding-left: 1rem; }
     .lightbox-nav-next { right: 0.5rem; padding-right: 1rem; }
 
@@ -1646,12 +1662,13 @@
           }, AUTOPLAY_DELAY);
         };
 
-        var selectStill = function (index, userInitiated) {
+        var selectStill = function (index) {
           currentStillIndex = index;
           var still = currentStills[index];
 
-          // Ken-Burns-Zoom immer zuruecksetzen -- neu gestartet wird er
-          // unten nur fuer automatische (nicht manuelle) Wechsel.
+          // Ken-Burns-Zoom immer zuruecksetzen und danach immer neu
+          // starten -- unabhaengig davon, ob der Wechsel automatisch
+          // (Autoplay) oder manuell (Klick/Pfeiltaste) ausgeloest wurde.
           lbImage.classList.remove('is-kenburns');
 
           lbImage.style.opacity = '0';
@@ -1664,11 +1681,9 @@
             lbImage.setAttribute('alt', still.alt);
             requestAnimationFrame(function () {
               lbImage.style.opacity = '1';
-              if (!userInitiated) {
-                requestAnimationFrame(function () {
-                  lbImage.classList.add('is-kenburns');
-                });
-              }
+              requestAnimationFrame(function () {
+                lbImage.classList.add('is-kenburns');
+              });
             });
           };
           lbImage.addEventListener('transitionend', onFade);
@@ -1682,7 +1697,10 @@
             t.classList.toggle('is-active', i === index);
           });
 
-          if (userInitiated) stopAutoplay();
+          // Slideshow laeuft auch nach einem manuellen Wechsel weiter --
+          // startAutoplay() setzt den 4s-Countdown lediglich neu auf,
+          // stoppt ihn aber nicht.
+          startAutoplay();
         };
 
         var buildFilmstrip = function (button) {
@@ -1711,7 +1729,7 @@
             thumb.appendChild(img);
 
             thumb.addEventListener('click', function () {
-              selectStill(i, true);
+              selectStill(i);
             });
 
             lbFilmstrip.appendChild(thumb);
@@ -1754,8 +1772,8 @@
 
         var onKeydown = function (e) {
           if (e.key === 'Escape') { closeLightbox(); return; }
-          if (e.key === 'ArrowRight') { selectStill((currentStillIndex + 1) % currentStills.length, true); return; }
-          if (e.key === 'ArrowLeft') { selectStill((currentStillIndex - 1 + currentStills.length) % currentStills.length, true); return; }
+          if (e.key === 'ArrowRight') { selectStill((currentStillIndex + 1) % currentStills.length); return; }
+          if (e.key === 'ArrowLeft') { selectStill((currentStillIndex - 1 + currentStills.length) % currentStills.length); return; }
           if (e.key === 'Tab') {
             var focusable = lightbox.querySelectorAll('button');
             var first = focusable[0];
@@ -1768,6 +1786,23 @@
               first.focus();
             }
           }
+        };
+
+        // Scale-In (0.35s) gefolgt vom Ken-Burns-Zoom (4s) -- gemeinsam
+        // genutzt beim Oeffnen der Lightbox und beim Wechsel auf ein
+        // anderes Projekt per Pfeil, damit Ken Burns wirklich IMMER laeuft,
+        // nicht nur bei automatischem Still-Wechsel innerhalb eines Projekts.
+        var playOpenTransition = function () {
+          lbImage.classList.remove('is-kenburns');
+          lbImage.classList.add('is-opening');
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              lbImage.classList.remove('is-opening');
+            });
+          });
+          setTimeout(function () {
+            lbImage.classList.add('is-kenburns');
+          }, 360);
         };
 
         var openLightbox = function () {
@@ -1785,12 +1820,7 @@
           // fillLightbox noch ein Nullrechteck gewesen (display:none).
           positionNavArrows();
 
-          lbImage.classList.add('is-opening');
-          requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-              lbImage.classList.remove('is-opening');
-            });
-          });
+          playOpenTransition();
         };
 
         var closeLightbox = function () {
@@ -1811,6 +1841,7 @@
           nextButton.click();
           fillLightbox(nextButton);
           positionNavArrows();
+          playOpenTransition();
         };
 
         media.addEventListener('click', openLightbox);
