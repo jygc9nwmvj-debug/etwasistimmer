@@ -167,7 +167,15 @@
     .poem-stage {
       position: fixed;
       top: 0; left: 0;
-      width: 100%; height: 100vh;
+      width: 100%;
+      /* 100vh bleibt starr, waehrend iOS Safaris ein-/ausklappende
+         Adressleiste die tatsaechlich sichtbare Hoehe aendert -- dadurch
+         entstand unten eine Luecke, durch die (seit dem helleren
+         --bg-page-Body-Grundton) ein heller Streifen durchschimmerte.
+         100dvh folgt der echten sichtbaren Hoehe; 100vh bleibt als
+         Fallback fuer Browser ohne dvh-Unterstuetzung stehen. */
+      height: 100vh;
+      height: 100dvh;
       display: flex;
       align-items: center;
       z-index: 40;
@@ -304,7 +312,17 @@
 
     /* CONTENT STAGE */
     .scroll-container { position: relative; }
-    .intro-spacer { height: 60vh; }
+    /* Gleiche vh/dvh-Problematik wie .poem-stage, andere Auswirkung:
+       .intro-spacer ist nicht fixed/sichtbar, sondern definiert nur die
+       Scroll-Distanz fuer den ScrollTrigger (trigger: '.intro-spacer').
+       Ohne dvh koennte diese Distanz beim Ein-/Ausklappen der Safari-
+       Adressleiste leicht von der tatsaechlich sichtbaren Hoehe
+       abweichen und den Scroll-Uebergang minimal verschieben. dvh mit
+       vh-Fallback macht sie konsistent mit der echten Viewport-Hoehe. */
+    .intro-spacer {
+      height: 60vh;
+      height: 60dvh;
+    }
 
     /* Kein horizontales Padding/max-width mehr fuer den Inhalt: alle vier
        Kind-Sections sind jetzt selbst randlos (100vw) und zentrieren
