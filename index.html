@@ -295,23 +295,16 @@
     }
 
     /* MAIN INTRO GRID */
-    /* Durchbricht content-stage's Padding/max-width nach rechts, damit
-       das Bild bis zum Viewport-Rand reicht -- bewusst ueber die Breite
-       der ganzen Section statt per negativem Margin auf dem
-       Bild-Container: negative Margins auf einem mix-blend-mode-Element
-       (bzw. dessen direktem Flex-Elternteil) rendern in Chromium
-       zusammen mit body's overflow-x:hidden unsichtbar, sobald sie ueber
-       die eigene Box hinausragen. So bleibt das Bild vollstaendig
-       innerhalb seiner eigenen Box. */
+    /* Kein padding-bottom mehr: das Portrait sitzt (via align-self:stretch
+       + object-fit:cover) direkt auf der Trennlinie, jeder Bottom-Padding
+       hier wuerde eine Luecke zwischen Bildunterkante und border-bottom
+       erzeugen. */
     .main-intro {
       display: grid;
       grid-template-columns: 0.9fr 1.1fr;
       gap: 2.5rem;
       align-items: start;
-      width: 100vw;
-      margin-left: calc(50% - 50vw);
-      margin-right: calc(50% - 50vw);
-      padding: 12rem 0 5rem calc((100vw - min(100vw, 1200px)) / 2 + 5vw);
+      padding: 12rem 0 0 0;
       border-bottom: 1px solid var(--line);
       scroll-margin-top: 12rem;
     }
@@ -345,13 +338,19 @@
       display: flex;
       justify-content: flex-end;
       align-items: flex-end;
+      /* Streckt sich ueber .main-intro's align-items:start hinweg auf
+         die volle Zeilenhoehe, damit das Bild unten exakt auf der
+         Trennlinie aufsitzt (Sockel-Prinzip) statt eine Luecke zu
+         lassen. */
+      align-self: stretch;
     }
 
     .portrait-freistehend {
+      display: block;
       width: 100%;
-      max-width: 420px;
-      height: auto;
-      object-fit: contain;
+      height: 100%;
+      min-height: 0;
+      object-fit: cover;
       opacity: 0.95;
       will-change: transform, filter;
       transition: filter 0.6s ease, transform 0.6s ease, opacity 0.6s ease;
@@ -900,9 +899,6 @@
 
       .content-stage { padding-left: 6vw; padding-right: 6vw; padding-bottom: 10rem; }
       .main-intro {
-        width: auto;
-        margin-left: 0;
-        margin-right: 0;
         grid-template-columns: 1fr;
         gap: 2.5rem;
         padding: 7rem 0 5rem 0;
@@ -910,8 +906,8 @@
         align-items: center;
       }
       .intro-text { padding-bottom: 0; }
-      .intro-portrait { justify-content: center; margin-left: 0; margin-top: 0; margin-right: 0; }
-      .portrait-freistehend { max-width: 300px; }
+      .intro-portrait { justify-content: center; align-self: auto; margin-left: 0; margin-top: 0; margin-right: 0; }
+      .portrait-freistehend { height: auto; width: 100%; max-width: 300px; max-height: none; object-fit: contain; }
     }
   </style>
 
