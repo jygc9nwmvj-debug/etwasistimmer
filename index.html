@@ -31,12 +31,16 @@
          mehr als Body-Hintergrund. Erzeugt den "Naht"-Abstand zwischen
          Hero/Portfolio/Kacheln/Kontakt. */
       --bg-page:     #fdfcfa;
-      --bg-light:    #f4f3ef;
+      --bg-light:    #f0ebde;
       --text-light:  #121211;
       --muted-light: #706f6b;
 
       /* AKZENTFARBE (SIGNAL-ORANGE) */
       --accent:     #FF4D00;
+
+      /* GENRE-FARBCODIERUNG (gedeckte Toene, kein Wettstreit mit --accent) */
+      --tag-doku: #55654a;
+      --tag-tv:   #3f5570;
 
       --line:  rgba(120, 120, 115, 0.2);
 
@@ -141,9 +145,9 @@
       color: var(--text-light);
       text-decoration: none;
       font-family: 'Inter', sans-serif;
-      font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+      font-size: 1.05rem;
       font-weight: 400;
-      letter-spacing: -0.02em;
+      letter-spacing: 0.02em;
       display: inline-block;
       transition: color 0.28s ease-out;
     }
@@ -564,7 +568,7 @@
       font-weight: 800;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: rgba(20, 16, 13, 0.55);
       margin-bottom: 1.5rem;
     }
 
@@ -674,22 +678,22 @@
     .portfolio-arrow {
       appearance: none;
       background: none;
-      border: 1px solid var(--line);
+      border: none;
       color: var(--text-light);
       width: 2.25rem;
       height: 2.25rem;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       line-height: 1;
       cursor: pointer;
-      transition: border-color 0.2s, color 0.2s;
+      transition: color 0.2s ease, transform 0.2s ease;
     }
 
     .portfolio-arrow:hover {
-      border-color: var(--accent);
       color: var(--accent);
+      transform: scale(1.1);
     }
 
     .portfolio-genre {
@@ -700,7 +704,8 @@
       font-weight: 800;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--accent);
+      /* Farbe wird per JS gesetzt (genreColor()) -- Dokumentarfilm/TV
+         bekommen eigene Tag-Farben statt der Akzentfarbe. */
     }
 
     .portfolio-desc {
@@ -712,25 +717,29 @@
       line-height: 1.6;
     }
 
-    /* Eigenstaendige Zeile ueber dem gesamten zweispaltigen Layout
-       (Vorschau + Liste), nicht mehr nur ueber der Liste -- grid-column
-       spannt beide Spalten von .portfolio-layout, .portfolio-preview und
-       .portfolio-list ruecken dadurch automatisch in eine gemeinsame
-       zweite Grid-Reihe und beginnen buendig auf gleicher Hoehe. Typografie
-       bewusst identisch zu .name-sub (Hero-Copy) statt einer eigenen,
-       kleineren Kicker-Optik. Kein max-width: die Zeile soll die volle
-       Grid-Breite nutzen (linksbuendig) und dort natuerlich umbrechen,
-       statt schon deutlich vor dem Rand unmotiviert abzureissen. */
-    .portfolio-kicker {
+    /* Zweizeilige Kopfzeile ueber dem gesamten zweispaltigen Layout
+       (Vorschau + Liste), nach dem Muster grosser Ueberschrift +
+       kleiner Unterzeile. grid-column spannt beide Spalten von
+       .portfolio-layout, .portfolio-preview und .portfolio-list ruecken
+       dadurch automatisch in eine gemeinsame naechste Grid-Reihe und
+       beginnen buendig auf gleicher Hoehe. */
+    .portfolio-headline {
       display: block;
       grid-column: 1 / -1;
       font-family: 'EB Garamond', serif;
-      font-size: clamp(1.5rem, 2.4vw, 2.2rem);
       font-weight: 400;
-      color: var(--text-light);
-      line-height: 1.35;
-      letter-spacing: -0.01em;
-      margin-bottom: 2.5rem;
+      font-size: 2.2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .portfolio-subline {
+      display: block;
+      grid-column: 1 / -1;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--muted-light);
+      margin-bottom: 2rem;
     }
 
     .portfolio-filters {
@@ -753,6 +762,18 @@
       text-transform: uppercase;
       color: var(--muted-light);
       transition: color 0.2s;
+    }
+
+    /* Genre-Tag-Farben fuer inaktive Filter-Buttons -- Quellreihenfolge
+       bewusst zwischen Basis- und :hover/.is-active-Regel platziert, damit
+       Hover weiterhin auf --text-light und aktiver Zustand weiterhin auf
+       --accent geht (spaetere Regel gewinnt bei gleicher Spezifitaet). */
+    .portfolio-filter[data-filter="Dokumentarfilm"] {
+      color: var(--tag-doku);
+    }
+
+    .portfolio-filter[data-filter="TV"] {
+      color: var(--tag-tv);
     }
 
     .portfolio-filter:hover {
@@ -906,7 +927,7 @@
       font-weight: 800;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--accent);
+      /* Farbe wird per JS gesetzt (genreColor()). */
     }
 
     .lightbox-title {
@@ -997,7 +1018,6 @@
     .lightbox-close:hover {
       color: var(--accent);
       border-color: var(--accent);
-      text-shadow: 0 0 14px rgba(255, 77, 0, 0.6);
       transform: scale(1.12);
     }
 
@@ -1121,7 +1141,6 @@
        Labels, passend zum Hover-Verhalten im Rest der Seite. */
     .lightbox-nav:hover .lightbox-arrow {
       color: var(--accent);
-      text-shadow: 0 0 14px rgba(255, 77, 0, 0.6);
       transform: scale(1.12);
     }
 
@@ -1143,7 +1162,7 @@
       font-weight: 800;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: rgba(20, 16, 13, 0.55);
       margin-bottom: 2rem;
     }
 
@@ -1258,7 +1277,7 @@
         font-weight: 800;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: var(--accent);
+        /* Farbe wird per JS gesetzt (genreColor()). */
       }
 
       .portfolio-panel-desc {
@@ -1380,7 +1399,8 @@
            folgen. -->
       <section class="portfolio-section" id="portfolio" aria-label="Arbeiten">
         <div class="portfolio-layout section-inner">
-          <p class="portfolio-kicker">Meistens hinter, manchmal vor der Kamera: Reportagen, Berichte, Dokumentarfilm. Für MDR, ZDF, BR, SWR u.a.</p>
+          <h2 class="portfolio-headline">Meistens hinter, manchmal vor der Kamera.</h2>
+          <p class="portfolio-subline">Reportagen, Berichte, Dokumentarfilm — für MDR, ZDF, BR, SWR u.a.</p>
 
           <div class="portfolio-preview">
             <div class="portfolio-media">
@@ -1660,6 +1680,12 @@
       var previewGenre = document.getElementById('portfolioGenre');
       var previewDesc = document.getElementById('portfolioDesc');
 
+      function genreColor(genre) {
+        if (genre === 'Dokumentarfilm') return 'var(--tag-doku)';
+        if (genre === 'TV') return 'var(--tag-tv)';
+        return '';
+      }
+
       var portfolioItems = [
         {
           title: "Love Alien",
@@ -1829,6 +1855,7 @@
           var panelGenre = document.createElement('span');
           panelGenre.className = 'portfolio-panel-genre';
           panelGenre.textContent = item.genre;
+          panelGenre.style.color = genreColor(item.genre);
           var panelDesc = document.createElement('p');
           panelDesc.className = 'portfolio-panel-desc';
           panelDesc.textContent = item.desc;
@@ -1848,6 +1875,10 @@
       var prevBtn = document.getElementById('portfolioPrev');
       var nextBtn = document.getElementById('portfolioNext');
       if (!previewImage || !items.length) return;
+
+      // Statische Genre-Farbe im Markup entfaellt (siehe .portfolio-genre
+      // CSS) -- ohne diesen Aufruf bliebe der Anfangszustand ungefaerbt.
+      activatePreview(items[0]);
 
       function getSepForButton(button) {
         var el = button.nextElementSibling;
@@ -1875,6 +1906,7 @@
 
         if (previewImage.getAttribute('src') === newSrc) {
           previewGenre.textContent = newGenre;
+          previewGenre.style.color = genreColor(newGenre);
           previewDesc.textContent = newDesc;
           return;
         }
@@ -1889,6 +1921,7 @@
           previewImage.setAttribute('src', newSrc);
           previewImage.setAttribute('alt', newAlt);
           previewGenre.textContent = newGenre;
+          previewGenre.style.color = genreColor(newGenre);
           previewDesc.textContent = newDesc;
           requestAnimationFrame(function () {
             previewImage.style.opacity = '1';
@@ -1921,6 +1954,7 @@
       items.forEach(function (button) {
         button.setAttribute('aria-expanded', 'false');
         button.addEventListener('click', function () {
+          stopPortfolioAutoplay();
           activatePreview(button);
           togglePanel(button);
         });
@@ -1963,8 +1997,43 @@
         nextButton.scrollIntoView({ block: 'nearest', inline: 'nearest' });
       }
 
-      if (prevBtn) prevBtn.addEventListener('click', function () { step(-1); });
-      if (nextBtn) nextBtn.addEventListener('click', function () { step(1); });
+      if (prevBtn) prevBtn.addEventListener('click', function () { stopPortfolioAutoplay(); step(-1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { stopPortfolioAutoplay(); step(1); });
+
+      // Ruhiger, automatischer Durchlauf der Portfolio-Vorschau -- eigener
+      // Namensraum (portfolioAutoplayTimer statt filmstripTimer), um nicht
+      // mit der bestehenden Lightbox-Filmstreifen-Autoplay weiter unten zu
+      // kollidieren: die dortige wechselt Stills EINES Projekts, diese hier
+      // wechselt zwischen verschiedenen Portfolio-Eintraegen.
+      var PORTFOLIO_AUTOPLAY_DELAY = 6000;
+      var portfolioAutoplayTimer = null;
+      var reduceMotionPortfolio = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function stopPortfolioAutoplay() {
+        if (portfolioAutoplayTimer) {
+          clearInterval(portfolioAutoplayTimer);
+          portfolioAutoplayTimer = null;
+        }
+      }
+
+      function startPortfolioAutoplay() {
+        stopPortfolioAutoplay();
+        if (reduceMotionPortfolio) return;
+        // Verlaesst die Maus .portfolio-layout waehrend die Lightbox
+        // offen ist (z.B. beim Klick auf das Vorschaubild selbst), darf
+        // das nicht erneut anlaufen -- sonst wechselt das Projekt im
+        // Hintergrund, waehrend die Lightbox es eigentlich pausiert haelt.
+        if (lightbox && lightbox.classList.contains('is-open')) return;
+        portfolioAutoplayTimer = setInterval(function () { step(1); }, PORTFOLIO_AUTOPLAY_DELAY);
+      }
+
+      var portfolioLayoutEl = document.querySelector('.portfolio-layout');
+      if (portfolioLayoutEl) {
+        portfolioLayoutEl.addEventListener('mouseenter', stopPortfolioAutoplay);
+        portfolioLayoutEl.addEventListener('mouseleave', startPortfolioAutoplay);
+      }
+
+      startPortfolioAutoplay();
 
       var media = document.querySelector('.portfolio-media');
       var lightbox = document.getElementById('portfolioLightbox');
@@ -2102,7 +2171,9 @@
         var fillLightbox = function (button) {
           lbImage.setAttribute('src', button.getAttribute('data-image'));
           lbImage.setAttribute('alt', button.getAttribute('data-alt') || '');
-          lbGenre.textContent = button.getAttribute('data-genre') || '';
+          var genre = button.getAttribute('data-genre') || '';
+          lbGenre.textContent = genre;
+          lbGenre.style.color = genreColor(genre);
           lbTitle.textContent = button.textContent.trim();
           lbDesc.textContent = button.getAttribute('data-desc') || '';
           buildFilmstrip(button);
@@ -2146,6 +2217,7 @@
         var openLightbox = function () {
           var active = document.querySelector('.portfolio-item.is-active');
           if (!active) return;
+          stopPortfolioAutoplay();
           fillLightbox(active);
           lastFocused = document.activeElement;
           lightbox.classList.add('is-open');
@@ -2167,6 +2239,7 @@
           document.body.style.overflow = '';
           document.removeEventListener('keydown', onKeydown);
           stopAutoplay();
+          startPortfolioAutoplay();
           if (lastFocused) lastFocused.focus();
         };
 
