@@ -117,10 +117,12 @@
       list-style: none;
       opacity: 0;
       pointer-events: none;
+      transition: opacity var(--fade);
     }
 
-    /* Menü erscheint hart, sobald die Gedicht-Section durchgescrollt ist --
-       keine eigene Einblend-Animation. */
+    /* Blendet sanft ein, sobald der Titel gelandet ist (html.nav-visible,
+       gesetzt kurz vor Ende der Klick-Timeline -- siehe JS) statt hart
+       zu erscheinen. */
     html.nav-visible .site-nav {
       opacity: 1;
       pointer-events: auto;
@@ -287,10 +289,11 @@
       pointer-events: auto;
     }
 
-    /* Durchgehende Kopfleiste, sobald die Gedicht-Section durchgescrollt
-       ist: deckt Titel UND Menüzeile als eine nahtlose Fläche ab (wie die
-       mobile Menüleiste unten), damit keine eigene Menü-Box eine
-       sichtbare Kante über dem Content erzeugt. */
+    /* Durchgehende Kopfleiste, sobald der Titel gelandet ist: deckt Titel
+       UND Menüzeile als eine nahtlose Fläche ab (wie die mobile
+       Menüleiste unten), damit keine eigene Menü-Box eine sichtbare
+       Kante über dem Content erzeugt. Blendet sanft ein statt hart zu
+       erscheinen, siehe html.nav-visible .site-nav weiter oben. */
     .logo-bar {
       position: fixed;
       top: 0;
@@ -303,6 +306,7 @@
       background-color: color-mix(in srgb, var(--bg-page) 82%, transparent);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      transition: opacity var(--fade);
     }
 
     html.nav-visible .logo-bar {
@@ -1477,7 +1481,6 @@
 
         var tl = gsap.timeline({
           onComplete: function () {
-            root.classList.add('nav-visible', 'hero-fixed');
             document.body.classList.remove('poem-active');
             document.getElementById('poemSection').style.visibility = 'hidden';
           }
@@ -1490,6 +1493,18 @@
             duration: 0.9,
             ease: 'power2.inOut'
           }, 0)
+          // Menü/Kopfleiste beginnen sanft einzublenden (siehe transition:
+          // opacity var(--fade) auf .site-nav/.logo-bar), sobald der Titel
+          // gelandet ist (0.9) -- nicht erst am ganz Ende (1.0, wenn auch
+          // der Hintergrund fertig ausgeblendet ist). So ueberlappt das
+          // Einblenden mit dem letzten Stueck des Uebergangs, statt nach
+          // dessen Abschluss abrupt aufzupoppen. .site-title selbst bleibt
+          // bewusst ein harter Schnitt (kein eigenes transition), weil sie
+          // exakt an .hero-lines Landeposition uebernimmt -- ein Fade
+          // wuerde dort kurz eine Luecke zwischen beiden zeigen.
+          .call(function () {
+            root.classList.add('nav-visible', 'hero-fixed');
+          }, null, 0.9)
           .to('#introText',    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.3)
           .to('#introPortrait',{ opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.35)
           .to('.poem-overlay-bg', { opacity: 0, duration: 0.5 }, 0.5);
