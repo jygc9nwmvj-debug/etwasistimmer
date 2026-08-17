@@ -710,9 +710,9 @@
        .portfolio-list ruecken dadurch automatisch in eine gemeinsame
        zweite Grid-Reihe und beginnen buendig auf gleicher Hoehe. Typografie
        bewusst identisch zu .name-sub (Hero-Copy) statt einer eigenen,
-       kleineren Kicker-Optik -- max-width:600px sorgt trotz grid-column:
-       1/-1 dafuer, dass die Zeile schmal umbricht statt ueber die volle
-       Grid-Breite zu laufen. */
+       kleineren Kicker-Optik. Kein max-width: die Zeile soll die volle
+       Grid-Breite nutzen (linksbuendig) und dort natuerlich umbrechen,
+       statt schon deutlich vor dem Rand unmotiviert abzureissen. */
     .portfolio-kicker {
       display: block;
       grid-column: 1 / -1;
@@ -720,7 +720,6 @@
       font-size: clamp(1.5rem, 2.4vw, 2.2rem);
       font-weight: 400;
       color: var(--text-light);
-      max-width: 600px;
       line-height: 1.35;
       letter-spacing: -0.01em;
       margin-bottom: 2.5rem;
