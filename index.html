@@ -295,16 +295,20 @@
     }
 
     /* MAIN INTRO GRID */
-    /* Kein padding-bottom mehr: das Portrait sitzt (via align-self:stretch
-       + object-fit:cover) direkt auf der Trennlinie, jeder Bottom-Padding
+    /* Kein padding-bottom: das Portrait sitzt (via align-self:stretch +
+       object-fit:cover) direkt auf der Trennlinie, jeder Bottom-Padding
        hier wuerde eine Luecke zwischen Bildunterkante und border-bottom
-       erzeugen. */
+       erzeugen. align-items:end setzt den Text ebenfalls unten an --
+       .intro-portrait ueberschreibt das ohnehin per align-self:stretch,
+       das Bild bleibt unveraendert an der Linie. Der freie Weißraum
+       liegt dadurch oben (zwischen Nav und Textanfang), nicht zwischen
+       Textende und Linie. */
     .main-intro {
       display: grid;
       grid-template-columns: 0.9fr 1.1fr;
       gap: 2.5rem;
-      align-items: start;
-      padding: 12rem 0 0 0;
+      align-items: end;
+      padding: 9rem 0 0 0;
       border-bottom: 1px solid var(--line);
       scroll-margin-top: 12rem;
     }
@@ -901,7 +905,7 @@
       .main-intro {
         grid-template-columns: 1fr;
         gap: 2.5rem;
-        padding: 7rem 0 5rem 0;
+        padding: 3rem 0 5rem 0;
         scroll-margin-top: 7rem;
         align-items: center;
       }
