@@ -613,34 +613,26 @@ html.hero-fixed .hero-line-wrapper {
 .col-card h2 {
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(20, 16, 13, 0.55);
   margin-bottom: 1.5rem;
 }
 
-.col-card h3 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 2.6rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  margin-bottom: 1rem;
-}
-
-/* Ueberschreibt .col-card h3 fuer Beratung/Profil gezielt (ID schlaegt
-   Klasse) -- dieselbe Typo-Ebene wie .name-sub (Hero-Text), damit keine
-   Headline mehr staerker hervorsticht. .col-card h3 selbst bleibt
-   unveraendert bestehen (aktuell ohnehin ihr einziger verbleibender
-   Verwendungszweck, siehe Kommentar oben bei .col-card-link -- Filmemacher/
-   Journalist-Karten sind bereits entfernt), fuer den Fall kuenftiger
-   .col-card-Nutzung ohne eigene Ueberschreibung. */
+/* Dieselbe Typo-Ebene wie .name-sub (Hero-Text), damit keine Headline
+   staerker hervorsticht. Frueher als Ueberschreibung einer generischen
+   .col-card h3-Regel (Space Grotesk) angelegt -- die war fuer beide
+   existierenden Vorkommen wirkungslos und als letzte Space-Grotesk-
+   Referenz der einzige Grund, die Font ueberhaupt zu laden; deshalb
+   samt Font-Einbindung entfernt. */
 #beratung-section h3,
 #profil-section h3 {
   font-family: 'Inter', sans-serif;
   font-weight: 400;
   font-size: clamp(1.3rem, 1.9vw, 1.75rem);
   letter-spacing: normal;
+  margin-bottom: 1rem;
 }
 
 .col-card p,
@@ -666,11 +658,6 @@ html.hero-fixed .hero-line-wrapper {
   font-weight: 600;
   color: var(--accent);
   text-decoration: none;
-  transition: opacity 0.2s;
-}
-
-.col-card-link:hover {
-  opacity: 0.7;
 }
 
 /* TEXTSEITEN (beratung.html, profil.html) -- Kicker/Headline/Lead im
@@ -680,7 +667,7 @@ html.hero-fixed .hero-line-wrapper {
   display: block;
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(20, 16, 13, 0.55);
@@ -696,7 +683,7 @@ html.hero-fixed .hero-line-wrapper {
 .page-lead {
   font-family: 'Inter', sans-serif;
   font-size: clamp(1.1rem, 1.6vw, 1.3rem);
-  font-weight: 300;
+  font-weight: 400;
   color: var(--muted-light);
   line-height: 1.6;
   max-width: 640px;
@@ -714,7 +701,7 @@ html.hero-fixed .hero-line-wrapper {
 .page-section h2 {
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(20, 16, 13, 0.55);
@@ -724,7 +711,7 @@ html.hero-fixed .hero-line-wrapper {
 .page-section p {
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--muted-light);
   line-height: 1.6;
 }
@@ -733,10 +720,6 @@ html.hero-fixed .hero-line-wrapper {
 .portfolio-section {
   padding: 7rem 0;
   scroll-margin-top: 12rem;
-}
-
-.portfolio-layout {
-  display: block;
 }
 
 .portfolio-preview {
@@ -767,9 +750,10 @@ html.hero-fixed .hero-line-wrapper {
 }
 
 /* Klick-Signal statt separater Pfeil-Buttons/Hinweis-Pill: Titel und
-   Genre liegen dauerhaft als Overlay auf dem Bild, oben-mittig. Ein
-   kleiner Pfeil fliegt direkt neben dem Titel erst bei Hover ein; die
-   Kurzbeschreibung ist permanent sichtbar. */
+   Genre liegen dauerhaft als Overlay auf dem Bild, oben-mittig. Bei
+   Hover waechst eine Underline unter dem Titel ein (siehe
+   .portfolio-media-title::after); die Kurzbeschreibung ist permanent
+   sichtbar. */
 .portfolio-media-overlay {
   position: absolute;
   top: 0;
@@ -1026,7 +1010,7 @@ html.hero-fixed .hero-line-wrapper {
   display: block;
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted-on-dark);
@@ -1110,6 +1094,13 @@ html.hero-fixed .hero-line-wrapper {
   line-height: 1;
   outline: none;
   transition: color 0.2s, text-shadow 0.2s, transform 0.2s, border-color 0.2s;
+  position: absolute;
+  z-index: 2;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  font-size: 2rem;
 }
 
 .lightbox-close:hover {
@@ -1121,16 +1112,6 @@ html.hero-fixed .hero-line-wrapper {
 .lightbox-close:focus-visible {
   outline: 1px solid var(--muted-on-dark);
   outline-offset: 3px;
-}
-
-.lightbox-close {
-  position: absolute;
-  z-index: 2;
-  top: 1.5rem;
-  right: 1.5rem;
-  width: 3.25rem;
-  height: 3.25rem;
-  font-size: 2rem;
 }
 
 .lightbox-frame {
@@ -1212,7 +1193,7 @@ html.hero-fixed .hero-line-wrapper {
 .contact-section h2 {
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(20, 16, 13, 0.55);
@@ -1389,7 +1370,7 @@ html.hero-fixed .hero-line-wrapper {
     margin-top: 1rem;
     font-family: 'Inter', sans-serif;
     font-size: 0.8rem;
-    font-weight: 800;
+    font-weight: 900;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--muted-light);
@@ -1399,7 +1380,7 @@ html.hero-fixed .hero-line-wrapper {
     margin-top: 0.5rem;
     font-family: 'Inter', sans-serif;
     font-size: 0.95rem;
-    font-weight: 300;
+    font-weight: 400;
     color: var(--muted-light);
     line-height: 1.6;
   }
