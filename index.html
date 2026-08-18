@@ -648,70 +648,22 @@
       transform: scale(1.04);
     }
 
-    /* Dezenter Hover-Hinweis: leichte Verdunklung statt vollflaechigem
-       Overlay, umrandeter Pill-Button statt harter Flaeche, reine
-       Opacity-Transition. Nur ueber :hover erreichbar -- auf Touch-
-       Geraeten (kein Hover-Zustand) bleibt das bestehende Tap-Verhalten
-       (oeffnet die Lightbox) unveraendert, der Hinweis erscheint dort
-       schlicht nie. */
-    .portfolio-media-hint {
+    /* Klick-Signal statt separater Pfeil-Buttons/Hinweis-Pill: Titel und
+       Genre liegen dauerhaft als Overlay auf dem Bild, ein kleiner Pfeil
+       fliegt direkt neben dem Titel erst bei Hover ein (dezent, gehoert
+       zur Textzeile statt als eigenstaendiges Element danebenzustehen),
+       die Kurzbeschreibung blendet darunter sanft ein. */
+    .portfolio-media-overlay {
       position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: rgba(13, 13, 12, 0.35);
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      inset: auto 0 0 0;
+      padding: 1.5rem 1.5rem 1.25rem;
+      background: linear-gradient(to top, rgba(13, 13, 12, 0.8), rgba(13, 13, 12, 0));
       pointer-events: none;
     }
 
-    .portfolio-media:hover .portfolio-media-hint {
-      opacity: 1;
-    }
-
-    .portfolio-media-hint span {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 999px;
-      padding: 0.6rem 1.4rem;
-    }
-
-    .portfolio-nav {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 1.25rem;
-    }
-
-    .portfolio-arrow {
-      appearance: none;
-      background: none;
-      border: none;
-      color: var(--text-light);
-      width: 2.25rem;
-      height: 2.25rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      line-height: 1;
-      cursor: pointer;
-      transition: color 0.2s ease, transform 0.2s ease;
-    }
-
-    .portfolio-arrow:hover {
-      color: var(--accent);
-      transform: scale(1.1);
-    }
-
-    .portfolio-genre {
-      display: inline-block;
-      margin-top: 0.75rem;
+    .portfolio-media-genre {
+      display: block;
+      margin-bottom: 0.4rem;
       font-family: 'Inter', sans-serif;
       font-size: 0.8rem;
       font-weight: 800;
@@ -721,13 +673,46 @@
          bekommen eigene Tag-Farben statt der Akzentfarbe. */
     }
 
-    .portfolio-desc {
-      margin-top: 1.5rem;
+    .portfolio-media-title {
+      font-family: 'EB Garamond', serif;
+      font-weight: 500;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      color: #fff;
+      line-height: 1.15;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .portfolio-media-title-arrow {
+      font-size: 0.6em;
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .portfolio-media:hover .portfolio-media-title-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .portfolio-media-desc {
+      display: block;
       font-family: 'Inter', sans-serif;
-      font-size: 0.95rem;
       font-weight: 300;
-      color: var(--muted-light);
-      line-height: 1.6;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.85);
+      margin-top: 0.6rem;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, opacity 0.3s ease;
+    }
+
+    .portfolio-media:hover .portfolio-media-desc {
+      max-height: 5rem;
+      opacity: 1;
     }
 
     /* Zweizeilige Kopfzeile ueber dem gesamten zweispaltigen Layout
@@ -757,7 +742,6 @@
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem 1.5rem;
-      margin-bottom: 2rem;
     }
 
     .portfolio-filter {
@@ -801,6 +785,7 @@
       align-items: baseline;
       column-gap: 0.5em;
       row-gap: 0.7em;
+      margin-bottom: 2rem;
     }
 
     .portfolio-item {
@@ -1409,13 +1394,13 @@
             <h2 class="portfolio-headline">Meistens hinter, manchmal vor der Kamera.</h2>
             <p class="portfolio-subline">Reportagen, Berichte, Dokumentarfilm — für MDR, ZDF, BR, SWR u.a.</p>
 
+            <div class="portfolio-flow" id="portfolioFlow"><!-- wird per JS befüllt, siehe portfolioItems --></div>
+
             <div class="portfolio-filters" role="group" aria-label="Nach Format filtern">
               <button type="button" class="portfolio-filter is-active" data-filter="all">Alle</button>
               <button type="button" class="portfolio-filter" data-filter="Dokumentarfilm">Dokumentarfilm</button>
               <button type="button" class="portfolio-filter" data-filter="TV">TV</button>
             </div>
-
-            <div class="portfolio-flow" id="portfolioFlow"><!-- wird per JS befüllt, siehe portfolioItems --></div>
           </div>
 
           <div class="portfolio-preview">
@@ -1425,13 +1410,11 @@
                 src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&amp;w=1200&amp;auto=format&amp;fit=crop"
                 alt="Nahaufnahme einer analogen Filmkamera"
                 class="portfolio-image">
-              <div class="portfolio-media-hint" aria-hidden="true"><span>Mehr Info</span></div>
-            </div>
-            <p class="portfolio-desc" id="portfolioDesc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</p>
-            <span class="portfolio-genre" id="portfolioGenre">Dokumentarfilm</span>
-            <div class="portfolio-nav">
-              <button type="button" class="portfolio-arrow" id="portfolioPrev" aria-label="Vorheriges Projekt">‹</button>
-              <button type="button" class="portfolio-arrow" id="portfolioNext" aria-label="Nächstes Projekt">›</button>
+              <div class="portfolio-media-overlay">
+                <span class="portfolio-media-genre" id="portfolioMediaGenre">Dokumentarfilm</span>
+                <span class="portfolio-media-title" id="portfolioMediaTitle">Love Alien<span class="portfolio-media-title-arrow" aria-hidden="true">→</span></span>
+                <span class="portfolio-media-desc" id="portfolioMediaDesc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1683,8 +1666,9 @@
       'use strict';
 
       var previewImage = document.getElementById('portfolioImage');
-      var previewGenre = document.getElementById('portfolioGenre');
-      var previewDesc = document.getElementById('portfolioDesc');
+      var previewGenre = document.getElementById('portfolioMediaGenre');
+      var previewTitle = document.getElementById('portfolioMediaTitle');
+      var previewDesc = document.getElementById('portfolioMediaDesc');
 
       function genreColor(genre) {
         if (genre === 'Dokumentarfilm') return 'var(--tag-doku)';
@@ -1878,12 +1862,11 @@
 
       var items = Array.prototype.slice.call(document.querySelectorAll('.portfolio-item'));
       var filters = document.querySelectorAll('.portfolio-filter');
-      var prevBtn = document.getElementById('portfolioPrev');
-      var nextBtn = document.getElementById('portfolioNext');
       if (!previewImage || !items.length) return;
 
-      // Statische Genre-Farbe im Markup entfaellt (siehe .portfolio-genre
-      // CSS) -- ohne diesen Aufruf bliebe der Anfangszustand ungefaerbt.
+      // Statische Genre-Farbe im Markup entfaellt (siehe .portfolio-media-
+      // genre CSS) -- ohne diesen Aufruf bliebe der Anfangszustand
+      // ungefaerbt.
       activatePreview(items[0]);
 
       function getSepForButton(button) {
@@ -1909,10 +1892,12 @@
         var newAlt = button.getAttribute('data-alt') || '';
         var newDesc = button.getAttribute('data-desc') || '';
         var newGenre = button.getAttribute('data-genre') || '';
+        var newTitle = button.textContent.trim();
 
         if (previewImage.getAttribute('src') === newSrc) {
           previewGenre.textContent = newGenre;
           previewGenre.style.color = genreColor(newGenre);
+          previewTitle.firstChild.textContent = newTitle;
           previewDesc.textContent = newDesc;
           return;
         }
@@ -1928,6 +1913,7 @@
           previewImage.setAttribute('alt', newAlt);
           previewGenre.textContent = newGenre;
           previewGenre.style.color = genreColor(newGenre);
+          previewTitle.firstChild.textContent = newTitle;
           previewDesc.textContent = newDesc;
           requestAnimationFrame(function () {
             previewImage.style.opacity = '1';
@@ -2002,9 +1988,6 @@
         activatePreview(nextButton);
         nextButton.scrollIntoView({ block: 'nearest', inline: 'nearest' });
       }
-
-      if (prevBtn) prevBtn.addEventListener('click', function () { stopPortfolioAutoplay(); step(-1); });
-      if (nextBtn) nextBtn.addEventListener('click', function () { stopPortfolioAutoplay(); step(1); });
 
       // Ruhiger, automatischer Durchlauf der Portfolio-Vorschau -- eigener
       // Namensraum (portfolioAutoplayTimer statt filmstripTimer), um nicht
