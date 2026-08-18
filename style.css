@@ -339,11 +339,15 @@ html.hero-fixed .hero-line-wrapper {
    verschmelzen. Gilt fuer alle drei Seiten: .main-intro/.intro-portrait
    (nur index.html) und .page-intro (nur beratung.html/profil.html)
    sind der jeweilige oberste Block, .portfolio-section nur index.html,
-   .columns-grid nur index.html, .contact-section auf allen drei. */
+   .contact-section auf allen drei. .split-section (Beratung/Profil,
+   nur index.html) gehoert bewusst NICHT in diese Liste -- sie bleibt
+   selbst im --bg-page-Ton, die beiden .col-card-Kinder tragen ihr
+   --bg-light einzeln (siehe .split-section-inner .col-card), damit
+   der Zwischenraum zwischen ihnen sichtbar bleibt statt einer
+   durchgehenden Flaeche. */
 .main-intro,
 .page-intro,
 .portfolio-section,
-.columns-grid,
 .contact-section {
   background-color: var(--bg-light);
   margin-bottom: 3rem;
@@ -410,7 +414,7 @@ html.hero-fixed .hero-line-wrapper {
 
 .name-sub {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+  font-size: clamp(1.3rem, 1.9vw, 1.75rem);
   font-weight: 400;
   color: var(--text-light);
   line-height: 1.35;
@@ -451,21 +455,46 @@ html.hero-fixed .hero-line-wrapper {
   transform: scale(1.02);
 }
 
-/* KACHELN (nur index.html) */
-.columns-grid-inner {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 4rem;
-  padding-top: 6rem;
-  padding-bottom: 6rem;
+/* BERATUNG/PROFIL (nur index.html) -- zwei eigenstaendige Flaechen mit
+   echtem, sichtbarem Zwischenraum (--bg-page scheint durch), statt
+   einer durchgehenden Box mit zwei Spalten wie beim frueheren
+   .columns-grid. Randlos wie die anderen Content-Bloecke, aber mit
+   eigener Regel statt in der gemeinsamen Selektor-Liste (siehe dort),
+   weil der Grundton hier bewusst --bg-page statt --bg-light ist. */
+.split-section {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  background-color: var(--bg-page);
 }
 
-/* 12rem statt der Logo-Bar-Hoehe (10.5rem): .col-card h2's kleine
-   Kicker-Zeile sitzt sonst genau in der Zone, die die fixierte
-   Logo-Bar beim Anker-Scroll verdeckt (Fehler war latent, bis die
-   Beratung/Profil-Karten echte Nav-Anker bekamen). Gleicher Wert wie
-   .main-intro/.page-intro, die denselben Header ueberragen muessen. */
-.col-card { scroll-margin-top: 12rem; }
+.split-section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  padding: 5vw;
+}
+
+.split-section-inner .col-card {
+  background-color: var(--bg-light);
+  padding: 3.5rem 3rem;
+}
+
+/* An dieselbe Variable gekoppelt wie .main-intro/.page-intro's
+   Top-Padding (--logo-bar-height), damit der Anker-Scroll-Versatz nie
+   wieder von der tatsaechlichen Logo-Bar-Hoehe abweicht -- siehe
+   .col-card's eigene Regel fuer den generischen Fallback. */
+#beratung-section,
+#profil-section {
+  scroll-margin-top: calc(var(--logo-bar-height) + 1.5rem);
+}
+
+/* Generischer Fallback fuer kuenftige .col-card-Anker ohne eigene
+   ID-Regel -- dieselbe Formel wie oben statt eines hart codierten
+   12rem, damit beide Werte nicht wieder auseinanderlaufen koennen. */
+.col-card { scroll-margin-top: calc(var(--logo-bar-height) + 1.5rem); }
 
 .col-card h2 {
   font-family: 'Inter', sans-serif;
@@ -1049,7 +1078,7 @@ html.hero-fixed .hero-line-wrapper {
    damit er sich sichtbar davon absetzt. */
 .site-footer {
   background-color: var(--bg-page);
-  padding: 1.25rem 0;
+  padding: 1rem 0;
 }
 
 .site-footer-inner {
@@ -1076,6 +1105,7 @@ html.hero-fixed .hero-line-wrapper {
 .footer-social {
   display: flex;
   gap: 1rem;
+  min-height: 0;
 }
 
 /* MOBIL RESPONSIVE -- ein einziger Breakpoint-Block statt mehrerer
@@ -1124,6 +1154,8 @@ html.hero-fixed .hero-line-wrapper {
   .portrait-freistehend { height: auto; width: 100%; max-width: 300px; max-height: none; object-fit: contain; }
 
   .page-sections { gap: 2.5rem; margin-top: 4rem; padding-top: 4rem; }
+
+  .split-section-inner { grid-template-columns: 1fr; }
 
   .portfolio-preview {
     display: none;

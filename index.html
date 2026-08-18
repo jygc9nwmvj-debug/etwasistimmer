@@ -190,26 +190,13 @@
         </div>
       </section>
 
-      <section class="columns-grid" aria-label="Arbeitsfelder">
-        <div class="columns-grid-inner section-inner">
-          <article class="col-card" id="film">
-            <h2>Doku &amp; Regie</h2>
-            <h3>Filmemacher</h3>
-            <p>Dokumentarfilme, Kameraführung und visuelles Storytelling mit klarer, unaufgeregter Haltung.</p>
-          </article>
-
-          <article class="col-card" id="journalismus">
-            <h2>Recherche &amp; TV</h2>
-            <h3>Journalist</h3>
-            <p>Tiefgründige TV-Reportagen und redaktionelle Beiträge für öffentlich-rechtliche Formate (MDR, ZDF, SWR).</p>
-          </article>
-        </div>
-      </section>
-
       <!-- Kurze Teaser fuer Medienberatung/Profil, ausfuehrlicher Inhalt
-           bleibt auf den jeweiligen Unterseiten (siehe .col-card-link). -->
-      <section class="columns-grid" aria-label="Beratung und Profil">
-        <div class="columns-grid-inner section-inner">
+           bleibt auf den jeweiligen Unterseiten (siehe .col-card-link).
+           .split-section statt .columns-grid: zwei eigenstaendige
+           Flaechen mit echtem Zwischenraum (--bg-page scheint durch),
+           nicht eine durchgehende Box mit zwei Spalten. -->
+      <section class="split-section" aria-label="Beratung und Profil">
+        <div class="split-section-inner">
           <article class="col-card" id="beratung-section">
             <h2>Sparring &amp; Konzept</h2>
             <h3>Die meisten wissen, was sie sagen wollen. Die wenigsten, wie.</h3>
