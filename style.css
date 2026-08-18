@@ -398,6 +398,29 @@ html.hero-fixed .hero-line-wrapper {
      Logo-Bar beginnt. */
   padding: calc(var(--logo-bar-height) + 1.5rem) 0 0 0;
   scroll-margin-top: 12rem;
+  position: relative; /* Containing Block fuer .elmo-peek */
+  overflow: visible;
+}
+
+/* Easter Egg: schaut bei Hover von unten rechts kurz hoch, mit kleinem
+   Ueberschwung am Ende der Bewegung (siehe cubic-bezier), statt starr
+   einzublenden -- im Ruhezustand fast komplett hinter der Section-
+   Unterkante verborgen. Nur Desktop/Hover-faehige Geraete (siehe
+   Media Query), auf Touch waere er sonst dauerhaft unsichtbar. */
+.elmo-peek {
+  position: absolute;
+  bottom: 0;
+  right: 6%;
+  width: clamp(70px, 8vw, 110px);
+  height: auto;
+  transform: translateY(88%);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  z-index: 5; /* ueber dem Portrait */
+}
+
+.main-intro:hover .elmo-peek {
+  transform: translateY(18%);
 }
 
 /* Oberster Content-Block auf beratung.html/profil.html -- dieselbe
@@ -451,6 +474,17 @@ html.hero-fixed .hero-line-wrapper {
   align-self: stretch;
 }
 
+/* <picture> ist per Default nur inline und wuerde sich sonst als
+   Flex-Kind auf seine Bildgroesse zusammenziehen statt wie zuvor das
+   <img> direkt die volle Flaeche von .intro-portrait auszufuellen --
+   ohne diese Regel wuerde die width:100%/height:100% von
+   .portrait-freistehend gegen eine unbestimmte Groesse aufloesen. */
+.intro-portrait picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .portrait-freistehend {
   display: block;
   width: 100%;
@@ -463,6 +497,34 @@ html.hero-fixed .hero-line-wrapper {
   transition: filter 0.6s ease, transform 0.6s ease, opacity 0.6s ease;
   transform-origin: bottom center;
   mix-blend-mode: multiply;
+  position: relative;
+  z-index: 1;
+  clip-path: polygon(
+    0% 100%, 1.5% 83%, 0% 67%, 2.5% 51%, 0% 35%, 1.5% 19%, 0% 7%,
+    8% 2%, 19% 5%, 31% 1%, 43% 4%, 55% 1%, 67% 4%, 79% 1%, 90% 4%, 100% 1%,
+    98.5% 17%, 100% 33%, 97.5% 49%, 100% 65%, 98.5% 81%, 100% 100%
+  );
+}
+
+/* Weisse Ruecklage hinter dem Reisskanten-Schnitt des Portraits --
+   minimal groesser (-10px oben/links/rechts) als das geclippte Bild
+   selbst, damit in den Zacken-Luecken ein "Papierrand" durchscheint statt
+   der dahinterliegenden Section-Flaeche. Unterkante bleibt bewusst
+   buendig (kein Ueberstand), da der Sockel-Bezug zur Section-Unterkante
+   erhalten bleiben soll. */
+.portrait-torn-edge {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: 0;
+  background-color: #fff;
+  z-index: 0;
+  clip-path: polygon(
+    0% 100%, 1% 82%, 0% 66%, 3% 50%, 0% 34%, 2% 18%, 0% 6%,
+    9% 1%, 20% 4%, 32% 0%, 44% 3%, 56% 0%, 68% 3%, 80% 0%, 91% 3%, 100% 0%,
+    98% 16%, 100% 32%, 97% 48%, 100% 64%, 98% 80%, 100% 100%
+  );
 }
 
 .intro-portrait:hover .portrait-freistehend {
@@ -1158,6 +1220,8 @@ html.hero-fixed .hero-line-wrapper {
 /* MOBIL RESPONSIVE -- ein einziger Breakpoint-Block statt mehrerer
    verstreuter @media-Regeln, gilt fuer alle drei Seiten gemeinsam. */
 @media (max-width: 768px) {
+  .elmo-peek { display: none; } /* kein Hover auf Touch, waere nie sichtbar */
+
   .poem-block { left: 6vw; right: 6vw; padding-right: 0; }
   .poem-line { font-size: 1.35rem; white-space: normal; }
   .site-title { top: 6vw; font-size: 1.35rem; }
