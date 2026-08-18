@@ -1293,10 +1293,15 @@ html.hero-fixed .hero-line-wrapper {
   }
   .site-nav a { font-size: 0.95rem; }
 
-  .content-stage { padding-bottom: 10rem; }
+  /* Kein eigenes padding-bottom hier: das war dieselbe Ursache, die auf
+     Desktop schon einmal behoben wurde (siehe Kommentar bei der
+     .content-stage-Basisregel) -- ein zusaetzlicher, unsichtbarer
+     Abstand von 10rem NACH dem margin-bottom der letzten Section, der
+     komplett ausserhalb von .site-footer lag und den Footer-Bereich
+     unabhaengig von dessen eigenem Padding aufgeblaeht hat. */
   .section-inner { padding-left: 6vw; padding-right: 6vw; }
   .main-intro {
-    padding: calc(var(--logo-bar-height-mobile) + 1.5rem) 0 5rem 0;
+    padding: calc(var(--logo-bar-height-mobile) + 1.5rem) 0 2.5rem 0;
     scroll-margin-top: 7rem;
   }
   .page-intro {
@@ -1309,20 +1314,38 @@ html.hero-fixed .hero-line-wrapper {
     align-items: center;
   }
   .intro-text { padding-bottom: 0; }
-  .intro-portrait { justify-content: center; align-self: auto; margin-left: 0; margin-top: 0; margin-right: 0; }
+  /* aspect-ratio:1/1 (siehe Desktop-Regel) ist nur fuer die feste
+     Grid-Spaltenbreite gedacht -- auf Mobile faellt die Spalte weg
+     (main-intro-inner wird 1fr einspaltig), das Bild schrumpft eigen-
+     staendig auf max-width:300px. Ohne diesen Reset zwingt aspect-ratio
+     den Container trotzdem in ein quadratisches Format, waehrend das
+     Bild selbst kleiner bleibt -- dazwischen blieb eine leere graue
+     Flaeche stehen. */
+  .intro-portrait { justify-content: center; align-self: auto; margin-left: 0; margin-top: 0; margin-right: 0; aspect-ratio: auto; }
   .portrait-freistehend { height: auto; width: 100%; max-width: 300px; max-height: none; object-fit: contain; }
 
   .page-sections { gap: 2.5rem; margin-top: 4rem; padding-top: 4rem; }
+
+  /* .portfolio-section: 7rem oben/unten war der Desktop-Wert ohne
+     eigene mobile Reduzierung -- auf einem kleinen Screen unverhaeltnis-
+     maessig viel Leerraum am Section-Anfang/-Ende. */
+  .portfolio-section { padding: 3.5rem 0; }
 
   .split-section { grid-template-columns: 1fr; }
 
   /* Auf Mobile faellt die 1200px-Content-Kanten-Ausrichtung weg (keine
      Spalte nebeneinander mehr, die sich daran orientieren muesste) --
-     beide Seiten bekommen denselben einfachen Innenabstand. */
+     beide Seiten bekommen denselben einfachen Innenabstand. Vertikales
+     Padding ebenfalls reduziert (4rem war der unveraenderte Desktop-
+     Wert). */
   .split-half:first-child,
   .split-half:last-child {
     padding-left: 6vw;
     padding-right: 6vw;
+  }
+  .split-half {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
   }
 
   .portfolio-preview {
@@ -1398,4 +1421,17 @@ html.hero-fixed .hero-line-wrapper {
   .lightbox-nav-label { font-size: 0.6rem; }
   .lightbox-nav-prev { left: 0.25rem; }
   .lightbox-nav-next { right: 0.25rem; }
+
+  /* Die eigentliche Ursache fuer den weitlaeufig wirkenden Footer war
+     .content-stage's padding-bottom (siehe oben) -- das hier ist eine
+     eigenstaendige Ergaenzung, kein zusaetzlicher Kuerzungs-Hebel: auf
+     Geraeten mit Home-Indicator (env(safe-area-inset-bottom)) bekommt
+     der Footer dieselbe Sicherheitszone wie bereits .site-nav, damit
+     der Text nicht zu dicht am unteren Rand klebt. */
+  .site-footer {
+    padding: 1rem 0 calc(1rem + env(safe-area-inset-bottom));
+  }
+  .site-footer-inner {
+    gap: 1rem;
+  }
 }
