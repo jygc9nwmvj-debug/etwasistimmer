@@ -78,7 +78,7 @@
     body {
       background-color: var(--bg-page);
       color: var(--text-light);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Inter', sans-serif;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
       /* Safari darf scrollY nicht eigenmaechtig nachjustieren, um einen
@@ -495,7 +495,7 @@
     }
 
     .name-sub {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: clamp(1.6rem, 2.6vw, 2.4rem);
       font-weight: 400;
       color: var(--text-light);
@@ -505,8 +505,7 @@
     }
 
     .name-sub strong {
-      font-weight: 800;
-      letter-spacing: -0.01em;
+      font-weight: 700;
       color: var(--text-light);
     }
 
@@ -813,7 +812,7 @@
       border: 0;
       padding: 0;
       cursor: pointer;
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 1.3rem;
       font-weight: 400;
       color: var(--muted-light);
@@ -829,7 +828,7 @@
     }
 
     .portfolio-sep {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 1.3rem;
       color: var(--muted-light);
     }
@@ -1167,9 +1166,6 @@
     .contact-section {
       padding: 6rem 0 2rem;
       scroll-margin-top: 8rem;
-      /* Letzter Block auf der Seite -- kein Abstand zur "naechsten"
-         Section noetig, .content-stage's eigenes padding-bottom reicht. */
-      margin-bottom: 0;
     }
 
     .contact-section h2 {
@@ -1183,7 +1179,7 @@
     }
 
     .contact-email {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: clamp(2rem, 4vw, 3.5rem);
       color: inherit;
       text-decoration: none;
@@ -1192,17 +1188,40 @@
     }
     .contact-email:hover { opacity: 0.6; }
 
+    /* Eigenstaendiger Footer statt Teil von .contact-section: die Seite
+       kann so mehrfach denselben Footer verwenden (index/beratung/
+       profil), ohne dass er an den Kontaktbereich gebunden ist. Heller
+       Grundton wie Header/Nav-Zone (--bg-page), nicht --bg-light wie die
+       Content-Bloecke, damit er sich sichtbar davon absetzt. */
+    .site-footer {
+      background-color: var(--bg-page);
+      padding: 2rem 0 3rem;
+    }
+
+    .site-footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
     .footer-meta {
-      margin-top: 4rem;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.95rem;
-      color: var(--muted-light);
       display: flex;
       flex-wrap: wrap;
       gap: 2rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: var(--muted-light);
     }
     .footer-meta a { color: inherit; text-decoration: none; }
     .footer-meta a:hover { color: var(--text-light); }
+
+    .footer-social {
+      display: flex;
+      gap: 1rem;
+      min-height: 1.5rem;
+    }
 
     /* MOBIL RESPONSIVE -- ein einziger Breakpoint-Block statt vormals drei
        ueber die Datei verstreuter @media (max-width: 768px)-Regeln. */
@@ -1411,6 +1430,9 @@
            folgen. -->
       <section class="portfolio-section" id="portfolio" aria-label="Arbeiten">
         <div class="portfolio-layout section-inner">
+          <h2 class="portfolio-headline">Meistens hinter, manchmal vor der Kamera.</h2>
+          <p class="portfolio-subline">Reportagen, Berichte, Dokumentarfilm — für MDR, ZDF, BR, SWR u.a.</p>
+
           <div class="portfolio-preview">
             <div class="portfolio-media">
               <img
@@ -1427,9 +1449,6 @@
           </div>
 
           <div class="portfolio-list">
-            <h2 class="portfolio-headline">Meistens hinter, manchmal vor der Kamera.</h2>
-            <p class="portfolio-subline">Reportagen, Berichte, Dokumentarfilm — für MDR, ZDF, BR, SWR u.a.</p>
-
             <div class="portfolio-flow" id="portfolioFlow"><!-- wird per JS befüllt, siehe portfolioItems --></div>
 
             <div class="portfolio-filters" role="group" aria-label="Nach Format filtern">
@@ -1464,17 +1483,24 @@
         <div class="section-inner">
           <h2>Kontakt</h2>
           <a href="mailto:hallo@etwasistimmer.de" class="contact-email">hallo@etwasistimmer.de</a>
-
-          <div class="footer-meta">
-            <span>© Wolfram Huke</span>
-            <a href="/impressum.html">Impressum</a>
-            <a href="/datenschutz.html">Datenschutz</a>
-          </div>
         </div>
       </section>
 
     </main>
   </div>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner section-inner">
+      <div class="footer-meta">
+        <span>© Wolfram Huke</span>
+        <a href="/impressum.html">Impressum</a>
+        <a href="/datenschutz.html">Datenschutz</a>
+      </div>
+      <div class="footer-social" aria-label="Social Media">
+        <!-- Platzhalter für spätere Icons/Links -->
+      </div>
+    </div>
+  </footer>
 
   <div class="lightbox" id="portfolioLightbox" aria-hidden="true">
     <div class="lightbox-frame">

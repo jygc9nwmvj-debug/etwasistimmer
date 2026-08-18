@@ -210,17 +210,41 @@
     }
     .contact-email:hover { opacity: 0.6; }
 
+    /* Eigenstaendiger Footer statt Teil von .contact-section -- gleicher
+       Grundton wie der Rest der Seite (kein --bg-page/--bg-light-
+       Unterschied hier wie auf der Startseite). */
+    .site-footer {
+      background-color: var(--bg);
+      padding: 2rem 0 3rem;
+    }
+
+    .site-footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 5vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
     .footer-meta {
-      margin-top: 4rem;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
-      color: var(--muted);
       display: flex;
       flex-wrap: wrap;
       gap: 2rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: var(--muted);
     }
     .footer-meta a { color: inherit; text-decoration: none; }
     .footer-meta a:hover { color: var(--text); }
+
+    .footer-social {
+      display: flex;
+      gap: 1rem;
+      min-height: 1.5rem;
+    }
 
     @media (max-width: 768px) {
       .logo-bar { height: 7rem; }
@@ -290,15 +314,22 @@
     <section class="contact-section" id="kontakt">
       <h2>Kontakt</h2>
       <a href="mailto:hallo@etwasistimmer.de" class="contact-email">hallo@etwasistimmer.de</a>
+    </section>
+  </main>
 
+  <footer class="site-footer">
+    <div class="site-footer-inner">
       <div class="footer-meta">
         <span>© Wolfram Huke</span>
         <a href="index.html">Startseite</a>
         <a href="/impressum.html">Impressum</a>
         <a href="/datenschutz.html">Datenschutz</a>
       </div>
-    </section>
-  </main>
+      <div class="footer-social" aria-label="Social Media">
+        <!-- Platzhalter für spätere Icons/Links -->
+      </div>
+    </div>
+  </footer>
 
   <script>
     // Markiert den direkten Wechsel von dieser Unterseite zur Startseite,
