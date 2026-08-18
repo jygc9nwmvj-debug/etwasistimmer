@@ -8,7 +8,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;600;700;900&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -78,7 +78,7 @@
     body {
       background-color: var(--bg-page);
       color: var(--text-light);
-      font-family: 'EB Garamond', serif;
+      font-family: 'Space Grotesk', sans-serif;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
       /* Safari darf scrollY nicht eigenmaechtig nachjustieren, um einen
@@ -240,7 +240,9 @@
       appearance: none;
       background: none;
       border: 0;
-      font-family: inherit;
+      /* Explizit statt "inherit": body ist jetzt Space Grotesk, aber das
+         Gedicht/Logo bleibt bewusst bei der Serife. */
+      font-family: 'EB Garamond', serif;
       line-height: inherit;
       color: inherit;
       font-weight: 500;
@@ -333,7 +335,7 @@
 
     .poem-author {
       margin-top: 2.5rem;
-      font-family: 'Inter', sans-serif;
+      font-family: 'EB Garamond', serif;
       font-size: 0.75rem;
       letter-spacing: 0.25em;
       text-transform: uppercase;
@@ -493,8 +495,8 @@
     }
 
     .name-sub {
-      font-family: 'EB Garamond', serif;
-      font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.6rem, 2.6vw, 2.4rem);
       font-weight: 400;
       color: var(--text-light);
       max-width: 600px;
@@ -503,7 +505,8 @@
     }
 
     .name-sub strong {
-      font-weight: 600;
+      font-weight: 800;
+      letter-spacing: -0.01em;
       color: var(--text-light);
     }
 
@@ -579,17 +582,19 @@
     }
 
     .col-card h3 {
-      font-size: 2.2rem;
-      font-weight: 400;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
       margin-bottom: 1rem;
     }
 
     .col-card p {
       font-family: 'Inter', sans-serif;
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       font-weight: 300;
       color: var(--muted-light);
-      line-height: 1.6;
+      line-height: 1.55;
     }
 
     /* PORTFOLIO: Bildvorschau + fließende Titelliste */
@@ -616,16 +621,13 @@
       display: block;
     }
 
-    .portfolio-list {
-      margin-bottom: 3rem;
-    }
-
     .portfolio-preview {
       /* Kein sticky mehr: das ergab nur Sinn, solange Liste und Vorschau
          nebeneinander standen und die Liste laenger als das Bild werden
          konnte. Gestapelt gibt es keine gemeinsame Scroll-Situation mehr. */
       position: static;
       width: 100%;
+      margin-bottom: 3rem;
     }
 
     .portfolio-media {
@@ -649,36 +651,59 @@
     }
 
     /* Klick-Signal statt separater Pfeil-Buttons/Hinweis-Pill: Titel und
-       Genre liegen dauerhaft als Overlay auf dem Bild, ein kleiner Pfeil
-       fliegt direkt neben dem Titel erst bei Hover ein (dezent, gehoert
-       zur Textzeile statt als eigenstaendiges Element danebenzustehen),
-       die Kurzbeschreibung blendet darunter sanft ein. */
+       Genre liegen dauerhaft als Overlay auf dem Bild, oben-mittig statt
+       unten -- damit bleiben sie auch auf hellen/unruhigen Bildern lesbar
+       (Farbverlauf deckt den oberen Bildrand ab, unabhaengig davon wie
+       hell/dunkel das Motiv selbst ist). Ein kleiner Pfeil fliegt direkt
+       neben dem Titel erst bei Hover ein (gehoert zur Textzeile statt als
+       eigenstaendiges Element danebenzustehen); die Kurzbeschreibung ist
+       jetzt permanent sichtbar, kein Hover-Reveal mehr. */
     .portfolio-media-overlay {
       position: absolute;
-      inset: auto 0 0 0;
-      padding: 1.5rem 1.5rem 1.25rem;
-      background: linear-gradient(to top, rgba(13, 13, 12, 0.8), rgba(13, 13, 12, 0));
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 1.75rem 2rem 2.5rem;
+      background: linear-gradient(to bottom, rgba(20, 16, 13, 0.78) 0%, rgba(20, 16, 13, 0.5) 55%, transparent 100%);
       pointer-events: none;
     }
 
     .portfolio-media-genre {
-      display: block;
-      margin-bottom: 0.4rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5em;
       font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 800;
+      font-weight: 700;
+      font-size: 0.75rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      /* Farbe wird per JS gesetzt (genreColor()) -- Dokumentarfilm/TV
-         bekommen eigene Tag-Farben statt der Akzentfarbe. */
+      color: #fff;
+    }
+
+    /* Farbiger Punkt statt farbigem Text -- Dokumentarfilm/TV bleiben per
+       Genre unterscheidbar, aber der Overlay-Text selbst bleibt komplett
+       weiss fuer maximalen Kontrast auf jedem Bildmotiv. Farbe wird per JS
+       als --dot-color gesetzt (siehe activatePreview()). */
+    .portfolio-media-genre::before {
+      content: '';
+      width: 0.55em;
+      height: 0.55em;
+      border-radius: 50%;
+      background-color: var(--dot-color, #fff);
     }
 
     .portfolio-media-title {
-      font-family: 'EB Garamond', serif;
-      font-weight: 500;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.01em;
       font-size: clamp(1.6rem, 3vw, 2.4rem);
       color: #fff;
       line-height: 1.15;
+      margin-top: 0.5rem;
       display: inline-flex;
       align-items: baseline;
       gap: 0.5rem;
@@ -700,19 +725,11 @@
       display: block;
       font-family: 'Inter', sans-serif;
       font-weight: 300;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      color: rgba(255, 255, 255, 0.85);
+      font-size: 1.05rem;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.88);
       margin-top: 0.6rem;
-      max-height: 0;
-      opacity: 0;
-      overflow: hidden;
-      transition: max-height 0.35s ease, opacity 0.3s ease;
-    }
-
-    .portfolio-media:hover .portfolio-media-desc {
-      max-height: 5rem;
-      opacity: 1;
+      max-width: 32rem;
     }
 
     /* Zweizeilige Kopfzeile ueber dem gesamten zweispaltigen Layout
@@ -723,8 +740,9 @@
        beginnen buendig auf gleicher Hoehe. */
     .portfolio-headline {
       display: block;
-      font-family: 'EB Garamond', serif;
-      font-weight: 400;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.01em;
       font-size: 2.2rem;
       margin-bottom: 0.6rem;
     }
@@ -732,7 +750,8 @@
     .portfolio-subline {
       display: block;
       font-family: 'Inter', sans-serif;
-      font-size: 0.95rem;
+      font-size: 1.05rem;
+      line-height: 1.55;
       font-weight: 300;
       color: var(--muted-light);
       margin-bottom: 2rem;
@@ -794,7 +813,7 @@
       border: 0;
       padding: 0;
       cursor: pointer;
-      font-family: 'EB Garamond', serif;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 1.3rem;
       font-weight: 400;
       color: var(--muted-light);
@@ -810,7 +829,7 @@
     }
 
     .portfolio-sep {
-      font-family: 'EB Garamond', serif;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 1.3rem;
       color: var(--muted-light);
     }
@@ -928,19 +947,20 @@
 
     .lightbox-title {
       margin-top: 0.6rem;
-      font-family: 'EB Garamond', serif;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: clamp(1.4rem, 2.6vw, 2rem);
-      font-weight: 400;
+      font-weight: 800;
+      letter-spacing: -0.01em;
       color: #e8e6e1;
     }
 
     .lightbox-desc {
       margin-top: 0.4rem;
       font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
+      font-size: 1.05rem;
       font-weight: 300;
       color: #a9a8a3;
-      line-height: 1.5;
+      line-height: 1.55;
       max-width: 640px;
     }
 
@@ -1163,6 +1183,7 @@
     }
 
     .contact-email {
+      font-family: 'Space Grotesk', sans-serif;
       font-size: clamp(2rem, 4vw, 3.5rem);
       color: inherit;
       text-decoration: none;
@@ -1174,7 +1195,7 @@
     .footer-meta {
       margin-top: 4rem;
       font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
+      font-size: 0.95rem;
       color: var(--muted-light);
       display: flex;
       flex-wrap: wrap;
@@ -1390,19 +1411,6 @@
            folgen. -->
       <section class="portfolio-section" id="portfolio" aria-label="Arbeiten">
         <div class="portfolio-layout section-inner">
-          <div class="portfolio-list">
-            <h2 class="portfolio-headline">Meistens hinter, manchmal vor der Kamera.</h2>
-            <p class="portfolio-subline">Reportagen, Berichte, Dokumentarfilm — für MDR, ZDF, BR, SWR u.a.</p>
-
-            <div class="portfolio-flow" id="portfolioFlow"><!-- wird per JS befüllt, siehe portfolioItems --></div>
-
-            <div class="portfolio-filters" role="group" aria-label="Nach Format filtern">
-              <button type="button" class="portfolio-filter is-active" data-filter="all">Alle</button>
-              <button type="button" class="portfolio-filter" data-filter="Dokumentarfilm">Dokumentarfilm</button>
-              <button type="button" class="portfolio-filter" data-filter="TV">TV</button>
-            </div>
-          </div>
-
           <div class="portfolio-preview">
             <div class="portfolio-media">
               <img
@@ -1415,6 +1423,19 @@
                 <span class="portfolio-media-title" id="portfolioMediaTitle">Love Alien<span class="portfolio-media-title-arrow" aria-hidden="true">→</span></span>
                 <span class="portfolio-media-desc" id="portfolioMediaDesc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</span>
               </div>
+            </div>
+          </div>
+
+          <div class="portfolio-list">
+            <h2 class="portfolio-headline">Meistens hinter, manchmal vor der Kamera.</h2>
+            <p class="portfolio-subline">Reportagen, Berichte, Dokumentarfilm — für MDR, ZDF, BR, SWR u.a.</p>
+
+            <div class="portfolio-flow" id="portfolioFlow"><!-- wird per JS befüllt, siehe portfolioItems --></div>
+
+            <div class="portfolio-filters" role="group" aria-label="Nach Format filtern">
+              <button type="button" class="portfolio-filter is-active" data-filter="all">Alle</button>
+              <button type="button" class="portfolio-filter" data-filter="Dokumentarfilm">Dokumentarfilm</button>
+              <button type="button" class="portfolio-filter" data-filter="TV">TV</button>
             </div>
           </div>
         </div>
@@ -1896,7 +1917,7 @@
 
         if (previewImage.getAttribute('src') === newSrc) {
           previewGenre.textContent = newGenre;
-          previewGenre.style.color = genreColor(newGenre);
+          previewGenre.style.setProperty('--dot-color', newGenre === 'TV' ? 'var(--tag-tv)' : 'var(--tag-doku)');
           previewTitle.firstChild.textContent = newTitle;
           previewDesc.textContent = newDesc;
           return;
@@ -1912,7 +1933,7 @@
           previewImage.setAttribute('src', newSrc);
           previewImage.setAttribute('alt', newAlt);
           previewGenre.textContent = newGenre;
-          previewGenre.style.color = genreColor(newGenre);
+          previewGenre.style.setProperty('--dot-color', newGenre === 'TV' ? 'var(--tag-tv)' : 'var(--tag-doku)');
           previewTitle.firstChild.textContent = newTitle;
           previewDesc.textContent = newDesc;
           requestAnimationFrame(function () {
@@ -1979,14 +2000,20 @@
         });
       });
 
-      function step(direction) {
+      function step(direction, userInitiated) {
         var shown = visibleItems();
         if (!shown.length) return;
         var current = shown.indexOf(document.querySelector('.portfolio-item.is-active'));
         var nextIndex = (current + direction + shown.length) % shown.length;
         var nextButton = shown[nextIndex];
         activatePreview(nextButton);
-        nextButton.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        // Nur bei bewusster Nutzerinteraktion zum naechsten Eintrag
+        // scrollen -- die automatische Diashow (step(1) ohne zweites
+        // Argument, siehe startPortfolioAutoplay()) soll die Seite nicht
+        // unter dem Nutzer wegscrollen.
+        if (userInitiated) {
+          nextButton.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
       }
 
       // Ruhiger, automatischer Durchlauf der Portfolio-Vorschau -- eigener
