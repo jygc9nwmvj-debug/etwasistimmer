@@ -8,7 +8,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;600;700;900&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 
@@ -242,8 +242,8 @@
     <div class="site-footer-inner section-inner">
       <div class="footer-meta">
         <span>© Wolfram Huke</span>
-        <a href="/impressum.html">Impressum</a>
-        <a href="/datenschutz.html">Datenschutz</a>
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
       </div>
       <div class="footer-social" aria-label="Social Media">
         <!-- Platzhalter für spätere Icons/Links -->
@@ -653,9 +653,8 @@
       var filters = document.querySelectorAll('.portfolio-filter');
       if (!previewImage || !items.length) return;
 
-      // Statische Genre-Farbe im Markup entfaellt (siehe .portfolio-media-
-      // genre CSS) -- ohne diesen Aufruf bliebe der Anfangszustand
-      // ungefaerbt.
+      // Initialisiert Vorschau-Texte und aktiven Listeneintrag auf das
+      // erste Projekt -- das statische Markup traegt nur Platzhalter.
       activatePreview(items[0]);
 
       function getSepForButton(button) {
