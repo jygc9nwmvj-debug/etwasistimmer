@@ -479,7 +479,25 @@ html.hero-fixed .hero-line-wrapper {
 
 .split-half {
   background-color: var(--bg-light);
-  padding: 4rem 5vw;
+  border-radius: 1rem;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+/* Innenabstand zur Bildschirmmitte hin bleibt 5vw (Rhythmus wie
+   .section-inner), aber zum jeweiligen Aussenrand hin waechst er mit,
+   sobald der Screen breiter als 1200px wird -- so faengt der Text in
+   beiden Haelften exakt auf Hoehe der 1200px-Content-Kante von
+   .main-intro/.portfolio-section an/auf, statt bei sehr breiten Screens
+   naeher am Rand zu stehen als der Content darueber/darunter. */
+.split-half:first-child {
+  padding-left: max(5vw, calc((100vw - 1200px) / 2 + 5vw));
+  padding-right: 5vw;
+}
+
+.split-half:last-child {
+  padding-left: 5vw;
+  padding-right: max(5vw, calc((100vw - 1200px) / 2 + 5vw));
 }
 
 /* An dieselbe Variable gekoppelt wie .main-intro/.page-intro's
@@ -1156,6 +1174,15 @@ html.hero-fixed .hero-line-wrapper {
   .page-sections { gap: 2.5rem; margin-top: 4rem; padding-top: 4rem; }
 
   .split-section { grid-template-columns: 1fr; }
+
+  /* Auf Mobile faellt die 1200px-Content-Kanten-Ausrichtung weg (keine
+     Spalte nebeneinander mehr, die sich daran orientieren muesste) --
+     beide Seiten bekommen denselben einfachen Innenabstand. */
+  .split-half:first-child,
+  .split-half:last-child {
+    padding-left: 6vw;
+    padding-right: 6vw;
+  }
 
   .portfolio-preview {
     display: none;
