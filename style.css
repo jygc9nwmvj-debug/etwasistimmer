@@ -417,7 +417,7 @@ html.hero-fixed .hero-line-wrapper {
   bottom: 0;
   left: 50%;
   transform: translate(-50%, 105%);
-  width: clamp(180px, 30vw, 340px);
+  width: clamp(220px, 36vw, 420px);
   height: auto;
   transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
@@ -425,7 +425,7 @@ html.hero-fixed .hero-line-wrapper {
 }
 
 .intro-portrait:hover .elmo-peek {
-  transform: translate(-50%, 8%);
+  transform: translate(-50%, 16%);
 }
 
 /* Oberster Content-Block auf beratung.html/profil.html -- dieselbe
@@ -876,6 +876,10 @@ html.hero-fixed .hero-line-wrapper {
   letter-spacing: normal;
   font-size: clamp(1.3rem, 1.9vw, 1.75rem);
   margin-bottom: 0.6rem;
+  text-align: center;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .portfolio-subline {
@@ -886,6 +890,10 @@ html.hero-fixed .hero-line-wrapper {
   font-weight: 400;
   color: var(--text-secondary);
   margin-bottom: 2rem;
+  text-align: center;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .portfolio-filters {
