@@ -1,0 +1,93 @@
+name: Optimize Images
+
+# Laeuft bei jedem Push, der .png/.jpg/.jpeg-Dateien veraendert (irgendwo
+# im Repo, auch im Root -- die Bilder liegen hier flach ohne assets/-
+# Ordner). Komprimiert die geaenderten Dateien verlustarm in place und
+# erzeugt/aktualisiert daneben eine passende .webp-Version, committet
+# beides automatisch zurueck.
+on:
+  push:
+    paths:
+      - '**.png'
+      - '**.jpg'
+      - '**.jpeg'
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    # Verhindert eine Endlosschleife: der Auto-Commit unten laeuft unter
+    # der Identitaet github-actions[bot] -- ohne diese Bedingung wuerde
+    # dieser Commit selbst wieder einen Push-Event ausloesen, der erneut
+    # denselben Workflow startet.
+    if: github.actor != 'github-actions[bot]'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install image tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pngquant jpegoptim webp
+
+      - name: Compress changed images + generate matching .webp
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.event.after }}
+        run: |
+          set -e
+
+          # Bei einem allerersten Push auf einen neuen Branch ist BEFORE_SHA
+          # die Nullkommit-SHA -- dann gegen einen leeren Baum vergleichen,
+          # statt mit einer nicht vorhandenen Referenz zu diffen.
+          if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            DIFF_BASE=$(git hash-object -t tree /dev/null)
+          else
+            DIFF_BASE="$BEFORE_SHA"
+          fi
+
+          CHANGED=$(git diff --name-only --diff-filter=ACM "$DIFF_BASE" "$AFTER_SHA" -- '*.png' '*.jpg' '*.jpeg' || true)
+
+          if [ -z "$CHANGED" ]; then
+            echo "Keine geaenderten Bilddateien in diesem Push."
+            exit 0
+          fi
+
+          echo "$CHANGED" | while IFS= read -r file; do
+            [ -f "$file" ] || continue
+            echo "Bearbeite: $file"
+
+            case "$file" in
+              *.png)
+                # --skip-if-larger laesst die Datei unangetastet, falls die
+                # Kompression sie ausnahmsweise vergroessern wuerde.
+                pngquant --force --skip-if-larger --strip --quality=70-90 --output "$file" "$file" || true
+                ;;
+              *.jpg|*.jpeg)
+                jpegoptim --strip-all --max=85 "$file" || true
+                ;;
+            esac
+
+            webp="${file%.*}.webp"
+            cwebp -quiet -q 82 "$file" -o "$webp"
+          done
+
+      - name: Commit optimized images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Kein Pathspec-Filter hier: "git add -A -- '*.jpg' ..." bricht
+          # hart ab, sobald auch nur eines der Muster null Treffer hat
+          # (z.B. aktuell keine .jpg-Dateien im Repo) -- dieser Schritt
+          # aendert ohnehin nur .png/.jpg/.jpeg/.webp, ein normales
+          # "git add -A" ist hier gefahrlos.
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nichts zu committen (Dateien waren schon optimal oder keine Aenderung)."
+          else
+            git commit -m "Bilder automatisch komprimiert + WebP erzeugt [skip ci]"
+            git push
+          fi

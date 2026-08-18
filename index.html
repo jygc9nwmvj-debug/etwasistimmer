@@ -146,13 +146,24 @@
           </div>
 
           <div class="intro-portrait" id="introPortrait">
-            <img
-              src="wolfram-huke.png"
-              alt="Porträt von Wolfram Huke"
-              class="portrait-freistehend"
-              loading="eager" decoding="async">
+            <div class="portrait-torn-edge" aria-hidden="true"></div>
+            <picture>
+              <source srcset="wolfram-huke.webp" type="image/webp">
+              <img
+                src="wolfram-huke.png"
+                alt="Porträt von Wolfram Huke"
+                class="portrait-freistehend"
+                loading="eager" decoding="async">
+            </picture>
           </div>
         </div>
+
+        <!-- Reines Easter Egg ohne inhaltliche Bedeutung -- Screenreader
+             sollen es ueberspringen (alt="" + aria-hidden). -->
+        <picture>
+          <source srcset="elmo.webp" type="image/webp">
+          <img src="elmo.png" alt="" class="elmo-peek" aria-hidden="true">
+        </picture>
       </section>
 
       <!-- Titel, Bilder und Beschreibungen hier sind Platzhalter, bewusst
