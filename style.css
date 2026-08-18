@@ -443,13 +443,6 @@ html.hero-fixed .hero-line-wrapper {
   grid-template-columns: 1.15fr 0.85fr;
   gap: 1.5rem;
   align-items: end;
-  /* Feste Bezugsgroesse fuer .intro-portrait/.portrait-freistehend's
-     height:100%-Kette -- ohne das haengt die berechnete Hoehe von
-     .main-intro (und damit die overflow:hidden-Grenze fuer Elmo) von
-     Content-/Font-Rendering-Details ab, die zwischen Browsern leicht
-     variieren koennen. Wert gegen das Portrait-Seitenverhaeltnis
-     abgeglichen. */
-  min-height: 32rem;
 }
 
 .intro-text {
@@ -484,6 +477,14 @@ html.hero-fixed .hero-line-wrapper {
   justify-content: flex-end;
   align-items: flex-end;
   align-self: stretch;
+  /* Feste, echte Bezugsgroesse fuer .portrait-freistehend's height:100%
+     (und damit fuer .main-intro's overflow:hidden-Kante bei Elmo) --
+     entspricht dem tatsaechlichen Seitenverhaeltnis von
+     wolfram-huke-cutout.png (800x800, quadratisch). Ersetzt das
+     frühere min-height:32rem auf .main-intro-inner, das die ganze
+     Grid-Zeile auf eine hoehere/schmalere Form zwang als das Foto
+     hergibt und dadurch unnoetig stark beschnitt. */
+  aspect-ratio: 1 / 1;
 }
 
 /* <picture> ist per Default nur inline und wuerde sich sonst als
@@ -592,15 +593,17 @@ html.hero-fixed .hero-line-wrapper {
    sichtbar, WELCHES Element gerade angesprungen wurde (bei Beratung/
    Profil je nur die eigene Kachel, da die IDs direkt auf den
    .split-half-Kacheln sitzen statt auf der gemeinsamen .split-section).
-   --bg-light als Zielfarbe passt fuer alle vier Nav-Ziele (Sections und
-   Kacheln nutzen dieselbe Grundfarbe). */
-@keyframes nav-target-flash {
-  0%   { background-color: var(--accent); opacity: 0.18; }
-  100% { background-color: var(--bg-light); opacity: 1; }
+   Innen liegende Kontur statt Flaechen-Flash, damit die eigentliche
+   --bg-light-Fuellfarbe der Section/Kachel unangetastet bleibt -- per
+   JS nur fuer Beratung/Profil/Kontakt und nur auf Desktop-Breite
+   ausgeloest (siehe dortiger Kommentar), Film & TV bleibt ohne Effekt. */
+@keyframes nav-target-outline {
+  0%   { box-shadow: inset 0 0 0 2px var(--accent); }
+  100% { box-shadow: inset 0 0 0 2px transparent; }
 }
 
 .nav-flash {
-  animation: nav-target-flash 1.1s ease-out;
+  animation: nav-target-outline 1.1s ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
