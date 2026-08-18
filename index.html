@@ -134,6 +134,26 @@
     </div>
   </div>
 
+  <!-- Reisskanten-Effekt fuers Hero-Portrait (.portrait-freistehend/
+       .portrait-torn-edge, siehe style.css) -- einmalige Filter-
+       Definition, referenziert per filter:url(#torn-edge). Kein
+       sichtbarer Inhalt selbst, daher aria-hidden + 0x0 versteckt.
+       Displacement laeuft bewusst nur auf SourceAlpha (die Silhouette),
+       nicht auf SourceGraphic direkt -- sonst verzerrt der Filter das
+       gesamte Foto (Gesicht, Falten etc. "zerlaufen" sichtbar), statt
+       nur die Kante auszufransen. feComposite "in" schneidet danach das
+       UNVERZERRTE Originalbild entlang der ausgefransten Maske aus, der
+       Bildinhalt selbst bleibt scharf. x/y/width/height groesser als
+       0%/0%/100%/100%, weil die Standard-Filterregion (10% Rand) sonst
+       die nach aussen ausschlagenden Zacken abschneiden kann. -->
+  <svg style="position:absolute; width:0; height:0;" aria-hidden="true">
+    <filter id="torn-edge" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04 0.08" numOctaves="2" seed="7" result="noise" />
+      <feDisplacementMap in="SourceAlpha" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" result="torn-mask" />
+      <feComposite in="SourceGraphic" in2="torn-mask" operator="in" />
+    </filter>
+  </svg>
+
   <div class="scroll-container">
     <main class="content-stage" id="inhalt">
 
@@ -148,9 +168,9 @@
           <div class="intro-portrait" id="introPortrait">
             <div class="portrait-torn-edge" aria-hidden="true"></div>
             <picture>
-              <source srcset="wolfram-huke.webp" type="image/webp">
+              <source srcset="wolfram-huke-cutout.webp" type="image/webp">
               <img
-                src="wolfram-huke.png"
+                src="wolfram-huke-cutout.png"
                 alt="Porträt von Wolfram Huke"
                 class="portrait-freistehend"
                 loading="eager" decoding="async">
@@ -183,7 +203,7 @@
                 class="portfolio-image">
               <div class="portfolio-media-overlay">
                 <div class="portfolio-media-title-row">
-                  <span class="portfolio-media-title" id="portfolioMediaTitle">Love Alien<span class="portfolio-media-title-arrow" aria-hidden="true">→</span></span>
+                  <span class="portfolio-media-title" id="portfolioMediaTitle">Love Alien</span>
                   <span class="portfolio-media-genre" id="portfolioMediaGenre">Dokumentarfilm</span>
                 </div>
                 <span class="portfolio-media-desc" id="portfolioMediaDesc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</span>
@@ -464,12 +484,6 @@
       var previewTitle = document.getElementById('portfolioMediaTitle');
       var previewDesc = document.getElementById('portfolioMediaDesc');
 
-      function genreColor(genre) {
-        if (genre === 'Dokumentarfilm') return 'var(--tag-doku)';
-        if (genre === 'TV') return 'var(--tag-tv)';
-        return '';
-      }
-
       var portfolioItems = [
         {
           title: "Love Alien",
@@ -639,7 +653,6 @@
           var panelGenre = document.createElement('span');
           panelGenre.className = 'portfolio-panel-genre';
           panelGenre.textContent = item.genre;
-          panelGenre.style.color = genreColor(item.genre);
           var panelDesc = document.createElement('p');
           panelDesc.className = 'portfolio-panel-desc';
           panelDesc.textContent = item.desc;
@@ -690,7 +703,6 @@
 
         if (previewImage.getAttribute('src') === newSrc) {
           previewGenre.textContent = newGenre;
-          previewGenre.style.setProperty('--dot-color', newGenre === 'TV' ? 'var(--tag-tv)' : 'var(--tag-doku)');
           previewTitle.firstChild.textContent = newTitle;
           previewDesc.textContent = newDesc;
           return;
@@ -706,7 +718,6 @@
           previewImage.setAttribute('src', newSrc);
           previewImage.setAttribute('alt', newAlt);
           previewGenre.textContent = newGenre;
-          previewGenre.style.setProperty('--dot-color', newGenre === 'TV' ? 'var(--tag-tv)' : 'var(--tag-doku)');
           previewTitle.firstChild.textContent = newTitle;
           previewDesc.textContent = newDesc;
           requestAnimationFrame(function () {
@@ -969,7 +980,6 @@
           lbImage.setAttribute('alt', button.getAttribute('data-alt') || '');
           var genre = button.getAttribute('data-genre') || '';
           lbGenre.textContent = genre;
-          lbGenre.style.color = genreColor(genre);
           lbTitle.textContent = button.textContent.trim();
           lbDesc.textContent = button.getAttribute('data-desc') || '';
           buildFilmstrip(button);
@@ -1093,6 +1103,29 @@
 
         splitHalves.forEach(function (el) { splitObserver.observe(el); });
       }
+
+      // Kurzer Highlight-Flash beim Anspringen eines Nav-Ziels, siehe
+      // .nav-flash/@keyframes nav-target-flash. Funktioniert bei
+      // Beratung/Profil automatisch pro Kachel statt fuer beide
+      // zusammen, weil #beratung-section/#profil-section direkt auf den
+      // einzelnen .split-half-Elementen sitzen, nicht auf der
+      // gemeinsamen .split-section.
+      document.querySelectorAll('.site-nav a[href^="#"]').forEach(function (link) {
+        link.addEventListener('click', function () {
+          var id = link.getAttribute('href').slice(1);
+          var target = document.getElementById(id);
+          if (!target) return;
+
+          target.classList.remove('nav-flash');
+          requestAnimationFrame(function () {
+            target.classList.add('nav-flash');
+          });
+          target.addEventListener('animationend', function handler() {
+            target.classList.remove('nav-flash');
+            target.removeEventListener('animationend', handler);
+          });
+        });
+      });
     });
   </script>
 
