@@ -81,6 +81,12 @@
       font-family: 'EB Garamond', serif;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      /* Safari darf scrollY nicht eigenmaechtig nachjustieren, um einen
+         Layout-Sprung (Font-Swap von EB Garamond, Portrait-Bild laedt
+         nach) "auszugleichen" -- genau das liess kurz nach dem Gedicht-
+         Uebergang die Hero-Section unter die fixierte Logo-Bar rutschen,
+         obwohl JS scrollY bereits hart auf 0 gesetzt hatte. */
+      overflow-anchor: none;
     }
 
     /* Sperrt Scrollen, solange das Gedicht als Vollbild-Layer sichtbar
