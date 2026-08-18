@@ -192,25 +192,25 @@
 
       <!-- Kurze Teaser fuer Medienberatung/Profil, ausfuehrlicher Inhalt
            bleibt auf den jeweiligen Unterseiten (siehe .col-card-link).
-           .split-section statt .columns-grid: zwei eigenstaendige
-           Flaechen mit echtem Zwischenraum (--bg-page scheint durch),
-           nicht eine durchgehende Box mit zwei Spalten. -->
+           Kein Wrapper-Div mehr: .split-section traegt Grid + randloses
+           width:100vw direkt (wie .main-intro/.portfolio-section), jede
+           .split-half reicht dadurch bis zum Bildschirmrand, nur der
+           Grid-Gap in der Mitte bleibt --bg-page. col-card bleibt als
+           zweite Klasse fuer die bestehende h2/h3/p/Link-Typografie. -->
       <section class="split-section" aria-label="Beratung und Profil">
-        <div class="split-section-inner">
-          <article class="col-card" id="beratung-section">
-            <h2>Sparring &amp; Konzept</h2>
-            <h3>Die meisten wissen, was sie sagen wollen. Die wenigsten, wie.</h3>
-            <p>Zwanzig Jahre Journalismus haben mir eins beigebracht: Die richtige Form zu finden ist oft schwerer als der richtige Inhalt. Genau dabei helfe ich — Organisationen und Menschen, ihre Botschaft verständlich zu machen.</p>
-            <a href="beratung.html" class="col-card-link">Mehr zur Beratung →</a>
-          </article>
+        <article class="col-card split-half" id="beratung-section">
+          <h2>Sparring &amp; Konzept</h2>
+          <h3>Die meisten wissen, was sie sagen wollen. Die wenigsten, wie.</h3>
+          <p>Zwanzig Jahre Journalismus haben mir eins beigebracht: Die richtige Form zu finden ist oft schwerer als der richtige Inhalt. Genau dabei helfe ich — Organisationen und Menschen, ihre Botschaft verständlich zu machen.</p>
+          <a href="beratung.html" class="col-card-link">Mehr zur Beratung →</a>
+        </article>
 
-          <article class="col-card" id="profil-section">
-            <h2>Profil</h2>
-            <h3>Wolfram Huke</h3>
-            <p>Geboren 1981 in Thüringen, erstes Zeitungspraktikum mit fünfzehn. Philosophie und Regie studiert, seither zwanzig Jahre öffentlich-rechtliches Fernsehen — MDR, ZDF, SWR.</p>
-            <a href="profil.html" class="col-card-link">Ausführliche Vita →</a>
-          </article>
-        </div>
+        <article class="col-card split-half" id="profil-section">
+          <h2>Profil</h2>
+          <h3>Wolfram Huke</h3>
+          <p>Geboren 1981 in Thüringen, erstes Zeitungspraktikum mit fünfzehn. Philosophie und Regie studiert, seither zwanzig Jahre öffentlich-rechtliches Fernsehen — MDR, ZDF, SWR.</p>
+          <a href="profil.html" class="col-card-link">Ausführliche Vita →</a>
+        </article>
       </section>
 
       <section class="contact-section" id="kontakt">

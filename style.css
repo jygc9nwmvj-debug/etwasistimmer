@@ -341,10 +341,9 @@ html.hero-fixed .hero-line-wrapper {
    sind der jeweilige oberste Block, .portfolio-section nur index.html,
    .contact-section auf allen drei. .split-section (Beratung/Profil,
    nur index.html) gehoert bewusst NICHT in diese Liste -- sie bleibt
-   selbst im --bg-page-Ton, die beiden .col-card-Kinder tragen ihr
-   --bg-light einzeln (siehe .split-section-inner .col-card), damit
-   der Zwischenraum zwischen ihnen sichtbar bleibt statt einer
-   durchgehenden Flaeche. */
+   selbst im --bg-page-Ton, die beiden .split-half-Kinder tragen ihr
+   --bg-light einzeln (siehe dort), damit der Zwischenraum zwischen
+   ihnen sichtbar bleibt statt einer durchgehenden Flaeche. */
 .main-intro,
 .page-intro,
 .portfolio-section,
@@ -458,28 +457,29 @@ html.hero-fixed .hero-line-wrapper {
 /* BERATUNG/PROFIL (nur index.html) -- zwei eigenstaendige Flaechen mit
    echtem, sichtbarem Zwischenraum (--bg-page scheint durch), statt
    einer durchgehenden Box mit zwei Spalten wie beim frueheren
-   .columns-grid. Randlos wie die anderen Content-Bloecke, aber mit
-   eigener Regel statt in der gemeinsamen Selektor-Liste (siehe dort),
-   weil der Grundton hier bewusst --bg-page statt --bg-light ist. */
+   .columns-grid. Kein separater max-width-Wrapper mehr (frueherer
+   Fehler: dadurch reichte die Farbflaeche selbst nur bis 1200px statt
+   randlos wie alle anderen Sections, plus verdoppeltes Padding durch
+   Wrapper+Karte zusammen) -- .split-section traegt das Grid UND das
+   randlose width:100vw direkt, exakt dieselbe Technik wie
+   .main-intro/.portfolio-section. Jede .split-half traegt ihre eigene
+   --bg-light-Flaeche bis zum jeweiligen Bildschirmrand, nur der
+   3rem-Grid-Gap in der Mitte bleibt --bg-page (der Section-eigene
+   Grundton scheint dort durch). */
 .split-section {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  background-color: var(--bg-page);
-}
-
-.split-section-inner {
-  max-width: 1200px;
-  margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 3rem;
-  padding: 5vw;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-bottom: 3rem;
+  background-color: var(--bg-page);
 }
 
-.split-section-inner .col-card {
+.split-half {
   background-color: var(--bg-light);
-  padding: 3.5rem 3rem;
+  padding: 4rem 5vw;
 }
 
 /* An dieselbe Variable gekoppelt wie .main-intro/.page-intro's
@@ -1155,7 +1155,7 @@ html.hero-fixed .hero-line-wrapper {
 
   .page-sections { gap: 2.5rem; margin-top: 4rem; padding-top: 4rem; }
 
-  .split-section-inner { grid-template-columns: 1fr; }
+  .split-section { grid-template-columns: 1fr; }
 
   .portfolio-preview {
     display: none;
