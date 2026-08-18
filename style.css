@@ -1,0 +1,1196 @@
+/* ============================================================
+   GEMEINSAMES STYLESHEET -- von index.html, beratung.html und
+   profil.html per <link rel="stylesheet"> eingebunden. Enthaelt alle
+   seitenuebergreifenden Regeln (Farb-Tokens, Reset, Body, Nav,
+   Kopfleiste, Footer, Section-Farbsystem, Typografie-Basis) sowie
+   Regeln, die nur auf index.html greifen, aber auf den Unterseiten
+   schadlos ungenutzt bleiben (z.B. .portfolio-*, .lightbox-*, .poem-*).
+
+   Eine Ausnahme bleibt bewusst NICHT hier: die Sichtbarkeits-Gating-
+   Regeln von .site-title/.site-nav/.logo-bar (opacity:0 + Freigabe ueber
+   html.nav-visible/html.hero-fixed) sind nur auf index.html relevant,
+   wo diese Elemente hinter dem Klick-Uebergang des Gedichts versteckt
+   starten. Auf den Unterseiten sollen sie von Anfang an sichtbar sein --
+   die Basisregeln hier setzen daher bewusst KEIN opacity, wodurch der
+   CSS-Startwert (1, sichtbar) automatisch greift. index.html ergaenzt die
+   Gating-Logik in einem eigenen kleinen <style>-Block im <head>.
+   ============================================================ */
+
+/* ============================================================
+   FARB-TOKENS & AKZENTFARBE
+   ============================================================ */
+:root {
+  --bg-dark:    #0d0d0c;
+  --text-dark:  #e8e6e1;
+  --muted-dark: #6e6d69;
+  /* Heller als --muted-dark: das ist fuer dezente Kontraste auf dem
+     fest dunklen Gedicht-Hintergrund gedacht. Wird auch von der
+     Lightbox genutzt, deren dunkler Zustand ebenfalls fest bleibt. */
+  --muted-on-dark: #a9a8a3;
+
+  /* Seiten-Grundton, sichtbar nur in den Luecken zwischen den
+     Content-Sections -- --bg-light bleibt daneben bestehen, wird
+     aber nur noch als explizite Section-Fuellfarbe verwendet, nicht
+     mehr als Body-Hintergrund. Erzeugt den "Naht"-Abstand zwischen
+     den Content-Bloecken, auf allen drei Seiten gleich. */
+  --bg-page:     #fdfcfa;
+  --bg-light:    #f0ebde;
+  --text-light:  #121211;
+  --muted-light: #706f6b;
+
+  /* AKZENTFARBE (SIGNAL-ORANGE) -- exklusiv fuer Interaktion (Nav-Hover,
+     Links, aktiver Zustand), nicht fuer statische Section-Kicker. */
+  --accent:     #FF4D00;
+
+  /* GENRE-FARBCODIERUNG (gedeckte Toene, kein Wettstreit mit --accent) */
+  --tag-doku: #55654a;
+  --tag-tv:   #3f5570;
+
+  --line:  rgba(120, 120, 115, 0.2);
+
+  --fade: 0.5s ease;
+
+  /* .logo-bar's Hoehe und der Top-Abstand der obersten Content-Section
+     (.main-intro/.page-intro) muessen so gekoppelt sein, dass Letzterer
+     IMMER groesser bleibt -- sonst rutscht der Content unter die
+     fixierte, teiltransparente Logo-Bar und wirkt oben angeschnitten.
+     Als Variable statt unabhaengiger Werte, die bei einem Redesign
+     leise auseinanderlaufen koennen. */
+  --logo-bar-height: 10.5rem;
+  --logo-bar-height-mobile: 7rem;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-light);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  /* Safari darf scrollY nicht eigenmaechtig nachjustieren, um einen
+     Layout-Sprung (Font-Swap, spaet ladende Bilder) "auszugleichen" --
+     das liess auf index.html kurz nach dem Gedicht-Uebergang die
+     Hero-Section unter die fixierte Logo-Bar rutschen, obwohl JS
+     scrollY bereits hart auf 0 gesetzt hatte. Schadlos auf Seiten ohne
+     vergleichbaren Uebergang. */
+  overflow-anchor: none;
+}
+
+::selection { background: var(--accent); color: #fff; }
+
+/* FILMKORN */
+.film-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* KOPFLEISTE -- Titel + Nav + halbtransparente Logo-Bar, auf allen drei
+   Seiten dieselbe Position/Optik. Auf index.html starten sie hinter dem
+   Gedicht-Uebergang versteckt (siehe dortiger Gating-Block); hier ohne
+   opacity-Angabe, also von Anfang an sichtbar -- passend fuer die
+   Unterseiten ohne Uebergang. */
+.site-title {
+  position: fixed;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0.15em 0;
+  font-family: 'EB Garamond', serif;
+  font-size: clamp(1.4rem, 2.5vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+  color: var(--text-light);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.logo-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--logo-bar-height);
+  z-index: 20;
+  pointer-events: none;
+  background-color: color-mix(in srgb, var(--bg-page) 82%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.site-nav {
+  position: fixed;
+  top: 7.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.6rem 2rem;
+  list-style: none;
+}
+
+.site-nav a {
+  position: relative;
+  color: var(--text-light);
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  display: inline-block;
+  transition: color 0.28s ease-out;
+}
+
+/* Unterstrich als eigenes Pseudo-Element statt text-decoration: laeuft
+   bei Hover per scaleX ein statt hart einzublenden, mit leichtem
+   Overshoot in der Easing-Kurve. */
+.site-nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.3em;
+  height: 2px;
+  background-color: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.site-nav a:hover { color: var(--accent); }
+.site-nav a:hover::after { transform: scaleX(1); }
+.site-nav a[aria-current="page"] { color: var(--accent); }
+
+/* GEDICHT SEKTION (nur index.html) -- einfacher Vollbild-Layer per
+   position:fixed + inset:0, kein Scroll-gekoppeltes Pinnen/Messen mehr.
+   Der Uebergang zur restlichen Seite wird per Klick ausgeloest (siehe
+   JS: playIntroTransition), nicht durch Scroll-Fortschritt angetrieben.
+   Auf Unterseiten ohne .poem-section im Markup wirkt das alles
+   schlicht nie. */
+.poem-section {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  color: var(--text-dark);
+}
+
+/* Eigenes, kindloses Element nur fuer die Hintergrundfarbe statt sie
+   direkt auf .poem-section zu setzen: .poem-section enthaelt
+   .hero-line, die waehrend der Klick-Timeline ihre eigene Landing-
+   Animation durchlaeuft und dabei die ganze Zeit voll sichtbar bleiben
+   muss -- ein opacity-Fade direkt auf .poem-section wuerde sie mit
+   ausblenden. */
+.poem-overlay-bg {
+  position: absolute;
+  inset: 0;
+  background-color: var(--bg-dark);
+}
+
+.poem-block {
+  position: absolute;
+  left: 38vw;
+  padding-right: 4vw;
+  text-align: left;
+}
+
+.poem-line {
+  font-family: 'EB Garamond', serif;
+  font-size: clamp(1.4rem, 2.5vw, 2.4rem);
+  font-weight: 400;
+  line-height: 1.6;
+  color: inherit;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.hero-line-wrapper { display: block; margin-bottom: 2rem; }
+
+.hero-line {
+  appearance: none;
+  background: none;
+  border: 0;
+  /* Explizit statt "inherit": body ist Inter, aber das Gedicht/Logo
+     bleibt bewusst bei der Serife. */
+  font-family: 'EB Garamond', serif;
+  line-height: inherit;
+  color: inherit;
+  font-weight: 500;
+  display: inline-block;
+  transform-origin: left top;
+  cursor: pointer;
+  pointer-events: auto;
+  will-change: transform;
+  padding: 0.15em 0;
+}
+
+/* .hero-line wandert waehrend des Klick-Uebergangs aus dem dunklen
+   Gedicht-Bereich in die helle, fixierte Kopfleiste -- braucht dort
+   also eine eigene Farb-Umschaltung, statt (wie die uebrigen
+   Gedichtzeilen) einfach --text-dark von .poem-section zu erben. */
+html.nav-visible .hero-line {
+  color: var(--text-light);
+}
+
+/* Waehrend der Klick-Timeline positioniert GSAP .hero-line per
+   Transform zur Logo-Position. Nach Abschluss uebernimmt .site-title
+   dauerhaft die Rolle des Seitentitels -- .hero-line landet exakt an
+   derselben Stelle (48px/zentriert), bevor sie verschwindet, der
+   Wechsel ist deshalb unsichtbar. */
+html.hero-fixed .hero-line-wrapper {
+  display: none;
+}
+
+.poem-author {
+  margin-top: 2.5rem;
+  font-family: 'EB Garamond', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-dark);
+}
+
+.poem-ellipsis {
+  color: var(--muted-dark);
+}
+
+/* Die Zeigehand schließt das Gedicht unten ab, linksbündig mit dem
+   Textblock -- wie ein klassisches Manicule/Schlussornament im
+   Buchsatz. Normaler Flow-Fluss statt Absolute-Positionierung. */
+.scroll-hint {
+  display: block;
+  margin-top: 2.5rem;
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.scroll-hint-hand {
+  display: block;
+  height: clamp(4.5rem, 6vw, 6rem);
+  width: auto;
+  aspect-ratio: 265 / 512;
+  background-color: var(--muted-dark);
+  -webkit-mask-image: url('image-neu.png');
+  mask-image: url('image-neu.png');
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  transition: background-color var(--fade);
+  animation: scroll-hint-bounce 1.6s ease-in-out infinite;
+}
+
+.scroll-hint:hover .scroll-hint-hand {
+  background-color: var(--text-dark);
+}
+
+@keyframes scroll-hint-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint-hand {
+    animation: none;
+  }
+}
+
+/* CONTENT STAGE -- gemeinsamer Wrapper auf allen drei Seiten. Kein
+   horizontales Padding/max-width mehr: alle Content-Sections sind
+   selbst randlos (100vw) und zentrieren ihren Inhalt per
+   .section-inner. Nur noch als Stacking-Context (z-index) und fuer den
+   Abstand nach der letzten Section relevant. */
+.scroll-container { position: relative; }
+
+.content-stage {
+  position: relative;
+  z-index: 10;
+  padding-bottom: 8rem;
+}
+
+/* Die Content-Bloecke bekommen explizit --bg-light als eigene
+   Fuellfarbe plus Abstand zueinander -- der hellere --bg-page-Ton des
+   Body wird dadurch als "Naht" zwischen den Sections sichtbar, statt
+   dass Seite und Sections denselben Ton teilen und optisch
+   verschmelzen. Gilt fuer alle drei Seiten: .main-intro/.intro-portrait
+   (nur index.html) und .page-intro (nur beratung.html/profil.html)
+   sind der jeweilige oberste Block, .portfolio-section nur index.html,
+   .columns-grid nur index.html, .contact-section auf allen drei. */
+.main-intro,
+.page-intro,
+.portfolio-section,
+.columns-grid,
+.contact-section {
+  background-color: var(--bg-light);
+  margin-bottom: 3rem;
+  /* Randlose Hintergrundflaeche: die Section selbst waechst auf volle
+     Bildschirmbreite, unabhaengig von .content-stage's max-width. Ihr
+     Inhalt bleibt trotzdem bei 1200px zentriert -- siehe .section-inner.
+     Body braucht overflow-x:hidden, damit die 100vw-Breite (bei
+     vorhandener Scrollbar minimal breiter als der sichtbare Viewport)
+     keinen horizontalen Scrollbalken erzeugt. */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+/* Gemeinsamer Innen-Wrapper, der den Inhalt der randlosen Sections
+   wieder auf die bekannte Content-Breite zentriert. Nur horizontales
+   Padding als Longhand (padding-left/-right statt Shorthand padding):
+   so kann eine Section, die zusaetzlich eigenes vertikales Padding
+   braucht, das per padding-top/-bottom ergaenzen, ohne dass sich beide
+   Regeln beim Zusammenspiel der beiden Klassen auf demselben Element
+   gegenseitig ueberschreiben. */
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 5vw;
+  padding-right: 5vw;
+}
+
+/* MAIN INTRO GRID (nur index.html) */
+/* Kein padding-bottom: das Portrait sitzt (via align-self:stretch +
+   object-fit:cover) direkt an der Unterkante der Section, jeder
+   Bottom-Padding hier wuerde eine Luecke INNERHALB der Section
+   erzeugen und den Sockel-Bezug zerstoeren. */
+.main-intro {
+  /* An --logo-bar-height gekoppelt statt eines unabhaengigen Werts --
+     garantiert, dass der Content immer unterhalb der fixierten
+     Logo-Bar beginnt. */
+  padding: calc(var(--logo-bar-height) + 1.5rem) 0 0 0;
+  scroll-margin-top: 12rem;
+}
+
+/* Oberster Content-Block auf beratung.html/profil.html -- dieselbe
+   Farb-/Randlos-Behandlung wie .main-intro (siehe Selektor-Liste oben),
+   aber mit normalem Bottom-Padding statt dem Portrait-Sockel-Sonderfall:
+   hier steht nur Text/Kacheln, kein Bild, das buendig am unteren
+   Section-Rand sitzen muss. */
+.page-intro {
+  padding: calc(var(--logo-bar-height) + 1.5rem) 0 4rem 0;
+  scroll-margin-top: 12rem;
+}
+
+.main-intro-inner {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1.5rem;
+  align-items: end;
+}
+
+.intro-text {
+  position: relative;
+  z-index: 2;
+  padding-bottom: 0.5rem;
+}
+
+.name-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+  font-weight: 400;
+  color: var(--text-light);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.name-sub strong {
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+/* PORTRAIT INTEGRATION (nur index.html) */
+.intro-portrait {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  align-self: stretch;
+}
+
+.portrait-freistehend {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0.95;
+  will-change: transform, filter;
+  transition: filter 0.6s ease, transform 0.6s ease, opacity 0.6s ease;
+  transform-origin: bottom center;
+  mix-blend-mode: multiply;
+}
+
+.intro-portrait:hover .portrait-freistehend {
+  opacity: 1;
+  transform: scale(1.02);
+}
+
+/* KACHELN (nur index.html) */
+.columns-grid-inner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 4rem;
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+.col-card { scroll-margin-top: 8rem; }
+
+.col-card h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(20, 16, 13, 0.55);
+  margin-bottom: 1.5rem;
+}
+
+.col-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin-bottom: 1rem;
+}
+
+.col-card p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 300;
+  color: var(--muted-light);
+  line-height: 1.55;
+}
+
+/* Nicht Teil der Filmemacher/Journalist-Karten (die verlinken nirgendwo
+   hin) -- nur die Beratung/Profil-Teaser haben einen CTA-Link zur
+   jeweiligen Unterseite. Orange, weil er (anders als der neutrale
+   Kicker/die Karten selbst) tatsaechlich interaktiv ist -- passend zur
+   Regel "Orange bleibt exklusiv fuer Interaktion". */
+.col-card-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.col-card-link:hover {
+  opacity: 0.7;
+}
+
+/* TEXTSEITEN (beratung.html, profil.html) -- Kicker/Headline/Lead im
+   selben Ton wie die Kachel-Labels auf index.html (rgba(20,16,13,0.55)
+   statt --accent: Orange bleibt exklusiv fuer Interaktion). */
+.page-kicker {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(20, 16, 13, 0.55);
+  margin-bottom: 1.5rem;
+}
+
+.page-heading {
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 400;
+  margin-bottom: 2rem;
+}
+
+.page-lead {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+  font-weight: 300;
+  color: var(--muted-light);
+  line-height: 1.6;
+  max-width: 640px;
+}
+
+.page-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 4rem;
+  margin-top: 6rem;
+  padding-top: 6rem;
+  border-top: 1px solid var(--line);
+}
+
+.page-section h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(20, 16, 13, 0.55);
+  margin-bottom: 1.5rem;
+}
+
+.page-section p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--muted-light);
+  line-height: 1.6;
+}
+
+/* PORTFOLIO: Bildvorschau + fließende Titelliste (nur index.html) */
+.portfolio-section {
+  padding: 7rem 0;
+  scroll-margin-top: 8rem;
+}
+
+.portfolio-layout {
+  display: block;
+}
+
+.portfolio-preview {
+  position: static;
+  width: 100%;
+  margin-bottom: 3rem;
+}
+
+.portfolio-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background-color: var(--line);
+  cursor: pointer;
+}
+
+.portfolio-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.35s ease, transform 0.4s ease;
+}
+
+.portfolio-media:hover .portfolio-image {
+  transform: scale(1.04);
+}
+
+/* Klick-Signal statt separater Pfeil-Buttons/Hinweis-Pill: Titel und
+   Genre liegen dauerhaft als Overlay auf dem Bild, oben-mittig. Ein
+   kleiner Pfeil fliegt direkt neben dem Titel erst bei Hover ein; die
+   Kurzbeschreibung ist permanent sichtbar. */
+.portfolio-media-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.75rem 2rem 2.5rem;
+  background: linear-gradient(to bottom, rgba(20, 16, 13, 0.78) 0%, rgba(20, 16, 13, 0.5) 55%, transparent 100%);
+  pointer-events: none;
+}
+
+.portfolio-media-genre {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+/* Farbiger Punkt statt farbigem Text -- Farbe wird per JS als
+   --dot-color gesetzt (siehe activatePreview()). */
+.portfolio-media-genre::before {
+  content: '';
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 50%;
+  background-color: var(--dot-color, #fff);
+}
+
+.portfolio-media-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  color: #fff;
+  line-height: 1.15;
+  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.portfolio-media-title-arrow {
+  font-size: 0.6em;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.portfolio-media:hover .portfolio-media-title-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.portfolio-media-desc {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.88);
+  margin-top: 0.6rem;
+  max-width: 32rem;
+}
+
+.portfolio-headline {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  font-size: 2.2rem;
+  margin-bottom: 0.6rem;
+}
+
+.portfolio-subline {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  font-weight: 300;
+  color: var(--muted-light);
+  margin-bottom: 2rem;
+}
+
+.portfolio-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+
+.portfolio-filter {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-light);
+  transition: color 0.2s;
+}
+
+/* Genre-Tag-Farben fuer inaktive Filter-Buttons -- Quellreihenfolge
+   bewusst zwischen Basis- und :hover/.is-active-Regel platziert, damit
+   Hover weiterhin auf --text-light und aktiver Zustand weiterhin auf
+   --accent geht (spaetere Regel gewinnt bei gleicher Spezifitaet). */
+.portfolio-filter[data-filter="Dokumentarfilm"] {
+  color: var(--tag-doku);
+}
+
+.portfolio-filter[data-filter="TV"] {
+  color: var(--tag-tv);
+}
+
+.portfolio-filter:hover {
+  color: var(--text-light);
+}
+
+.portfolio-filter.is-active {
+  color: var(--accent);
+}
+
+.portfolio-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.5em;
+  row-gap: 0.7em;
+  margin-bottom: 2rem;
+}
+
+.portfolio-item {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--muted-light);
+  transition: color 0.2s;
+}
+
+.portfolio-item:hover {
+  color: var(--text-light);
+}
+
+.portfolio-item.is-active {
+  color: var(--accent);
+}
+
+.portfolio-sep {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.3rem;
+  color: var(--muted-light);
+}
+
+.portfolio-panel {
+  display: none;
+}
+
+/* PORTFOLIO-LIGHTBOX (nur index.html): eigener, dauerhaft dunkler
+   Vollbild-Layer -- bewusst immer dunkel, unabhängig vom Rest der
+   Seite, wie bei Bildbetrachtern üblich. */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  background-color: rgba(13, 13, 12, 1);
+}
+
+.lightbox.is-open {
+  display: block;
+}
+
+.lightbox-content {
+  width: 100%;
+  max-width: 1100px;
+  max-height: 100%;
+  margin: 0 auto;
+}
+
+.lightbox-media {
+  position: relative;
+  width: min(100%, 1100px, calc(58vh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.lightbox-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  transform: scale(1);
+}
+
+.lightbox-image.is-opening {
+  transform: scale(1.05);
+  transition: none;
+}
+
+.lightbox-image.is-kenburns {
+  transition: opacity 0.35s ease, transform 4s linear;
+  transform: scale(1.06);
+}
+
+.lightbox-info {
+  width: min(100%, 1100px, calc(58vh * 16 / 9));
+  margin: 0 auto;
+  text-align: left;
+  padding: 1.25rem 1.5rem 1.5rem;
+  margin-top: 1.25rem;
+}
+
+.lightbox-genre {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  /* Farbe wird per JS gesetzt (genreColor()). */
+}
+
+.lightbox-title {
+  margin-top: 0.6rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #e8e6e1;
+}
+
+.lightbox-desc {
+  margin-top: 0.4rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 300;
+  color: #a9a8a3;
+  line-height: 1.55;
+  max-width: 640px;
+}
+
+.lightbox-filmstrip {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.filmstrip-thumb {
+  flex: 0 0 auto;
+  width: 6rem;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  appearance: none;
+  background: none;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.2s, border-color 0.2s;
+}
+
+.filmstrip-thumb:hover {
+  opacity: 0.85;
+}
+
+.filmstrip-thumb.is-active {
+  opacity: 1;
+  border-color: var(--accent);
+}
+
+.filmstrip-thumb-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%);
+  transition: filter 0.2s;
+}
+
+.filmstrip-thumb.is-active .filmstrip-thumb-image {
+  filter: grayscale(0%);
+}
+
+.lightbox-close {
+  appearance: none;
+  background: none;
+  border: 1px solid rgba(232, 230, 225, 0.22);
+  border-radius: 0.65rem;
+  color: #e8e6e1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  outline: none;
+  transition: color 0.2s, text-shadow 0.2s, transform 0.2s, border-color 0.2s;
+}
+
+.lightbox-close:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.12);
+}
+
+.lightbox-close:focus-visible {
+  outline: 1px solid var(--muted-on-dark);
+  outline-offset: 3px;
+}
+
+.lightbox-close {
+  position: absolute;
+  z-index: 2;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  font-size: 2rem;
+}
+
+.lightbox-frame {
+  position: absolute;
+  inset: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.lightbox-nav {
+  appearance: none;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  width: 5.5rem;
+}
+
+.lightbox-nav:focus-visible {
+  outline: 1px solid var(--muted-on-dark);
+  outline-offset: 3px;
+}
+
+.lightbox-nav-prev { left: 0.5rem; padding-left: 1rem; }
+.lightbox-nav-next { right: 0.5rem; padding-right: 1rem; }
+
+.lightbox-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  font-size: 2.2rem;
+  color: #e8e6e1;
+  line-height: 1;
+  transition: color 0.2s, text-shadow 0.2s, transform 0.2s;
+}
+
+.lightbox-nav-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.3;
+  color: rgba(232, 230, 225, 0.55);
+  transition: color 0.2s;
+}
+
+.lightbox-nav:hover .lightbox-arrow {
+  color: var(--accent);
+  transform: scale(1.12);
+}
+
+.lightbox-nav:hover .lightbox-nav-label {
+  color: rgba(232, 230, 225, 0.9);
+}
+
+/* KONTAKT (alle drei Seiten) */
+.contact-section {
+  padding: 6rem 0 2rem;
+  scroll-margin-top: 8rem;
+}
+
+.contact-section h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(20, 16, 13, 0.55);
+  margin-bottom: 2rem;
+}
+
+.contact-email {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  color: inherit;
+  text-decoration: none;
+  display: inline-block;
+  transition: opacity 0.3s;
+}
+.contact-email:hover { opacity: 0.6; }
+
+/* Eigenstaendiger Footer statt Teil von .contact-section: die Seite
+   kann so mehrfach denselben Footer verwenden (index/beratung/profil),
+   ohne dass er an den Kontaktbereich gebunden ist. Heller Grundton wie
+   Header/Nav-Zone (--bg-page), nicht --bg-light wie die Content-Bloecke,
+   damit er sich sichtbar davon absetzt. */
+.site-footer {
+  background-color: var(--bg-page);
+  padding: 1.25rem 0;
+}
+
+.site-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: var(--muted-light);
+}
+.footer-meta a { color: inherit; text-decoration: none; }
+.footer-meta a:hover { color: var(--text-light); }
+
+/* Kein min-height: bleibt leer, bis tatsaechlich Icons/Links darin
+   stehen -- sonst zieht der leere Platzhalter unnoetig Footer-Hoehe. */
+.footer-social {
+  display: flex;
+  gap: 1rem;
+}
+
+/* MOBIL RESPONSIVE -- ein einziger Breakpoint-Block statt mehrerer
+   verstreuter @media-Regeln, gilt fuer alle drei Seiten gemeinsam. */
+@media (max-width: 768px) {
+  .poem-block { left: 6vw; right: 6vw; padding-right: 0; }
+  .poem-line { font-size: 1.35rem; white-space: normal; }
+  .site-title { top: 6vw; font-size: 1.35rem; }
+
+  .logo-bar { height: var(--logo-bar-height-mobile); }
+
+  .site-nav {
+    top: auto;
+    bottom: 0; left: 0;
+    transform: none;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem 1.4rem;
+    padding: 0.9rem 6vw calc(0.9rem + env(safe-area-inset-bottom));
+    background-color: color-mix(in srgb, var(--bg-page) 88%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+  }
+  .site-nav a { font-size: 0.95rem; }
+
+  .content-stage { padding-bottom: 10rem; }
+  .section-inner { padding-left: 6vw; padding-right: 6vw; }
+  .main-intro {
+    padding: calc(var(--logo-bar-height-mobile) + 1.5rem) 0 5rem 0;
+    scroll-margin-top: 7rem;
+  }
+  .page-intro {
+    padding: calc(var(--logo-bar-height-mobile) + 1.5rem) 0 4rem 0;
+    scroll-margin-top: 7rem;
+  }
+  .main-intro-inner {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  .intro-text { padding-bottom: 0; }
+  .intro-portrait { justify-content: center; align-self: auto; margin-left: 0; margin-top: 0; margin-right: 0; }
+  .portrait-freistehend { height: auto; width: 100%; max-width: 300px; max-height: none; object-fit: contain; }
+
+  .page-sections { gap: 2.5rem; margin-top: 4rem; padding-top: 4rem; }
+
+  .portfolio-preview {
+    display: none;
+  }
+
+  .portfolio-flow {
+    row-gap: 0;
+  }
+
+  .portfolio-panel {
+    display: block;
+    flex-basis: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+
+  .portfolio-panel.is-open {
+    max-height: 32rem;
+  }
+
+  .portfolio-panel-inner {
+    padding: 1rem 0 1.5rem;
+  }
+
+  .portfolio-panel-media {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .portfolio-panel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .portfolio-panel-genre {
+    display: inline-block;
+    margin-top: 1rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    /* Farbe wird per JS gesetzt (genreColor()). */
+  }
+
+  .portfolio-panel-desc {
+    margin-top: 0.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--muted-light);
+    line-height: 1.6;
+  }
+
+  /* Auf Mobile bleibt es bei fest am Viewport verankerten
+     Lightbox-Controls statt am (dort ohnehin viewportbreiten) Frame. */
+  .lightbox-close,
+  .lightbox-nav {
+    position: fixed;
+  }
+
+  .lightbox-frame { inset: 4rem 0.75rem; }
+  .lightbox-media { width: min(100%, 1100px, calc(48vh * 16 / 9)); }
+  .lightbox-info { width: min(100%, 1100px, calc(48vh * 16 / 9)); padding: 1rem 1.1rem 1.15rem; margin-top: 1rem; }
+  .lightbox-desc { font-size: 0.85rem; }
+  .filmstrip-thumb { width: 4.5rem; }
+  .lightbox-close { width: 2.75rem; height: 2.75rem; font-size: 1.6rem; }
+  .lightbox-arrow { width: 2.75rem; height: 2.75rem; font-size: 1.8rem; }
+  .lightbox-nav-label { font-size: 0.6rem; }
+  .lightbox-nav-prev { left: 0.25rem; }
+  .lightbox-nav-next { right: 0.25rem; }
+}
