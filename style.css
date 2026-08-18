@@ -394,37 +394,38 @@ html.hero-fixed .hero-line-wrapper {
      Logo-Bar beginnt. */
   padding: calc(var(--logo-bar-height) + 1.5rem) 0 0 0;
   scroll-margin-top: 12rem;
-  position: relative; /* Containing Block fuer .elmo-peek */
-  /* Schneidet Elmo hart an der eigenen Unterkante ab, statt sich (wie
-     zuvor per overflow:visible) darauf zu verlassen, dass die naechste
-     Section ihn optisch verdeckt -- Paint-Reihenfolge zwischen
-     Geschwister-Sections ist eine Engine-Eigenheit, die je nach Browser
-     leicht anders ausfallen kann. overflow:hidden ist deterministisch
-     in jedem Browser gleich. */
+  position: relative;
+  /* overflow:hidden schneidet .elmo-peek (Kind von .intro-portrait, nicht
+     mehr direktes Kind von .main-intro) trotzdem hart an dieser Section-
+     Kante ab -- jeder Vorfahre mit overflow:hidden clippt positionierte
+     Nachfahren, unabhaengig davon, welcher naehere Vorfahre ihr
+     eigentlicher Containing Block ist (das ist jetzt .intro-portrait,
+     siehe dortiges position:relative). Deterministisch in jedem Browser
+     gleich, im Gegensatz zum frueheren overflow:visible, das sich auf
+     Paint-Reihenfolge zwischen Geschwister-Sections verliess. */
   overflow: hidden;
 }
 
-/* Easter Egg: schaut bei Hover von unten rechts mit kleinem Ueberschwung
-   hoch (siehe cubic-bezier), bleibt dabei unten hart an der Section-
-   Kante abgeschnitten (overflow:hidden auf .main-intro). Im
-   Ruhezustand komplett unter die Kante verschoben (105%, nicht nur 88%
-   -- .main-intro clippt jetzt selbst, es muss also kein Rest mehr
-   sichtbar bleiben). Nur Desktop/Hover-faehige Geraete (siehe Media
-   Query), auf Touch waere er sonst dauerhaft unsichtbar. */
+/* Easter Egg: springt bei Hover mittig und deutlich groesser vor das
+   Portrait (siehe cubic-bezier fuer den kleinen Ueberschwung), bleibt
+   dabei unten hart an der Section-Kante abgeschnitten (overflow:hidden
+   auf .main-intro). Im Ruhezustand komplett unter die Kante verschoben.
+   Nur Desktop/Hover-faehige Geraete (siehe Media Query), auf Touch waere
+   er sonst dauerhaft unsichtbar. */
 .elmo-peek {
   position: absolute;
   bottom: 0;
-  right: 6%;
-  width: clamp(70px, 8vw, 110px);
+  left: 50%;
+  transform: translate(-50%, 105%);
+  width: clamp(140px, 22vw, 260px);
   height: auto;
-  transform: translateY(105%);
   transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
   z-index: 5; /* ueber dem Portrait */
 }
 
-.main-intro:hover .elmo-peek {
-  transform: translateY(18%);
+.intro-portrait:hover .elmo-peek {
+  transform: translate(-50%, 25%);
 }
 
 /* Oberster Content-Block auf beratung.html/profil.html -- dieselbe
@@ -496,6 +497,16 @@ html.hero-fixed .hero-line-wrapper {
   height: 100%;
 }
 
+/* .elmo-peek-wrap ist die zweite <picture> in .intro-portrait (Wrapper
+   um .elmo-peek) -- ohne diese Regel wuerde sie die obige width/height:
+   100%-Regel ebenfalls treffen und als zweites Flex-Kind die Portrait-
+   Flaeche zusammenquetschen. display:contents nimmt ihr die eigene Box
+   komplett (kein Flex-Teilnehmer mehr), .elmo-peek (das <img> darin)
+   positioniert sich dadurch effektiv direkt relativ zu .intro-portrait. */
+.intro-portrait .elmo-peek-wrap {
+  display: contents;
+}
+
 .portrait-freistehend {
   display: block;
   width: 100%;
@@ -510,29 +521,6 @@ html.hero-fixed .hero-line-wrapper {
   mix-blend-mode: multiply;
   position: relative;
   z-index: 1;
-  /* Echter Reisskanten-Effekt per SVG-Filter (siehe #torn-edge in
-     index.html) statt eines von Hand gezeichneten clip-path-Zickzacks --
-     feDisplacementMap verzerrt die tatsaechliche Alphakante des Fotos
-     (Kopf/Schultern/Arme-Silhouette), dadurch faserig statt geometrisch. */
-  filter: url(#torn-edge);
-}
-
-/* Weisse Ruecklage hinter dem Portrait -- minimal groesser (-10px oben/
-   links/rechts) als das Foto selbst, damit an der zerrissenen Kante ein
-   "Papierrand" durchscheint statt der dahinterliegenden Section-Flaeche.
-   Unterkante bleibt bewusst buendig (kein Ueberstand), da der Sockel-
-   Bezug zur Section-Unterkante erhalten bleiben soll. Bekommt denselben
-   SVG-Filter wie das Foto, damit die eigene (rechteckige) Kante ebenso
-   zerrissen wirkt statt eines glatten Rands um die Foto-Silhouette. */
-.portrait-torn-edge {
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: 0;
-  background-color: #fff;
-  z-index: 0;
-  filter: url(#torn-edge);
 }
 
 .intro-portrait:hover .portrait-freistehend {
@@ -767,11 +755,12 @@ html.hero-fixed .hero-line-wrapper {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: opacity 0.35s ease, transform 0.4s ease;
+  transition: opacity 0.35s ease, transform 0.4s ease, filter 0.4s ease;
 }
 
 .portfolio-media:hover .portfolio-image {
   transform: scale(1.04);
+  filter: brightness(0.92);
 }
 
 /* Klick-Signal statt separater Pfeil-Buttons/Hinweis-Pill: Titel und
