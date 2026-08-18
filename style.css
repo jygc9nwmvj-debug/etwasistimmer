@@ -421,6 +421,10 @@ html.hero-fixed .hero-line-wrapper {
   position: relative;
   z-index: 2;
   padding-bottom: 0.5rem;
+  /* .main-intro-inner nutzt align-items:end -- dieses margin-bottom
+     schiebt nur den Textblock nach oben, das Portrait daneben bleibt
+     unten verankert. Schafft sichtbaren Abstand zur Section-Unterkante. */
+  margin-bottom: 1.5rem;
 }
 
 .name-sub {
@@ -481,7 +485,7 @@ html.hero-fixed .hero-line-wrapper {
 .split-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3rem;
+  gap: 1.5rem;
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
@@ -683,6 +687,13 @@ html.hero-fixed .hero-line-wrapper {
   pointer-events: none;
 }
 
+.portfolio-media-title-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
 .portfolio-media-genre {
   display: inline-flex;
   align-items: center;
@@ -712,7 +723,6 @@ html.hero-fixed .hero-line-wrapper {
   font-size: clamp(1.6rem, 3vw, 2.4rem);
   color: #fff;
   line-height: 1.15;
-  margin-top: 0.5rem;
   display: inline-flex;
   align-items: baseline;
   gap: 0.5rem;

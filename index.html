@@ -141,7 +141,7 @@
         <div class="main-intro-inner section-inner">
           <div class="intro-text" id="introText">
             <p class="name-sub">
-              Ich bin <strong>Wolfram Huke</strong>. Ich mache Dokumentarfilme und Primetime-Fernsehen, verhelfe anderen zu ihrer Botschaft und bin sonst mit dem Hund draußen.
+              Ich bin <strong>Wolfram Huke</strong>. Ich mache Dokumentarfilme und Fernsehen, verhelfe anderen zu ihrer Botschaft und bin viel mit dem Hund draußen.
             </p>
           </div>
 
@@ -171,8 +171,10 @@
                 alt="Nahaufnahme einer analogen Filmkamera"
                 class="portfolio-image">
               <div class="portfolio-media-overlay">
-                <span class="portfolio-media-genre" id="portfolioMediaGenre">Dokumentarfilm</span>
-                <span class="portfolio-media-title" id="portfolioMediaTitle">Love Alien<span class="portfolio-media-title-arrow" aria-hidden="true">→</span></span>
+                <div class="portfolio-media-title-row">
+                  <span class="portfolio-media-title" id="portfolioMediaTitle">Love Alien<span class="portfolio-media-title-arrow" aria-hidden="true">→</span></span>
+                  <span class="portfolio-media-genre" id="portfolioMediaGenre">Dokumentarfilm</span>
+                </div>
                 <span class="portfolio-media-desc" id="portfolioMediaDesc">Kurzbeschreibung folgt, sobald ein reales Projekt feststeht.</span>
               </div>
             </div>
@@ -1051,6 +1053,96 @@
         });
       }
     });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      'use strict';
+
+      // Dezentes Einblenden der Beratung/Profil-Karten beim ersten
+      // Sichtbarwerden -- eigener, von der Gedicht-/GSAP-Logik
+      // unabhaengiger Block, damit er auch laeuft, falls GSAP mal fehlt.
+      var splitHalves = document.querySelectorAll('.split-half');
+      if (splitHalves.length && 'IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        splitHalves.forEach(function (el) {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(16px)';
+          el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        });
+
+        var splitObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = '1';
+              entry.target.style.transform = 'translateY(0)';
+              splitObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.2 });
+
+        splitHalves.forEach(function (el) { splitObserver.observe(el); });
+      }
+    });
+  </script>
+
+  <!-- Bearbeitungsmodus: nur aktiv mit ?edit=true in der URL, macht
+       ausgewaehlte Textstellen contenteditable und sammelt sie per Klick
+       formatiert in die Zwischenablage -- kein Speichern, nur Export zum
+       manuellen Einfuegen hier im Chat oder direkt in Claude Code. -->
+  <script>
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('edit') !== 'true') return;
+
+    var editableConfig = [
+      { selector: '.name-sub', label: 'Hero-Copy' },
+      { selector: '.portfolio-headline', label: 'Portfolio-Headline' },
+      { selector: '.portfolio-subline', label: 'Portfolio-Subline' },
+      { selector: '#beratung-section h3', label: 'Beratung-Headline' },
+      { selector: '#beratung-section p', label: 'Beratung-Text' },
+      { selector: '#profil-section h3', label: 'Profil-Headline' },
+      { selector: '#profil-section p', label: 'Profil-Text' }
+    ];
+
+    editableConfig.forEach(function (cfg) {
+      document.querySelectorAll(cfg.selector).forEach(function (el) {
+        el.setAttribute('contenteditable', 'true');
+        el.dataset.editLabel = cfg.label;
+        el.style.outlineOffset = '4px';
+        el.style.transition = 'outline-color 0.15s ease';
+        el.style.outline = '1px dashed transparent';
+        el.addEventListener('focus', function () { el.style.outline = '1px dashed var(--accent, #FF4D00)'; });
+        el.addEventListener('blur', function () { el.style.outline = '1px dashed transparent'; });
+      });
+    });
+
+    var banner = document.createElement('div');
+    banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#FF4D00;color:#fff;padding:0.6rem 1rem;font-family:Inter,sans-serif;font-size:0.85rem;z-index:999;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;';
+
+    var text = document.createElement('span');
+    text.textContent = 'Bearbeitungsmodus — nichts wird automatisch gespeichert.';
+
+    var button = document.createElement('button');
+    button.textContent = 'Alle Texte kopieren';
+    button.style.cssText = 'background:#fff;color:#FF4D00;border:0;border-radius:0.4rem;padding:0.4rem 0.9rem;font-weight:700;cursor:pointer;';
+
+    button.addEventListener('click', function () {
+      var out = editableConfig.map(function (cfg) {
+        return Array.from(document.querySelectorAll(cfg.selector)).map(function (el) {
+          return cfg.label + ':\n' + el.textContent.trim();
+        }).join('\n\n');
+      }).join('\n\n---\n\n');
+
+      navigator.clipboard.writeText(out).then(function () {
+        button.textContent = 'Kopiert ✓';
+        setTimeout(function () { button.textContent = 'Alle Texte kopieren'; }, 2000);
+      });
+    });
+
+    banner.appendChild(text);
+    banner.appendChild(button);
+    document.body.appendChild(banner);
+  })();
   </script>
 </body>
 </html>
