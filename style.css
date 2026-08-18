@@ -34,9 +34,16 @@
      mehr als Body-Hintergrund. Erzeugt den "Naht"-Abstand zwischen
      den Content-Bloecken, auf allen drei Seiten gleich. */
   --bg-page:     #fdfcfa;
-  --bg-light:    #f0ebde;
+  --bg-light:    #e5e9ea;
   --text-light:  #121211;
   --muted-light: #706f6b;
+
+  /* Fuer echten Fliesstext gedacht, der als Inhalt gelesen werden soll
+     (z.B. Beratung/Profil-Absaetze) -- deutlich dunkler als
+     --muted-light, das fuer wirkliche Nebensaechlichkeiten (Footer,
+     Kicker-Labels, Genre-Tags) reserviert bleibt. Sonst tragen Inhalt
+     und Fussnote optisch dasselbe Gewicht. */
+  --text-secondary: rgba(18, 20, 17, 0.78);
 
   /* AKZENTFARBE (SIGNAL-ORANGE) -- exklusiv fuer Interaktion (Nav-Hover,
      Links, aktiver Zustand), nicht fuer statische Section-Kicker. */
@@ -322,14 +329,19 @@ html.hero-fixed .hero-line-wrapper {
 /* CONTENT STAGE -- gemeinsamer Wrapper auf allen drei Seiten. Kein
    horizontales Padding/max-width mehr: alle Content-Sections sind
    selbst randlos (100vw) und zentrieren ihren Inhalt per
-   .section-inner. Nur noch als Stacking-Context (z-index) und fuer den
-   Abstand nach der letzten Section relevant. */
+   .section-inner. Nur noch als Stacking-Context (z-index) relevant.
+   KEIN eigenes padding-bottom mehr: das erzeugte einen zusaetzlichen,
+   unsichtbaren Abstand von 8rem NACH dem margin-bottom der letzten
+   Section (.contact-section), der komplett ausserhalb von .site-footer
+   lag -- deshalb blieb der Footer-Bereich trotz mehrfacher Reduktion
+   von .site-footer's eigenem padding immer gleich hoch. Der Abstand
+   zum Footer ergibt sich jetzt allein aus .contact-section's eigenem
+   margin-bottom, genau wie zwischen allen anderen Sections. */
 .scroll-container { position: relative; }
 
 .content-stage {
   position: relative;
   z-index: 10;
-  padding-bottom: 8rem;
 }
 
 /* Die Content-Bloecke bekommen explizit --bg-light als eigene
@@ -349,7 +361,7 @@ html.hero-fixed .hero-line-wrapper {
 .portfolio-section,
 .contact-section {
   background-color: var(--bg-light);
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   /* Randlose Hintergrundflaeche: die Section selbst waechst auf volle
      Bildschirmbreite, unabhaengig von .content-stage's max-width. Ihr
      Inhalt bleibt trotzdem bei 1200px zentriert -- siehe .section-inner.
@@ -473,7 +485,7 @@ html.hero-fixed .hero-line-wrapper {
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   background-color: var(--bg-page);
 }
 
@@ -532,11 +544,12 @@ html.hero-fixed .hero-line-wrapper {
   margin-bottom: 1rem;
 }
 
-.col-card p {
+.col-card p,
+.split-half p {
   font-family: 'Inter', sans-serif;
   font-size: 1.05rem;
-  font-weight: 300;
-  color: var(--muted-light);
+  font-weight: 400;
+  color: var(--text-secondary);
   line-height: 1.55;
 }
 
@@ -720,9 +733,12 @@ html.hero-fixed .hero-line-wrapper {
 .portfolio-media-desc {
   display: block;
   font-family: 'Inter', sans-serif;
-  font-weight: 300;
+  font-weight: 400;
   font-size: 1.05rem;
   line-height: 1.55;
+  /* Bleibt hell: liegt auf dunklem Foto-Overlay (.portfolio-media-overlay),
+     nicht auf hellem --bg-light wie die anderen hier angepassten
+     Textstellen -- --text-secondary waere hier fast unlesbar. */
   color: rgba(255, 255, 255, 0.88);
   margin-top: 0.6rem;
   max-width: 32rem;
@@ -742,8 +758,8 @@ html.hero-fixed .hero-line-wrapper {
   font-family: 'Inter', sans-serif;
   font-size: 1.05rem;
   line-height: 1.55;
-  font-weight: 300;
-  color: var(--muted-light);
+  font-weight: 400;
+  color: var(--text-secondary);
   margin-bottom: 2rem;
 }
 
@@ -908,7 +924,10 @@ html.hero-fixed .hero-line-wrapper {
   margin-top: 0.4rem;
   font-family: 'Inter', sans-serif;
   font-size: 1.05rem;
-  font-weight: 300;
+  font-weight: 400;
+  /* Bleibt hell: liegt in der dunklen Lightbox (--muted-on-dark), nicht
+     auf hellem --bg-light -- --text-secondary waere hier fast
+     unlesbar. */
   color: #a9a8a3;
   line-height: 1.55;
   max-width: 640px;
@@ -1065,7 +1084,7 @@ html.hero-fixed .hero-line-wrapper {
 
 /* KONTAKT (alle drei Seiten) */
 .contact-section {
-  padding: 6rem 0 2rem;
+  padding: 4rem 0 2rem;
   scroll-margin-top: 12rem;
 }
 
