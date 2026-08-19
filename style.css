@@ -469,30 +469,6 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--text-light);
 }
 
-/* Rotierender Schlusssatz-Teil als Typewriter-Effekt, siehe JS:
-   heroEndings-Zyklus (Tippen/Loeschen per setTimeout, kein CSS-Transition
-   noetig -- der Text selbst aendert sich Zeichen fuer Zeichen). */
-.hero-ending-wrap {
-  display: inline;
-}
-
-.hero-cursor {
-  display: inline-block;
-  margin-left: 1px;
-  animation: hero-cursor-blink 0.9s step-end infinite;
-}
-
-@keyframes hero-cursor-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-/* Kein Tipp-/Loesch-Zyklus und kein blinkender Cursor bei reduzierter
-   Bewegung -- siehe JS-Gate auf denselben Media-Query. */
-@media (prefers-reduced-motion: reduce) {
-  .hero-cursor { display: none; }
-}
-
 /* PORTRAIT INTEGRATION (nur index.html) */
 .intro-portrait {
   position: relative;
