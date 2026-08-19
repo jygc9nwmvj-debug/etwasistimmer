@@ -1286,6 +1286,7 @@ html.hero-fixed .hero-line-wrapper {
   }
   .site-nav a {
     font-size: 0.95rem;
+    font-weight: 500;
     color: var(--accent); /* dauerhaft orange auf Mobile, nicht erst bei Hover/Touch -- untere Leiste als App-Tableiste erkennbar */
   }
 
