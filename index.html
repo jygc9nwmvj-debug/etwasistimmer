@@ -667,7 +667,7 @@
             var current = shown.indexOf(button);
             var target = shown[(current - 1 + shown.length) % shown.length];
             target.click(); // nutzt den bestehenden Klick-Handler: aktiviert Vorschau + oeffnet dessen Panel
-            target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            scrollPanelIntoViewAfterOpen(target);
           });
 
           nextBtn.addEventListener('click', function (e) {
@@ -676,7 +676,7 @@
             var current = shown.indexOf(button);
             var target = shown[(current + 1) % shown.length];
             target.click();
-            target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            scrollPanelIntoViewAfterOpen(target);
           });
 
           panelNav.appendChild(prevBtn);
@@ -769,6 +769,32 @@
           panel.classList.add('is-open');
           button.setAttribute('aria-expanded', 'true');
         }
+      }
+
+      // Wartet, bis das Panel von target fertig aufgeklappt ist (siehe
+      // .portfolio-panel max-height-Transition, 0.35s), bevor gescrollt
+      // wird -- scrollIntoView() direkt nach target.click() zielte noch
+      // auf die Position VOR dem Aufklappen/Zuklappen der Nachbar-Panels,
+      // dadurch landete der Scroll mal zu hoch, mal zu tief, je nachdem
+      // ob das vorherige Panel ueber oder unter dem neuen lag. setTimeout
+      // als Fallback nach demselben Muster wie activatePreview()s onFade,
+      // falls transitionend aus irgendeinem Grund nie feuert.
+      function scrollPanelIntoViewAfterOpen(target) {
+        var targetPanel = getPanelForButton(target);
+        var scrolled = false;
+        var doScroll = function () {
+          if (scrolled) return;
+          scrolled = true;
+          target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        };
+        if (targetPanel) {
+          targetPanel.addEventListener('transitionend', function handler(ev) {
+            if (ev.propertyName !== 'max-height') return;
+            targetPanel.removeEventListener('transitionend', handler);
+            doScroll();
+          });
+        }
+        setTimeout(doScroll, 400);
       }
 
       items.forEach(function (button) {
