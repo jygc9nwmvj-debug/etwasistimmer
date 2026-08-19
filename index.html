@@ -779,13 +779,32 @@
       // ob das vorherige Panel ueber oder unter dem neuen lag. setTimeout
       // als Fallback nach demselben Muster wie activatePreview()s onFade,
       // falls transitionend aus irgendeinem Grund nie feuert.
+      //
+      // Ziel ist absichtlich .portfolio-panel-nav (die Voriges/Naechstes-
+      // Buttons am Panel-Ende), nicht mehr der Titel-Button selbst: mit
+      // block:'center' auf dem Titel blieb bei laengeren Panels dessen
+      // unteres Ende samt der Buttons unter der fixierten unteren Nav-
+      // Leiste verdeckt. scrollIntoView()s block:'end' + scroll-margin-
+      // bottom haben sich dabei als unzuverlaessig erwiesen (Endposition
+      // landete auch damit noch unter der Leiste) -- stattdessen wird die
+      // Ziel-Scroll-Position hier direkt selbst berechnet: Position der
+      // Buttons per getBoundingClientRect() ermitteln und per
+      // window.scrollTo() exakt so weit scrollen, dass ihr unterer Rand
+      // mit Sicherheitsabstand oberhalb der (echten, gemessenen) Hoehe
+      // der fixierten unteren Nav-Leiste zu liegen kommt.
       function scrollPanelIntoViewAfterOpen(target) {
         var targetPanel = getPanelForButton(target);
         var scrolled = false;
         var doScroll = function () {
           if (scrolled) return;
           scrolled = true;
-          target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          var panelNav = targetPanel && targetPanel.querySelector('.portfolio-panel-nav');
+          var scrollTarget = panelNav || target;
+          var navBar = document.querySelector('.site-nav');
+          var clearance = (navBar ? navBar.getBoundingClientRect().height : 0) + 16;
+          var rect = scrollTarget.getBoundingClientRect();
+          var delta = rect.bottom - (window.innerHeight - clearance);
+          window.scrollTo({ top: window.scrollY + delta, behavior: 'smooth' });
         };
         if (targetPanel) {
           targetPanel.addEventListener('transitionend', function handler(ev) {
