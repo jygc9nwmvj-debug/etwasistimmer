@@ -469,21 +469,28 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--text-light);
 }
 
-/* Rotierender Schlusssatz-Teil, siehe JS: heroEndings-Rotation. */
+/* Rotierender Schlusssatz-Teil als Typewriter-Effekt, siehe JS:
+   heroEndings-Zyklus (Tippen/Loeschen per setTimeout, kein CSS-Transition
+   noetig -- der Text selbst aendert sich Zeichen fuer Zeichen). */
 .hero-ending-wrap {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: bottom;
+  display: inline;
 }
 
-.hero-ending {
+.hero-cursor {
   display: inline-block;
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  margin-left: 1px;
+  animation: hero-cursor-blink 0.9s step-end infinite;
 }
 
-.hero-ending.is-swapping {
-  opacity: 0;
-  transform: translateY(6px);
+@keyframes hero-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Kein Tipp-/Loesch-Zyklus und kein blinkender Cursor bei reduzierter
+   Bewegung -- siehe JS-Gate auf denselben Media-Query. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-cursor { display: none; }
 }
 
 /* PORTRAIT INTEGRATION (nur index.html) */
