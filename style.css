@@ -1257,7 +1257,15 @@ html.hero-fixed .hero-line-wrapper {
 
   .poem-block { left: 6vw; right: 6vw; padding-right: 0; }
   .poem-line { font-size: 1.35rem; white-space: normal; }
-  .site-title { top: 6vw; font-size: 1.35rem; }
+  .site-title {
+    /* Vertikal mittig im (jetzt kompakteren) Kopfbereich statt fixem
+       top-Wert -- haengt sich an --logo-bar-height-mobile statt an einem
+       geschaetzten px-Wert, bleibt also automatisch mittig, egal wie
+       hoch die Kopfleiste gerade eingestellt ist. */
+    top: calc(var(--logo-bar-height-mobile) / 2);
+    transform: translate(-50%, -50%);
+    font-size: 1.35rem;
+  }
 
   .logo-bar { height: var(--logo-bar-height-mobile); }
 
