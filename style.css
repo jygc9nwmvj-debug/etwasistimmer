@@ -1415,6 +1415,34 @@ html.hero-fixed .hero-line-wrapper {
     line-height: 1.6;
   }
 
+  /* Vor/Zurueck innerhalb des aufgeklappten Panels, siehe JS:
+     renderPortfolioItems(). */
+  .portfolio-panel-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .portfolio-panel-arrow {
+    appearance: none;
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.5rem 0;
+  }
+
+  .portfolio-panel-arrow:active {
+    color: var(--accent);
+  }
+
   /* Auf Mobile bleibt es bei fest am Viewport verankerten
      Lightbox-Controls statt am (dort ohnehin viewportbreiten) Frame. */
   .lightbox-close,

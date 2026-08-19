@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -641,6 +641,48 @@
           panelInner.appendChild(panelMedia);
           panelInner.appendChild(panelGenre);
           panelInner.appendChild(panelDesc);
+
+          // Vor/Zurueck nur innerhalb des aufgeklappten Mobile-Panels
+          // (siehe .portfolio-panel-nav in style.css, nur im Mobile-Media-
+          // Query sichtbar) -- erspart auf Mobile das Zurueckscrollen zur
+          // Liste, um zum naechsten Projekt zu wechseln. button bezieht
+          // sich auf den zu diesem Panel gehoerenden .portfolio-item, per
+          // Closure aus dem forEach-Scope.
+          var panelNav = document.createElement('div');
+          panelNav.className = 'portfolio-panel-nav';
+
+          var prevBtn = document.createElement('button');
+          prevBtn.type = 'button';
+          prevBtn.className = 'portfolio-panel-arrow';
+          prevBtn.innerHTML = '‹ Voriges';
+
+          var nextBtn = document.createElement('button');
+          nextBtn.type = 'button';
+          nextBtn.className = 'portfolio-panel-arrow';
+          nextBtn.innerHTML = 'Nächstes ›';
+
+          prevBtn.addEventListener('click', function (e) {
+            e.stopPropagation(); // verhindert, dass der Klick zusaetzlich den Panel-Toggle des Titel-Buttons ausloest
+            var shown = visibleItems();
+            var current = shown.indexOf(button);
+            var target = shown[(current - 1 + shown.length) % shown.length];
+            target.click(); // nutzt den bestehenden Klick-Handler: aktiviert Vorschau + oeffnet dessen Panel
+            target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          });
+
+          nextBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var shown = visibleItems();
+            var current = shown.indexOf(button);
+            var target = shown[(current + 1) % shown.length];
+            target.click();
+            target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          });
+
+          panelNav.appendChild(prevBtn);
+          panelNav.appendChild(nextBtn);
+          panelInner.appendChild(panelNav);
+
           panel.appendChild(panelInner);
           container.appendChild(panel);
         });
