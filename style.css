@@ -469,6 +469,23 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--text-light);
 }
 
+/* Rotierender Schlusssatz-Teil, siehe JS: heroEndings-Rotation. */
+.hero-ending-wrap {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.hero-ending {
+  display: inline-block;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.hero-ending.is-swapping {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
 /* PORTRAIT INTEGRATION (nur index.html) */
 .intro-portrait {
   position: relative;

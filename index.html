@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -141,7 +141,8 @@
         <div class="main-intro-inner section-inner">
           <div class="intro-text" id="introText">
             <p class="name-sub">
-              Ich bin <strong>Wolfram Huke</strong>. Ich mache Dokumentarfilme und Fernsehen, verhelfe anderen zu ihrer Botschaft und bin viel mit dem Hund draußen.
+              Ich bin <strong>Wolfram Huke</strong>. Ich mache Dokumentarfilme und Fernsehen, verhelfe anderen zu ihrer Botschaft
+              <span class="hero-ending-wrap"><span class="hero-ending" id="heroEnding">und bin viel mit dem Hund draußen.</span></span>
             </p>
           </div>
 
@@ -1127,6 +1128,36 @@
           });
         });
       });
+
+      // Rotierender Schlusssatz im Hero-Text, siehe .hero-ending-wrap/
+      // .hero-ending in style.css. heroEndings[0] muss exakt dem
+      // Anfangstext im HTML entsprechen, sonst gibt es beim ersten
+      // Wechsel einen sichtbaren Sprung. Im Bearbeitungsmodus (?edit=true)
+      // bewusst deaktiviert, da .name-sub dort contenteditable ist und
+      // ein Text-Wechsel alle paar Sekunden eine laufende Bearbeitung
+      // stoeren wuerde.
+      var heroEndings = [
+        'und bin viel mit dem Hund draußen.',
+        'und lebe in Leipzig.',
+        'und tanze gern Lindy Hop.',
+        'und bin oft mit dem Rennrad unterwegs.',
+        'und fahre am liebsten mit dem Camper los.',
+        'und laufe morgens mit Elmo.'
+      ];
+
+      var heroEndingEl = document.getElementById('heroEnding');
+      var isEditMode = new URLSearchParams(window.location.search).get('edit') === 'true';
+      if (heroEndingEl && !isEditMode && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var endingIndex = 0;
+        setInterval(function () {
+          heroEndingEl.classList.add('is-swapping');
+          setTimeout(function () {
+            endingIndex = (endingIndex + 1) % heroEndings.length;
+            heroEndingEl.textContent = heroEndings[endingIndex];
+            heroEndingEl.classList.remove('is-swapping');
+          }, 400);
+        }, 4500);
+      }
     });
   </script>
 
