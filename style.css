@@ -730,8 +730,13 @@ html.hero-fixed .hero-line-wrapper {
 
 .portfolio-media {
   position: relative;
-  width: 100%;
   aspect-ratio: 16 / 9;
+  /* Analog zu .lightbox-media: Hoehe bleibt auf einen Anteil der
+     Bildschirmhoehe begrenzt, Breite folgt daraus -- ohne diese Bremse
+     wurde das Bild auf breiten, aber nicht sehr hohen Laptop-Bild-
+     schirmen bei voller Breite und 16:9 unverhaeltnismaessig hoch. */
+  width: min(100%, calc(56vh * 16 / 9));
+  margin: 0 auto;
   overflow: hidden;
   background-color: var(--line);
   cursor: pointer;
