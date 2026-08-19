@@ -1249,6 +1249,10 @@ html.hero-fixed .hero-line-wrapper {
 /* MOBIL RESPONSIVE -- ein einziger Breakpoint-Block statt mehrerer
    verstreuter @media-Regeln, gilt fuer alle drei Seiten gemeinsam. */
 @media (max-width: 768px) {
+  :root {
+    --logo-bar-height-mobile: 4rem; /* statt 7rem -- Nav ist bereits nach unten gewandert, oben wird nur noch der Titel gebraucht */
+  }
+
   .elmo-peek { display: none; } /* kein Hover auf Touch, waere nie sichtbar */
 
   .poem-block { left: 6vw; right: 6vw; padding-right: 0; }
@@ -1272,7 +1276,10 @@ html.hero-fixed .hero-line-wrapper {
     -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--line);
   }
-  .site-nav a { font-size: 0.95rem; }
+  .site-nav a {
+    font-size: 0.95rem;
+    color: var(--accent); /* dauerhaft orange auf Mobile, nicht erst bei Hover/Touch -- untere Leiste als App-Tableiste erkennbar */
+  }
 
   /* Kein eigenes padding-bottom hier: das war dieselbe Ursache, die auf
      Desktop schon einmal behoben wurde (siehe Kommentar bei der
@@ -1302,8 +1309,22 @@ html.hero-fixed .hero-line-wrapper {
      den Container trotzdem in ein quadratisches Format, waehrend das
      Bild selbst kleiner bleibt -- dazwischen blieb eine leere graue
      Flaeche stehen. */
-  .intro-portrait { justify-content: center; align-self: auto; margin-left: 0; margin-top: 0; margin-right: 0; aspect-ratio: auto; }
-  .portrait-freistehend { height: auto; width: 100%; max-width: 300px; max-height: none; object-fit: contain; }
+  .intro-portrait {
+    justify-content: center;
+    align-self: auto;
+    margin-left: 0; margin-top: 0; margin-right: 0;
+    aspect-ratio: auto;
+    padding: 1rem 0 2rem 0; /* eigenstaendiges Bild mit normalem Innenabstand statt Sockel-Buendigkeit */
+  }
+  .portrait-freistehend {
+    height: auto; width: 100%; max-width: 300px; max-height: none; object-fit: contain;
+    /* .intro-portrait picture (Desktop-Regel, width:100%) fuellt als Flex-Item
+       bereits die volle Containerbreite aus -- justify-content:center auf
+       .intro-portrait hat dadurch keinen Spielraum mehr. Ohne margin:auto
+       haengt das <img> als Block-Element innerhalb von <picture> links statt
+       zentriert. */
+    margin: 0 auto;
+  }
 
   .page-sections { gap: 2.5rem; margin-top: 4rem; padding-top: 4rem; }
 

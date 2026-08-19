@@ -738,6 +738,19 @@
         });
       });
 
+      // Erstes Panel von Anfang an aufgeklappt zeigen (nur auf Mobile
+      // sichtbar, siehe .portfolio-panel.is-open in style.css) -- kein
+      // Toggle-Aufruf, nur der initiale Zustand, damit beim ersten Laden
+      // nicht erst getippt werden muss.
+      var firstButton = portfolioFlowEl.querySelector('.portfolio-item');
+      if (firstButton) {
+        var firstPanel = getPanelForButton(firstButton);
+        if (firstPanel) {
+          firstPanel.classList.add('is-open');
+          firstButton.setAttribute('aria-expanded', 'true');
+        }
+      }
+
       filters.forEach(function (filterBtn) {
         filterBtn.addEventListener('click', function () {
           filters.forEach(function (f) { f.classList.remove('is-active'); });
