@@ -287,31 +287,33 @@ html.hero-fixed .hero-line-wrapper {
   width: 3rem;
   height: 3rem;
   margin-top: 2.5rem;
-  border: 1px solid var(--muted-dark);
+  border: 1px solid var(--text-dark); /* war --muted-dark -- kraeftigerer Kontrast statt fein/verwaschen */
   border-radius: 50%;
   appearance: none;
   background: none;
   cursor: pointer;
   pointer-events: auto;
-  animation: scroll-hint-pulse 2.2s ease-in-out infinite;
+  opacity: 0;
+  /* Blendet erst nach 1.2s sanft ein (0.6s), erst danach beginnt das
+     Pulsieren (Start bei 1.8s = 1.2s + 0.6s) -- ohne den eigenen Delay
+     wuerde .scroll-hint-pulse den Hint schon ab Sekunde 0 sichtbar
+     machen und das Einblenden unterlaufen. */
+  animation: scroll-hint-fade-in 0.6s ease 1.2s forwards,
+             scroll-hint-pulse 2.2s ease-in-out 1.8s infinite;
   transition: border-color var(--fade);
 }
 
 .scroll-hint-chevron {
   width: 1rem;
   height: 1rem;
-  border-right: 1.5px solid var(--muted-dark);
-  border-bottom: 1.5px solid var(--muted-dark);
+  border-right: 2px solid var(--text-dark); /* war 1.5px / --muted-dark */
+  border-bottom: 2px solid var(--text-dark);
   transform: translateY(-2px) rotate(45deg);
   transition: border-color var(--fade);
 }
 
-.scroll-hint:hover {
-  border-color: var(--text-dark);
-}
-
-.scroll-hint:hover .scroll-hint-chevron {
-  border-color: var(--text-dark);
+@keyframes scroll-hint-fade-in {
+  to { opacity: 1; }
 }
 
 @keyframes scroll-hint-pulse {
@@ -322,6 +324,7 @@ html.hero-fixed .hero-line-wrapper {
 @media (prefers-reduced-motion: reduce) {
   .scroll-hint {
     animation: none;
+    opacity: 1; /* sonst bliebe der Hint durch die neue Basis-opacity:0 dauerhaft unsichtbar, wenn keine Animation mehr laeuft */
   }
 }
 
@@ -1269,7 +1272,10 @@ html.hero-fixed .hero-line-wrapper {
 
   .elmo-peek { display: none; } /* kein Hover auf Touch, waere nie sichtbar */
 
-  .poem-block { left: 6vw; right: 6vw; padding-right: 0; }
+  .poem-block {
+    left: 6vw; right: 6vw; padding-right: 0;
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom)); /* haelt den Scroll-Hint frei von Safaris unterer Systemleiste/Reader-Bar */
+  }
   .poem-line { font-size: 1.35rem; white-space: normal; }
   .site-title {
     /* Vertikal mittig im (jetzt kompakteren) Kopfbereich statt fixem
