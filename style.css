@@ -1277,6 +1277,12 @@ html.hero-fixed .hero-line-wrapper {
     padding-bottom: calc(2rem + env(safe-area-inset-bottom)); /* haelt den Scroll-Hint frei von Safaris unterer Systemleiste/Reader-Bar */
   }
   .poem-line { font-size: 1.35rem; white-space: normal; }
+  /* .poem-block ist auf Mobile links-/rechtsbuendig ueber die volle
+     Breite (left/right:6vw statt einer festen linksseitigen Position
+     wie am Desktop) -- der Hint soll dort horizontal zentriert stehen
+     statt wie der uebrige, linksbuendige Gedichttext an der linken
+     Kante zu kleben. */
+  .scroll-hint { margin-left: auto; margin-right: auto; }
   .site-title {
     /* Vertikal mittig im (jetzt kompakteren) Kopfbereich statt fixem
        top-Wert -- haengt sich an --logo-bar-height-mobile statt an einem
