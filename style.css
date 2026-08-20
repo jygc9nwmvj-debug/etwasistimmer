@@ -1446,10 +1446,39 @@ html.hero-fixed .hero-line-wrapper {
     line-height: 1.6;
   }
 
+  /* Eine gemeinsame Zeile statt zweier gestapelter Bloecke: "Mehr
+     Bilder ansehen" (eigentlicher Inhalt) als beschrifteter Haupt-
+     Button in der Mitte, Voriges/Naechstes (reine Navigationshilfe)
+     als kleine Pfeil-Icons links/rechts daneben. Siehe JS:
+     renderPortfolioItems(). */
+  .portfolio-panel-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--line); /* einzige Trennlinie, statt zweier gestapelter Bloecke */
+  }
+
+  .portfolio-panel-arrow-icon {
+    appearance: none;
+    background: none;
+    border: none;
+    color: var(--muted-light);
+    font-size: 1.4rem;
+    line-height: 1;
+    padding: 0.4rem;
+  }
+
+  .portfolio-panel-arrow-icon:active {
+    color: var(--accent);
+  }
+
   /* Oeffnet die bestehende Lightbox, siehe JS: renderPortfolioItems(). */
   .portfolio-panel-more {
-    display: block;
-    margin-top: 1rem;
+    flex: 1;
+    text-align: center;
     appearance: none;
     background: none;
     border: 1px solid var(--line);
@@ -1467,51 +1496,54 @@ html.hero-fixed .hero-line-wrapper {
     border-color: var(--accent);
   }
 
-  /* Vor/Zurueck innerhalb des aufgeklappten Panels, siehe JS:
-     renderPortfolioItems(). */
-  .portfolio-panel-nav {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1.25rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--line);
-  }
-
-  .portfolio-panel-arrow {
-    appearance: none;
-    background: none;
-    border: none;
-    color: var(--text-light);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.4em;
-    padding: 0.5rem 0;
-  }
-
-  .portfolio-panel-arrow:active {
-    color: var(--accent);
-  }
-
-  /* Auf Mobile bleibt es bei fest am Viewport verankerten
-     Lightbox-Controls statt am (dort ohnehin viewportbreiten) Frame. */
-  .lightbox-close,
-  .lightbox-nav {
+  /* Auf Mobile bleibt nur der Close-Button fest am Viewport verankert.
+     Die Pfeile lagen zuvor ebenfalls position:fixed direkt auf dem Bild
+     -- rutschen jetzt stattdessen als eigene Zeile in den normalen
+     Dokumentfluss zwischen Bild und Info-Block (siehe .lightbox-nav-row/
+     order unten), unabhaengig von der Bildhelligkeit immer auf
+     durchgehend schwarzem Hintergrund. */
+  .lightbox-close {
     position: fixed;
   }
 
+  .lightbox-nav {
+    position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    transform: none;
+  }
+
+  .lightbox-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .lightbox-nav-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0.5rem;
+    order: 2; /* zwischen .lightbox-media (order 1) und .lightbox-info (order 3) */
+  }
+
+  .lightbox-media {
+    order: 1;
+    width: min(100%, 1100px, calc(48vh * 16 / 9));
+  }
+
+  .lightbox-info {
+    order: 3;
+    width: min(100%, 1100px, calc(48vh * 16 / 9));
+    padding: 1rem 1.1rem 1.15rem;
+    margin-top: 1rem;
+  }
+
   .lightbox-frame { inset: 4rem 0.75rem; }
-  .lightbox-media { width: min(100%, 1100px, calc(48vh * 16 / 9)); }
-  .lightbox-info { width: min(100%, 1100px, calc(48vh * 16 / 9)); padding: 1rem 1.1rem 1.15rem; margin-top: 1rem; }
   .lightbox-desc { font-size: 0.85rem; }
   .filmstrip-thumb { width: 4.5rem; }
   .lightbox-close { width: 2.75rem; height: 2.75rem; font-size: 1.6rem; }
   .lightbox-arrow { width: 2.75rem; height: 2.75rem; font-size: 1.8rem; }
   .lightbox-nav-label { font-size: 0.6rem; }
-  .lightbox-nav-prev { left: 0.25rem; }
-  .lightbox-nav-next { right: 0.25rem; }
 
   /* Die eigentliche Ursache fuer den weitlaeufig wirkenden Footer war
      .content-stage's padding-bottom (siehe oben) -- das hier ist eine
