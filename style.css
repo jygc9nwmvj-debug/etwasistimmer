@@ -1522,7 +1522,7 @@ html.hero-fixed .hero-line-wrapper {
   .lightbox-nav-row {
     display: flex;
     justify-content: space-between;
-    padding: 0.75rem 0.5rem;
+    padding: 0.5rem 1rem;
     order: 2; /* zwischen .lightbox-media (order 1) und .lightbox-info (order 3) */
   }
 
@@ -1542,8 +1542,19 @@ html.hero-fixed .hero-line-wrapper {
   .lightbox-desc { font-size: 0.85rem; }
   .filmstrip-thumb { width: 4.5rem; }
   .lightbox-close { width: 2.75rem; height: 2.75rem; font-size: 1.6rem; }
-  .lightbox-arrow { width: 2.75rem; height: 2.75rem; font-size: 1.8rem; }
-  .lightbox-nav-label { font-size: 0.6rem; }
+  .lightbox-arrow { width: 2.25rem; height: 2.25rem; font-size: 1.6rem; }
+  .lightbox-nav-label {
+    font-size: 0.6rem;
+    white-space: nowrap; /* erzwingt eine Zeile statt des Umbruchs per <br> */
+  }
+  /* Der <br> bleibt im Markup fuer den Desktop-Zeilenumbruch (der
+     einzeilige Text wuerde dort bei .lightbox-navs schmaler 5.5rem-
+     Breite unkontrolliert umbrechen) -- auf Mobile per display:none
+     unwirksam gemacht, das vorangestellte Leerzeichen im Text sorgt
+     weiterhin fuer den Wortabstand. */
+  .lightbox-nav-break {
+    display: none;
+  }
 
   /* Die eigentliche Ursache fuer den weitlaeufig wirkenden Footer war
      .content-stage's padding-bottom (siehe oben) -- das hier ist eine
