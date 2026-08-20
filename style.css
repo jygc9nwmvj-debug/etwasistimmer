@@ -275,49 +275,52 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--muted-dark);
 }
 
-/* Die Zeigehand schließt das Gedicht unten ab, linksbündig mit dem
-   Textblock -- wie ein klassisches Manicule/Schlussornament im
-   Buchsatz. Normaler Flow-Fluss statt Absolute-Positionierung. */
+/* Schliesst das Gedicht unten ab, linksbuendig mit dem Textblock.
+   Seit dem Umstieg auf Klick-Ausloesung (statt Scroll-Fortschritt)
+   keine Scroll-Metapher mehr noetig -- ein pulsierender Kreis mit
+   Chevron signalisiert "hier antippen", ohne Bewegung vorzuschreiben.
+   Dieselbe Formsprache wie .lightbox-close (duenner Rahmen, kein Glow). */
 .scroll-hint {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
   margin-top: 2.5rem;
+  border: 1px solid var(--muted-dark);
+  border-radius: 50%;
   appearance: none;
   background: none;
-  border: 0;
-  padding: 0;
   cursor: pointer;
   pointer-events: auto;
+  animation: scroll-hint-pulse 2.2s ease-in-out infinite;
+  transition: border-color var(--fade);
 }
 
-.scroll-hint-hand {
-  display: block;
-  height: clamp(4.5rem, 6vw, 6rem);
-  width: auto;
-  aspect-ratio: 265 / 512;
-  background-color: var(--muted-dark);
-  -webkit-mask-image: url('image-neu.png');
-  mask-image: url('image-neu.png');
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  transition: background-color var(--fade);
-  animation: scroll-hint-bounce 1.6s ease-in-out infinite;
+.scroll-hint-chevron {
+  width: 1rem;
+  height: 1rem;
+  border-right: 1.5px solid var(--muted-dark);
+  border-bottom: 1.5px solid var(--muted-dark);
+  transform: translateY(-2px) rotate(45deg);
+  transition: border-color var(--fade);
 }
 
-.scroll-hint:hover .scroll-hint-hand {
-  background-color: var(--text-dark);
+.scroll-hint:hover {
+  border-color: var(--text-dark);
 }
 
-@keyframes scroll-hint-bounce {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(4px); }
+.scroll-hint:hover .scroll-hint-chevron {
+  border-color: var(--text-dark);
+}
+
+@keyframes scroll-hint-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.94); }
+  50%      { opacity: 1;    transform: scale(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scroll-hint-hand {
+  .scroll-hint {
     animation: none;
   }
 }
