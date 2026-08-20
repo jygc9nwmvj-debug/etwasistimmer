@@ -375,6 +375,21 @@
         // gehalten werden muesste, nur diesen einen Moment.
         measure();
 
+        // .scroll-hint laeuft dauerhaft in einer eigenen CSS-Animation
+        // (Einblenden + Pulsieren, siehe style.css), die ebenfalls
+        // opacity/transform animiert -- ohne diesen Schritt wuerde sie
+        // mit GSAPs gleich startendem Fade-Out unten um dieselben
+        // Eigenschaften konkurrieren (CSS-Animationen haben Vorrang vor
+        // per Inline-Style gesetzten Werten), wodurch der Pfeil laenger
+        // stehen blieb als der Rest der .fade-line-Elemente. Aktuellen
+        // Anblick als festen Wert einfrieren, dann die Animation stoppen,
+        // damit GSAP sauber von dort aus weiter ausblenden kann.
+        var scrollHintEl = document.getElementById('scrollHint');
+        if (scrollHintEl) {
+          scrollHintEl.style.opacity = getComputedStyle(scrollHintEl).opacity;
+          scrollHintEl.style.animation = 'none';
+        }
+
         var tl = gsap.timeline({
           onComplete: function () {
             document.body.classList.remove('poem-active');
