@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="stylesheet" href="style.css?v=16">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -258,11 +258,19 @@
         <div class="lightbox-media">
           <img id="lightboxImage" src="" alt="" class="lightbox-image">
         </div>
-        <!-- Auf Mobile per .lightbox-nav-row/order als eigene Zeile
-             zwischen Bild und Info-Block dargestellt (siehe style.css) --
-             auf Desktop unveraendert absolut ueber .lightbox-frame
-             positioniert, .lightbox-nav-row selbst bleibt dort ohne
-             eigene Hoehe im Textfluss. -->
+        <div class="lightbox-info">
+          <span class="lightbox-genre" id="lightboxGenre"></span>
+          <h3 class="lightbox-title" id="lightboxTitle"></h3>
+          <p class="lightbox-desc" id="lightboxDesc"></p>
+          <div class="lightbox-filmstrip" id="lightboxFilmstrip"></div>
+        </div>
+        <!-- Auf Mobile per .lightbox-nav-row/order als eigene Zeile ganz
+             am Ende dargestellt, nach Bild und Info-Block/Filmstrip
+             (siehe style.css) -- Inhalt vor Navigation, echte DOM-
+             Reihenfolge statt nur visueller order, damit Tab-Reihenfolge
+             mitzieht. Auf Desktop unveraendert absolut ueber
+             .lightbox-frame positioniert, .lightbox-nav-row selbst
+             bleibt dort ohne eigene Hoehe im Textfluss. -->
         <div class="lightbox-nav-row">
           <button type="button" class="lightbox-nav lightbox-nav-prev" id="lightboxPrev" aria-label="Voriges Projekt">
             <span class="lightbox-arrow" aria-hidden="true">‹</span>
@@ -272,12 +280,6 @@
             <span class="lightbox-arrow" aria-hidden="true">›</span>
             <span class="lightbox-nav-label" aria-hidden="true">Nächstes <br class="lightbox-nav-break">Projekt</span>
           </button>
-        </div>
-        <div class="lightbox-info">
-          <span class="lightbox-genre" id="lightboxGenre"></span>
-          <h3 class="lightbox-title" id="lightboxTitle"></h3>
-          <p class="lightbox-desc" id="lightboxDesc"></p>
-          <div class="lightbox-filmstrip" id="lightboxFilmstrip"></div>
         </div>
       </div>
     </div>
