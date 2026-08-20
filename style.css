@@ -1307,18 +1307,41 @@ html.hero-fixed .hero-line-wrapper {
   .section-inner { padding-left: 6vw; padding-right: 6vw; }
   .main-intro {
     padding: calc(var(--logo-bar-height-mobile) + 1.5rem) 0 2.5rem 0;
-    scroll-margin-top: 7rem;
+    /* War hart auf 7rem kodiert -- ein Leftover aus der Zeit vor dem
+       --logo-bar-height-mobile-Fix (7rem -> 4rem), dadurch reservierte
+       der Scroll-Sprung deutlich mehr Puffer, als die kleinere Kopf-
+       leiste tatsaechlich braucht. */
+    scroll-margin-top: calc(var(--logo-bar-height-mobile) + 1rem);
   }
   .page-intro {
     padding: calc(var(--logo-bar-height-mobile) + 1.5rem) 0 4rem 0;
-    scroll-margin-top: 7rem;
+    scroll-margin-top: calc(var(--logo-bar-height-mobile) + 1rem);
   }
+
+  /* Restliche Anker-Ziele, deren scroll-margin-top desktop-seitig an
+     --logo-bar-height (10.5rem) gekoppelt ist bzw. hart auf 12rem
+     kodiert war -- auf Mobile bisher ungekoppelt, dadurch reservierte
+     der Scroll-Sprung auf dem iPhone deutlich mehr Puffer, als die
+     kleinere Kopfleiste braucht (Section rutschte sichtbar zu weit
+     unter den Header). #formatentwicklung-section existiert nicht im
+     Markup, daher hier weggelassen. */
+  #beratung-section,
+  #profil-section,
+  .col-card,
+  #portfolio,
+  #kontakt {
+    scroll-margin-top: calc(var(--logo-bar-height-mobile) + 1rem);
+  }
+
   .main-intro-inner {
     grid-template-columns: 1fr;
     gap: 2.5rem;
     align-items: center;
   }
-  .intro-text { padding-bottom: 0; }
+  .intro-text {
+    padding-top: 2.5rem; /* mehr Raum vor dem Hero-Text -- asymmetrisch zum knappen Abstand vorm Bild darunter, siehe .intro-portrait */
+    padding-bottom: 0;
+  }
   /* aspect-ratio:1/1 (siehe Desktop-Regel) ist nur fuer die feste
      Grid-Spaltenbreite gedacht -- auf Mobile faellt die Spalte weg
      (main-intro-inner wird 1fr einspaltig), das Bild schrumpft eigen-
@@ -1331,7 +1354,7 @@ html.hero-fixed .hero-line-wrapper {
     align-self: auto;
     margin-left: 0; margin-top: 0; margin-right: 0;
     aspect-ratio: auto;
-    padding: 1rem 0 2rem 0; /* eigenstaendiges Bild mit normalem Innenabstand statt Sockel-Buendigkeit */
+    padding: 0.5rem 0 2rem 0; /* wenig Abstand oben zum Text (natuerliche Lesehierarchie: Bild als dichte Fortsetzung), normaler Abstand nach unten */
   }
   .portrait-freistehend {
     height: auto; width: 100%; max-width: 300px; max-height: none; object-fit: contain;
@@ -1421,6 +1444,27 @@ html.hero-fixed .hero-line-wrapper {
     font-weight: 400;
     color: var(--muted-light);
     line-height: 1.6;
+  }
+
+  /* Oeffnet die bestehende Lightbox, siehe JS: renderPortfolioItems(). */
+  .portfolio-panel-more {
+    display: block;
+    margin-top: 1rem;
+    appearance: none;
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.55rem 1.1rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+  }
+
+  .portfolio-panel-more:active {
+    color: var(--accent);
+    border-color: var(--accent);
   }
 
   /* Vor/Zurueck innerhalb des aufgeklappten Panels, siehe JS:
