@@ -475,6 +475,20 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--text-light);
 }
 
+.name-sub-footnote {
+  margin-top: 1rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: var(--muted-light);
+}
+
+.name-sub-footnote a {
+  display: inline-block;
+  position: relative;
+  color: var(--text-light);
+  text-decoration: none;
+}
+
 /* PORTRAIT INTEGRATION (nur index.html) */
 .intro-portrait {
   position: relative;
@@ -827,11 +841,13 @@ html.hero-fixed .hero-line-wrapper {
 /* Dieselbe wachsende Unterstrich-Animation wie beim Portfolio-Titel
    oben, hier fuer echte Text-Links -- currentColor statt --accent, da
    jeder dieser Links seine eigene Farbe traegt (Orange, geerbte
-   Footer-Farbe, geerbte Kontakt-Farbe). .portfolio-item/.portfolio-sep
-   bleiben bewusst aussen vor (kein ::after dort). */
+   Footer-Farbe, geerbte Kontakt-Farbe, geerbte Hero-Footnote-Farbe).
+   .portfolio-item/.portfolio-sep bleiben bewusst aussen vor (kein
+   ::after dort). */
 .col-card-link::after,
 .footer-meta a::after,
-.contact-email::after {
+.contact-email::after,
+.name-sub-footnote a::after {
   content: '';
   position: absolute;
   left: 0;
@@ -846,7 +862,8 @@ html.hero-fixed .hero-line-wrapper {
 
 .col-card-link:hover::after,
 .footer-meta a:hover::after,
-.contact-email:hover::after {
+.contact-email:hover::after,
+.name-sub-footnote a:hover::after {
   transform: scaleX(1);
 }
 
