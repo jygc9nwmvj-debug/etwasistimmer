@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=12">
+  <link rel="stylesheet" href="style.css?v=14">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -254,17 +254,24 @@
   <div class="lightbox" id="portfolioLightbox" aria-hidden="true">
     <div class="lightbox-frame">
       <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Schließen">×</button>
-      <button type="button" class="lightbox-nav lightbox-nav-prev" id="lightboxPrev" aria-label="Voriges Projekt">
-        <span class="lightbox-arrow" aria-hidden="true">‹</span>
-        <span class="lightbox-nav-label" aria-hidden="true">Voriges<br>Projekt</span>
-      </button>
-      <button type="button" class="lightbox-nav lightbox-nav-next" id="lightboxNext" aria-label="Nächstes Projekt">
-        <span class="lightbox-arrow" aria-hidden="true">›</span>
-        <span class="lightbox-nav-label" aria-hidden="true">Nächstes<br>Projekt</span>
-      </button>
       <div class="lightbox-content">
         <div class="lightbox-media">
           <img id="lightboxImage" src="" alt="" class="lightbox-image">
+        </div>
+        <!-- Auf Mobile per .lightbox-nav-row/order als eigene Zeile
+             zwischen Bild und Info-Block dargestellt (siehe style.css) --
+             auf Desktop unveraendert absolut ueber .lightbox-frame
+             positioniert, .lightbox-nav-row selbst bleibt dort ohne
+             eigene Hoehe im Textfluss. -->
+        <div class="lightbox-nav-row">
+          <button type="button" class="lightbox-nav lightbox-nav-prev" id="lightboxPrev" aria-label="Voriges Projekt">
+            <span class="lightbox-arrow" aria-hidden="true">‹</span>
+            <span class="lightbox-nav-label" aria-hidden="true">Voriges<br>Projekt</span>
+          </button>
+          <button type="button" class="lightbox-nav lightbox-nav-next" id="lightboxNext" aria-label="Nächstes Projekt">
+            <span class="lightbox-arrow" aria-hidden="true">›</span>
+            <span class="lightbox-nav-label" aria-hidden="true">Nächstes<br>Projekt</span>
+          </button>
         </div>
         <div class="lightbox-info">
           <span class="lightbox-genre" id="lightboxGenre"></span>
@@ -642,6 +649,20 @@
           panelInner.appendChild(panelGenre);
           panelInner.appendChild(panelDesc);
 
+          // Eine gemeinsame Zeile statt zweier gestapelter Bloecke:
+          // "Mehr Bilder ansehen" ist der eigentliche Inhalt (mehr vom
+          // aktuellen Projekt), Voriges/Naechstes ist reine Navigations-
+          // hilfe -- deshalb als kleine Pfeil-Icons links/rechts neben
+          // dem Haupt-Button statt gleichrangig in eigener Zeile.
+          var panelActions = document.createElement('div');
+          panelActions.className = 'portfolio-panel-actions';
+
+          var prevIcon = document.createElement('button');
+          prevIcon.type = 'button';
+          prevIcon.className = 'portfolio-panel-arrow-icon';
+          prevIcon.innerHTML = '‹';
+          prevIcon.setAttribute('aria-label', 'Voriges Projekt');
+
           // Oeffnet die bestehende Lightbox (Stills/Filmstreifen) --
           // .portfolio-media ist auf Mobile per CSS display:none, existiert
           // aber weiterhin im DOM samt ihrem Klick-Listener (openLightbox);
@@ -660,28 +681,16 @@
             var desktopMedia = document.querySelector('.portfolio-media');
             if (desktopMedia) desktopMedia.click();
           });
-          panelInner.appendChild(panelMoreBtn);
 
-          // Vor/Zurueck nur innerhalb des aufgeklappten Mobile-Panels
-          // (siehe .portfolio-panel-nav in style.css, nur im Mobile-Media-
-          // Query sichtbar) -- erspart auf Mobile das Zurueckscrollen zur
-          // Liste, um zum naechsten Projekt zu wechseln. button bezieht
-          // sich auf den zu diesem Panel gehoerenden .portfolio-item, per
-          // Closure aus dem forEach-Scope.
-          var panelNav = document.createElement('div');
-          panelNav.className = 'portfolio-panel-nav';
+          var nextIcon = document.createElement('button');
+          nextIcon.type = 'button';
+          nextIcon.className = 'portfolio-panel-arrow-icon';
+          nextIcon.innerHTML = '›';
+          nextIcon.setAttribute('aria-label', 'Nächstes Projekt');
 
-          var prevBtn = document.createElement('button');
-          prevBtn.type = 'button';
-          prevBtn.className = 'portfolio-panel-arrow';
-          prevBtn.innerHTML = '‹ Voriges';
-
-          var nextBtn = document.createElement('button');
-          nextBtn.type = 'button';
-          nextBtn.className = 'portfolio-panel-arrow';
-          nextBtn.innerHTML = 'Nächstes ›';
-
-          prevBtn.addEventListener('click', function (e) {
+          // button bezieht sich auf den zu diesem Panel gehoerenden
+          // .portfolio-item, per Closure aus dem forEach-Scope.
+          prevIcon.addEventListener('click', function (e) {
             e.stopPropagation(); // verhindert, dass der Klick zusaetzlich den Panel-Toggle des Titel-Buttons ausloest
             var shown = visibleItems();
             var current = shown.indexOf(button);
@@ -690,7 +699,7 @@
             scrollPanelIntoViewAfterOpen(target);
           });
 
-          nextBtn.addEventListener('click', function (e) {
+          nextIcon.addEventListener('click', function (e) {
             e.stopPropagation();
             var shown = visibleItems();
             var current = shown.indexOf(button);
@@ -699,9 +708,10 @@
             scrollPanelIntoViewAfterOpen(target);
           });
 
-          panelNav.appendChild(prevBtn);
-          panelNav.appendChild(nextBtn);
-          panelInner.appendChild(panelNav);
+          panelActions.appendChild(prevIcon);
+          panelActions.appendChild(panelMoreBtn);
+          panelActions.appendChild(nextIcon);
+          panelInner.appendChild(panelActions);
 
           panel.appendChild(panelInner);
           container.appendChild(panel);
@@ -801,7 +811,7 @@
       // falls transitionend aus irgendeinem Grund nie feuert.
       //
       // Ziel ist .portfolio-panel-media (das Vorschaubild), nicht mehr
-      // .portfolio-panel-nav oder der Titel-Button: waehrend das Panel
+      // .portfolio-panel-actions oder der Titel-Button: waehrend das Panel
       // sich oeffnet, verschiebt sich seine Position noch -- erst NACH
       // Abschluss der max-height-Transition (transitionend, mit
       // setTimeout-Fallback fuer den Fall, dass es nie feuert) wird
@@ -811,7 +821,7 @@
       // stattdessen wird die Ziel-Scroll-Position weiterhin manuell per
       // getBoundingClientRect() + window.scrollTo() berechnet: Bild
       // vertikal zentrieren, aber nie WENIGER weit scrollen, als noetig
-      // ist, damit .portfolio-panel-nav (Voriges/Naechstes) oberhalb der
+      // ist, damit .portfolio-panel-actions (Voriges/Naechstes) oberhalb der
       // fixierten unteren Nav-Leiste sichtbar bleibt -- sonst waere bei
       // laengeren Panels wieder genau der Buttons-unter-der-Leiste-Bug
       // von vorhin da.
@@ -822,17 +832,17 @@
           if (scrolled) return;
           scrolled = true;
           var media = targetPanel && targetPanel.querySelector('.portfolio-panel-media');
-          var panelNav = targetPanel && targetPanel.querySelector('.portfolio-panel-nav');
+          var panelActions = targetPanel && targetPanel.querySelector('.portfolio-panel-actions');
           var scrollTarget = media || target;
           var rect = scrollTarget.getBoundingClientRect();
           var delta = media
             ? (rect.top + rect.height / 2) - (window.innerHeight / 2)
             : rect.bottom - window.innerHeight;
-          if (panelNav) {
+          if (panelActions) {
             var navBar = document.querySelector('.site-nav');
             var clearance = (navBar ? navBar.getBoundingClientRect().height : 0) + 16;
-            var navRect = panelNav.getBoundingClientRect();
-            var minDelta = navRect.bottom - (window.innerHeight - clearance);
+            var actionsRect = panelActions.getBoundingClientRect();
+            var minDelta = actionsRect.bottom - (window.innerHeight - clearance);
             if (minDelta > delta) delta = minDelta;
           }
           window.scrollTo({ top: window.scrollY + delta, behavior: 'smooth' });
@@ -1085,6 +1095,13 @@
         // fixed/absolute immer Viewport-relativ, bei position:absolute
         // rechnen wir das auf den jeweiligen Bezugsrahmen um.
         var positionNavArrows = function () {
+          // Auf Mobile liegen die Pfeile als eigene Zeile im normalen
+          // Dokumentfluss (position:static, siehe .lightbox-nav-row in
+          // style.css) -- brauchen also keine per-JS berechnete top-
+          // Position mehr. Ohne dieses Skip wuerde ein alter style.top-
+          // Wert (von einer vorherigen Desktop-Breite) stehen bleiben
+          // und die statische Positionierung versehentlich ueberschreiben.
+          if (window.innerWidth <= 768) return;
           if (!lbMedia) return;
           var mediaRect = lbMedia.getBoundingClientRect();
           var centerY = mediaRect.top + mediaRect.height / 2;
