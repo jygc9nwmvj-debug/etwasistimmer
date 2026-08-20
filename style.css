@@ -1499,9 +1499,10 @@ html.hero-fixed .hero-line-wrapper {
   /* Auf Mobile bleibt nur der Close-Button fest am Viewport verankert.
      Die Pfeile lagen zuvor ebenfalls position:fixed direkt auf dem Bild
      -- rutschen jetzt stattdessen als eigene Zeile in den normalen
-     Dokumentfluss zwischen Bild und Info-Block (siehe .lightbox-nav-row/
-     order unten), unabhaengig von der Bildhelligkeit immer auf
-     durchgehend schwarzem Hintergrund. */
+     Dokumentfluss ganz ans Ende, nach dem Info-Block/Filmstrip (siehe
+     .lightbox-nav-row/order unten) -- Inhalt vor Navigation, statt
+     Navigation mitten reinzuschieben. Unabhaengig von der
+     Bildhelligkeit immer auf durchgehend schwarzem Hintergrund. */
   .lightbox-close {
     position: fixed;
   }
@@ -1523,7 +1524,8 @@ html.hero-fixed .hero-line-wrapper {
     display: flex;
     justify-content: space-between;
     padding: 0.5rem 1rem;
-    order: 2; /* zwischen .lightbox-media (order 1) und .lightbox-info (order 3) */
+    order: 3; /* zuletzt, nach .lightbox-info (order 2) -- Inhalt vor Navigation, natuerliche Lesereihenfolge */
+    margin-top: 0.5rem;
   }
 
   .lightbox-media {
@@ -1532,7 +1534,7 @@ html.hero-fixed .hero-line-wrapper {
   }
 
   .lightbox-info {
-    order: 3;
+    order: 2;
     width: min(100%, 1100px, calc(48vh * 16 / 9));
     padding: 1rem 1.1rem 1.15rem;
     margin-top: 1rem;
