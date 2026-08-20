@@ -1425,7 +1425,7 @@ html.hero-fixed .hero-line-wrapper {
     width: 100%;
     aspect-ratio: 16 / 9;
     overflow: hidden;
-    cursor: pointer; /* oeffnet dieselbe Lightbox wie "Mehr Bilder ansehen", siehe JS: openMorePictures() */
+    cursor: pointer; /* oeffnet dieselbe Lightbox wie das "Mehr Infos"-Overlay, siehe JS: openMorePictures() */
   }
 
   .portfolio-panel-image {
@@ -1454,19 +1454,16 @@ html.hero-fixed .hero-line-wrapper {
     line-height: 1.6;
   }
 
-  /* Eine gemeinsame Zeile statt zweier gestapelter Bloecke: "Mehr
-     Bilder ansehen" (eigentlicher Inhalt) als beschrifteter Haupt-
-     Button in der Mitte, Voriges/Naechstes (reine Navigationshilfe)
-     als kleine Pfeil-Icons links/rechts daneben. Siehe JS:
-     renderPortfolioItems(). */
+  /* Pfeile direkt unter dem Titel, vor dem Bild -- .portfolio-panel-
+     inner traegt bereits 1rem Top-Padding, deshalb kein zusaetzliches
+     margin-top hier noetig. Kein Trennstrich mehr: die Zeile fuehrt
+     jetzt in den Panel-Inhalt ein, statt zwei Bloecke voneinander
+     abzugrenzen. Siehe JS: renderPortfolioItems(). */
   .portfolio-panel-actions {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    margin-top: 1rem;
-    padding-top: 0.85rem;
-    border-top: 1px solid var(--line); /* einzige Trennlinie, statt zweier gestapelter Bloecke */
   }
 
   .portfolio-panel-arrow-icon {
@@ -1483,25 +1480,32 @@ html.hero-fixed .hero-line-wrapper {
     color: var(--accent);
   }
 
-  /* Oeffnet die bestehende Lightbox, siehe JS: renderPortfolioItems(). */
-  .portfolio-panel-more {
-    flex: 1;
-    text-align: center;
+  /* Ersetzt den frueheren separaten "Mehr Bilder ansehen"-Button:
+     blendet zeitverzoegert direkt auf dem Bild ein (siehe JS:
+     revealPanelOverlay()), statt permanent als eigene Zeile darunter
+     zu stehen. Oeffnet dieselbe Lightbox wie ein Tap aufs Bild selbst. */
+  .portfolio-panel-overlay {
+    position: absolute;
+    left: 50%;
+    bottom: 0.75rem;
+    transform: translateX(-50%);
     appearance: none;
-    background: none;
-    border: 1px solid var(--line);
+    background-color: rgba(13, 13, 12, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 999px;
-    padding: 0.55rem 1.1rem;
+    padding: 0.5rem 1rem;
+    color: #fff;
     font-family: 'Inter', sans-serif;
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-light);
-    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none; /* erst aktiv, sobald sichtbar */
   }
 
-  .portfolio-panel-more:active {
-    color: var(--accent);
-    border-color: var(--accent);
+  .portfolio-panel-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   /* Auf Mobile bleibt nur der Close-Button fest am Viewport verankert.
