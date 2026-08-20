@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=17">
+  <link rel="stylesheet" href="style.css?v=18">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -634,8 +634,28 @@
           panel.className = 'portfolio-panel';
           var panelInner = document.createElement('div');
           panelInner.className = 'portfolio-panel-inner';
+          // Oeffnet die bestehende Lightbox (Stills/Filmstreifen) --
+          // .portfolio-media ist auf Mobile per CSS display:none, existiert
+          // aber weiterhin im DOM samt ihrem Klick-Listener (openLightbox);
+          // ein synthetischer .click() darauf loest ihn aus, statt die
+          // Lightbox-Logik hier zu duplizieren. activatePreview(button)
+          // zuerst, damit openLightbox() (das .portfolio-item.is-active
+          // liest) das richtige, gerade aufgeklappte Projekt zeigt statt
+          // eines zuvor angeklickten. Als benannte Funktion statt inline,
+          // damit sowohl panelMoreBtn als auch panelMedia (Bild antippen
+          // soll dasselbe ausloesen -- naheliegendste Klickflaeche auf
+          // Touch-Geraeten) denselben Handler teilen, ohne auf die
+          // Definitionsreihenfolge der beiden Elemente achten zu muessen.
+          function openMorePictures(e) {
+            e.stopPropagation(); // verhindert, dass der Klick zusaetzlich das Panel zuklappt
+            activatePreview(button);
+            var desktopMedia = document.querySelector('.portfolio-media');
+            if (desktopMedia) desktopMedia.click();
+          }
+
           var panelMedia = document.createElement('div');
           panelMedia.className = 'portfolio-panel-media';
+          panelMedia.addEventListener('click', openMorePictures);
           var panelImg = document.createElement('img');
           panelImg.src = item.image;
           panelImg.alt = item.alt;
@@ -665,24 +685,11 @@
           prevIcon.innerHTML = '‹';
           prevIcon.setAttribute('aria-label', 'Voriges Projekt');
 
-          // Oeffnet die bestehende Lightbox (Stills/Filmstreifen) --
-          // .portfolio-media ist auf Mobile per CSS display:none, existiert
-          // aber weiterhin im DOM samt ihrem Klick-Listener (openLightbox);
-          // ein synthetischer .click() darauf loest ihn aus, statt die
-          // Lightbox-Logik hier zu duplizieren. activatePreview(button)
-          // zuerst, damit openLightbox() (das .portfolio-item.is-active
-          // liest) das richtige, gerade aufgeklappte Projekt zeigt statt
-          // eines zuvor angeklickten.
           var panelMoreBtn = document.createElement('button');
           panelMoreBtn.type = 'button';
           panelMoreBtn.className = 'portfolio-panel-more';
           panelMoreBtn.textContent = 'Mehr Bilder ansehen';
-          panelMoreBtn.addEventListener('click', function (e) {
-            e.stopPropagation(); // verhindert, dass der Klick zusaetzlich das Panel zuklappt
-            activatePreview(button);
-            var desktopMedia = document.querySelector('.portfolio-media');
-            if (desktopMedia) desktopMedia.click();
-          });
+          panelMoreBtn.addEventListener('click', openMorePictures);
 
           var nextIcon = document.createElement('button');
           nextIcon.type = 'button';

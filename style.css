@@ -1425,6 +1425,7 @@ html.hero-fixed .hero-line-wrapper {
     width: 100%;
     aspect-ratio: 16 / 9;
     overflow: hidden;
+    cursor: pointer; /* oeffnet dieselbe Lightbox wie "Mehr Bilder ansehen", siehe JS: openMorePictures() */
   }
 
   .portfolio-panel-image {
