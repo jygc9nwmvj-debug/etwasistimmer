@@ -1259,6 +1259,12 @@ html.hero-fixed .hero-line-wrapper {
 @media (max-width: 768px) {
   :root {
     --logo-bar-height-mobile: 4rem; /* statt 7rem -- Nav ist bereits nach unten gewandert, oben wird nur noch der Titel gebraucht */
+    /* Entspricht der real gerenderten Hoehe von .site-nav OHNE Safe-
+       Area (gemessen: ~47.8px = 2.99rem, hier auf 3rem gerundet) --
+       .site-nav bekommt darauf eine min-height, .site-footer eine
+       gleich hohe zusaetzliche Bottom-Padding, damit beide an derselben
+       Zahl haengen statt zwei unabhaengige Werte zu pflegen. */
+    --bottom-nav-height-mobile: 3rem;
   }
 
   .elmo-peek { display: none; } /* kein Hover auf Touch, waere nie sichtbar */
@@ -1282,6 +1288,7 @@ html.hero-fixed .hero-line-wrapper {
     bottom: 0; left: 0;
     transform: none;
     width: 100%;
+    min-height: var(--bottom-nav-height-mobile); /* Referenzwert fuer .site-footers Bottom-Puffer, siehe dort */
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
@@ -1560,12 +1567,15 @@ html.hero-fixed .hero-line-wrapper {
 
   /* Die eigentliche Ursache fuer den weitlaeufig wirkenden Footer war
      .content-stage's padding-bottom (siehe oben) -- das hier ist eine
-     eigenstaendige Ergaenzung, kein zusaetzlicher Kuerzungs-Hebel: auf
-     Geraeten mit Home-Indicator (env(safe-area-inset-bottom)) bekommt
-     der Footer dieselbe Sicherheitszone wie bereits .site-nav, damit
-     der Text nicht zu dicht am unteren Rand klebt. */
+     eigenstaendige Ergaenzung, kein zusaetzlicher Kuerzungs-Hebel.
+     Zusaetzlich zur Home-Indicator-Sicherheitszone (env(safe-area-
+     inset-bottom)) braucht der Footer auf Mobile Puffer in Hoehe der
+     fixierten unteren Nav-Leiste selbst (--bottom-nav-height-mobile,
+     siehe :root oben) -- sonst landet der komplette Footer-Inhalt am
+     Seitenende genau in dem Bereich, den die Leiste ueberdeckt und
+     ist dort nie erreichbar, egal wie weit man scrollt. */
   .site-footer {
-    padding: 1rem 0 calc(1rem + env(safe-area-inset-bottom));
+    padding: 1rem 0 calc(var(--bottom-nav-height-mobile) + env(safe-area-inset-bottom) + 0.5rem);
   }
   .site-footer-inner {
     gap: 1rem;
