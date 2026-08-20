@@ -477,9 +477,33 @@ html.hero-fixed .hero-line-wrapper {
 
 .name-sub-footnote {
   margin-top: 1rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   color: var(--muted-light);
+}
+
+/* Visualisiert das "gerade" im Text -- pulsierender Punkt wie ein
+   Live-/Online-Status-Indikator. */
+.footnote-pulse {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--accent);
+  align-self: center;
+  animation: footnote-pulse 2s ease-in-out infinite;
+}
+
+@keyframes footnote-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.85); }
+  50%      { opacity: 1;    transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footnote-pulse { animation: none; opacity: 1; }
 }
 
 .name-sub-footnote a {
