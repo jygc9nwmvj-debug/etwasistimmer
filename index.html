@@ -374,7 +374,7 @@
           }
         });
 
-        tl.to('.fade-line', { opacity: 0, y: -15, duration: 0.4 }, 0)
+        tl.to('.fade-line', { opacity: 0, y: -24, duration: 0.4 }, 0)
           .to(hero, {
             x: function () { return target.x; },
             y: function () { return target.y; },
@@ -833,6 +833,18 @@
           stopPortfolioAutoplay();
           activatePreview(button);
           togglePanel(button);
+
+          // Direktes Antippen eines Titels soll das Vorschaubild genauso
+          // zentrieren wie das Blaettern ueber Voriges/Naechstes -- aus
+          // Nutzersicht dieselbe Handlung (Projekt oeffnen), nur ueber
+          // einen anderen Ausloeser. Nur wenn togglePanel() das Panel
+          // tatsaechlich GEOEFFNET hat: tippt man denselben, bereits
+          // offenen Titel erneut an (schliesst das Panel), soll nicht
+          // gescrollt werden.
+          var openedPanel = getPanelForButton(button);
+          if (openedPanel && openedPanel.classList.contains('is-open')) {
+            scrollPanelIntoViewAfterOpen(button);
+          }
         });
       });
 
