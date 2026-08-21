@@ -480,11 +480,20 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--text-light);
 }
 
+/* Eigenstaendige Chip statt fliessender Fliesstext-Zeile -- liest sich
+   dadurch als bewusst eingeschobener Status-Hinweis statt als weitere
+   Absatzzeile, die den Lesefluss von Bio-Text zu Portraet unterbricht.
+   display:inline-flex begrenzt die Breite auf den Inhalt (statt volle
+   Breite wie ein Blockelement), Hintergrund in --accent-Ton greift die
+   Farbe des pulsierenden Punkts dezent auf. */
 .name-sub-footnote {
   margin-top: 1rem;
-  display: flex;
-  align-items: baseline;
+  display: inline-flex;
+  align-items: center;
   gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.75rem;
+  background-color: color-mix(in srgb, var(--accent) 8%, transparent);
   font-family: 'Inter', sans-serif;
   font-size: 1.05rem; /* statt 0.95rem, jetzt konsistent mit .portfolio-subline und anderen Fliesstext-Stellen */
   color: var(--muted-light);
@@ -1539,15 +1548,23 @@ html.hero-fixed .hero-line-wrapper {
     object-fit: cover;
   }
 
-  .portfolio-panel-genre {
-    display: inline-block;
-    margin-top: 1rem;
+  /* Steht jetzt direkt hinter dem Titel in der Liste statt im Panel
+     beim Bild -- nur sichtbar, wenn dieser Titel gerade aufgeklappt ist
+     (.is-open, von JS gesetzt: togglePanel()). display:none an dieser
+     Stelle (Media Query) reicht als Basiszustand, da .portfolio-flow
+     ohnehin nur auf Mobile ueberhaupt sichtbar ist. */
+  .portfolio-item-genre {
+    display: none;
     font-family: 'Inter', sans-serif;
     font-size: 0.8rem;
     font-weight: 900;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--muted-light);
+  }
+
+  .portfolio-item-genre.is-open {
+    display: inline;
   }
 
   .portfolio-panel-desc {
@@ -1562,47 +1579,30 @@ html.hero-fixed .hero-line-wrapper {
   /* Letztes Element im Panel, unter der Kurzbeschreibung -- Sichtbarkeit
      haengt wieder direkt an der max-height-Transition des Panels, keine
      eigene .is-open-Steuerung mehr noetig (siehe JS: togglePanel()).
-     Kein eigener Hintergrund hier -- dient nur dazu, .portfolio-panel-nav
-     (die eigentliche Pille) zu zentrieren. */
+     Kein Hintergrund/Pille mehr -- Zurück/Vor sitzen als reine Text-
+     links links/rechts aussen an den Panel-Raendern, wie eine klassische
+     Paging-Navigation, statt als ein zusammengehoeriges Element. */
   .portfolio-panel-actions {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     margin-top: 1.25rem;
   }
 
-  /* Eine einzige, eng sitzende Pille um beide Buttons statt zwei
-     getrennter -- overflow:hidden sorgt dafuer, dass der Trennstrich
-     zwischen den Buttons (siehe :first-child) nicht ueber die
-     abgerundeten Ecken hinaussteht. */
-  .portfolio-panel-nav {
-    display: flex;
-    align-items: stretch;
-    background-color: color-mix(in srgb, var(--text-light) 3.5%, transparent);
-    border-radius: 999px;
-    overflow: hidden;
-  }
-
-  /* Textlabels ("‹ Zurück"/"Vor ›") statt reiner Pfeil-Glyphen --
-     Klassenname bewusst unveraendert gelassen (kein Umbenennen quer
-     durch JS/CSS fuer eine reine Beschriftungsaenderung). Deutlich
-     leichter als die Titelliste (font-weight:400 dort) -- die vorherige
-     900er-Grossschreibung wirkte trotz kleinerer Schrift schwerer als
-     die Titel darueber und lenkte davon ab. */
+  /* Reine Pfeil-Glyphen statt Textlabels ("‹ Zurück"/"Vor ›") -- ohne
+     die Text-Anker groesser skaliert (1.4rem statt vormals 0.85rem),
+     damit sie trotz fehlendem Wortlaut gut sichtbar/greifbar bleiben,
+     aber ohne die 900er-Grossschreibung der ganz fruehen Version, die
+     schwerer wirkte als die Titelliste darueber. */
   .portfolio-panel-arrow-icon {
     appearance: none;
     background: none;
     border: none;
     color: var(--muted-light);
     font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    padding: 0.5rem 0.85rem; /* Mindest-Klickflaeche trotz kleiner Schrift */
-  }
-
-  /* Duenner Trennstrich zwischen den beiden Buttons statt einer Luecke --
-     macht aus zwei Einzel-Buttons ein zusammengehoeriges Steuerelement. */
-  .portfolio-panel-nav .portfolio-panel-arrow-icon:first-child {
-    border-right: 1px solid var(--line);
+    font-size: 1.4rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.4rem 0.5rem;
   }
 
   .portfolio-panel-arrow-icon:active {
@@ -1686,9 +1686,11 @@ html.hero-fixed .hero-line-wrapper {
   .filmstrip-thumb { width: 4.5rem; }
   .lightbox-close { width: 2.75rem; height: 2.75rem; font-size: 1.6rem; }
   .lightbox-arrow { width: 2.25rem; height: 2.25rem; font-size: 1.6rem; }
+  /* Nur noch der Pfeil auf Mobile, keine Beschriftung mehr daneben --
+     aria-label auf .lightbox-nav (siehe HTML) traegt die Bedeutung
+     weiterhin fuer Screenreader. */
   .lightbox-nav-label {
-    font-size: 0.6rem;
-    white-space: nowrap; /* erzwingt eine Zeile statt des Umbruchs per <br> */
+    display: none;
   }
   /* Der <br> bleibt im Markup fuer den Desktop-Zeilenumbruch (der
      einzeilige Text wuerde dort bei .lightbox-navs schmaler 5.5rem-
