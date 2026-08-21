@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=27">
+  <link rel="stylesheet" href="style.css?v=29">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -1327,6 +1327,26 @@
           });
         });
       });
+
+      // Elmo-Peekaboo auf Touch: kein CSS-Hover vorhanden, Tap ist der
+      // natuerliche Ersatz. Echtes click-Toggle statt sich auf :hover zu
+      // verlassen, das auf iOS teils unzuverlaessig bei Touch feuert.
+      // .is-elmo-visible steuert denselben Transform-Wert wie der
+      // bestehende :hover-Zustand (siehe style.css), damit sich Groesse/
+      // Position/Bewegung exakt wie am Desktop anfuehlen. Taucht nach
+      // 2.2s von selbst wieder ab; erneuter Tap waehrenddessen setzt den
+      // Timer nur zurueck, statt ein zweites Mal umzuschalten.
+      var introPortraitEl = document.getElementById('introPortrait');
+      if (introPortraitEl && window.matchMedia('(max-width: 768px)').matches) {
+        var elmoTimer = null;
+        introPortraitEl.addEventListener('click', function () {
+          introPortraitEl.classList.add('is-elmo-visible');
+          clearTimeout(elmoTimer);
+          elmoTimer = setTimeout(function () {
+            introPortraitEl.classList.remove('is-elmo-visible');
+          }, 2200);
+        });
+      }
     });
   </script>
 
