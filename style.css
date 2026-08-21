@@ -1391,10 +1391,27 @@ html.hero-fixed .hero-line-wrapper {
     /* Bekannter WebKit-Bug: overflow:hidden auf einem Elternelement
        clippt ein transformiertes Kind waehrend der laufenden Transition
        teils nicht zuverlaessig, erst wenn die Transition abgeschlossen
-       ist ("nachtraeglich" statt fortlaufend). translateZ(0) hebt den
-       Clip-Container auf eine eigene Compositing-Ebene, danach clippt
-       Safari waehrend der gesamten Bewegung korrekt. */
+       ist ("nachtraeglich" statt fortlaufend). translateZ(0) allein hat
+       sich auf echten iPhones als nicht ausreichend erwiesen -- sichtbar
+       dadurch, dass Elmo waehrend der Bewegung kurz bis zur (tieferen)
+       Unterkante der ganzen Hero-Section durchrutscht, statt durchgehend
+       an der (hoeher liegenden) Portraet-Unterkante abgeschnitten zu sein,
+       und erst nach Transitionsende an der richtigen Kante landet.
+       mask-image erzwingt in Safari einen anderen, Compositor-basierten
+       Clip-Pfad (CALayer-Maske statt Overflow-Rect), der waehrend der
+       gesamten Transform-Transition korrekt aktualisiert wird. Die Maske
+       selbst ist bewusst voll deckend (#000 zu #000, kein Verlauf) --
+       sie dient nur dazu, Safari auf diesen Rendering-Pfad zu zwingen,
+       nicht um irgendetwas auszublenden. */
+    -webkit-mask-image: -webkit-linear-gradient(#000, #000);
+    mask-image: linear-gradient(#000, #000);
     transform: translateZ(0);
+    /* Haelt die Compositing-Ebene durchgehend bestehen, statt sie erst
+       bei Transitionsbeginn neu aufzubauen -- zusammen mit der Maske
+       oben der uebliche, robustere Ersatz fuer das alleinige
+       translateZ(0), das dieses Safari-Clipping-Problem nicht immer
+       zuverlaessig behebt. */
+    will-change: transform;
   }
 
   /* Ruhezustand: 130% schiebt den Hund komplett unter die Fenster-
