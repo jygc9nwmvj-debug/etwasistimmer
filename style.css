@@ -1341,6 +1341,13 @@ html.hero-fixed .hero-line-wrapper {
     overflow: hidden;
     pointer-events: none;
     z-index: 5; /* ueber dem Portrait */
+    /* Bekannter WebKit-Bug: overflow:hidden auf einem Elternelement
+       clippt ein transformiertes Kind waehrend der laufenden Transition
+       teils nicht zuverlaessig, erst wenn die Transition abgeschlossen
+       ist ("nachtraeglich" statt fortlaufend). translateZ(0) hebt den
+       Clip-Container auf eine eigene Compositing-Ebene, danach clippt
+       Safari waehrend der gesamten Bewegung korrekt. */
+    transform: translateZ(0);
   }
 
   /* Ruhezustand: 130% schiebt den Hund komplett unter die Fenster-
