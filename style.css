@@ -779,11 +779,16 @@ html.hero-fixed .hero-line-wrapper {
   margin-bottom: 1.5rem;
 }
 
+/* War 0.95rem/--muted-light -- der einzige Ausreisser gegenueber
+   .col-card p/.split-half p (identische Rolle: echter Absatztext einer
+   Content-Card), obwohl --text-secondary laut eigener Definition (siehe
+   :root) explizit fuer "Beratung/Profil-Absaetze" gedacht ist. Jetzt
+   auf beides vereinheitlicht. */
 .page-section p {
   font-family: 'Inter', sans-serif;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 400;
-  color: var(--muted-light);
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
@@ -856,7 +861,7 @@ html.hero-fixed .hero-line-wrapper {
   align-items: center;
   font-family: 'Inter', sans-serif;
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.8rem; /* war 0.75rem -- reiht sich jetzt bei den uebrigen Uppercase-Labels (Kicker, Genre-Tags) ein statt knapp danebenzuliegen */
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.8);
@@ -1728,7 +1733,7 @@ html.hero-fixed .hero-line-wrapper {
   }
 
   .lightbox-frame { inset: 4rem 0.75rem; }
-  .lightbox-desc { font-size: 0.85rem; }
+  .lightbox-desc { font-size: 0.95rem; } /* war 0.85rem -- reiht sich jetzt bei der uebrigen "sekundaerer Fliesstext"-Stufe ein (Nav-Links, Panel-Beschreibungen) statt zwischen den Stufen zu liegen */
   .filmstrip-thumb { width: 4.5rem; }
   .lightbox-close { width: 2.75rem; height: 2.75rem; font-size: 1.6rem; }
   .lightbox-arrow { width: 2.25rem; height: 2.25rem; font-size: 1.6rem; }
