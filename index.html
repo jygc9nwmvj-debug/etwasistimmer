@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=44">
+  <link rel="stylesheet" href="style.css?v=49">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -145,7 +145,7 @@
             </p>
             <p class="name-sub-footnote">
               <span class="footnote-pulse" aria-hidden="true"></span>
-              <span>Aktuell: Kreative Banden bilden gegen künstliche Intelligenz - <a href="https://bandenbilden.de" target="_blank" rel="noopener">bandenbilden.de</a></span>
+              <span>Aktuell: Kreative Banden bilden als Antwort auf künstliche Intelligenz - <a href="https://bandenbilden.de" target="_blank" rel="noopener">bandenbilden.de</a></span>
             </p>
           </div>
 
@@ -640,7 +640,10 @@
 
           // Kein Trenner nach dem letzten Eintrag -- entspricht dem
           // bisherigen statischen HTML, in dem der letzte Button auch
-          // kein <span class="portfolio-sep"> danach hatte.
+          // kein <span class="portfolio-sep"> danach hatte. Bleibt direkt
+          // hinter dem Titel (wie zuvor) -- das Genre kommt dahinter,
+          // nicht davor, damit der Schraegstrich weiterhin Titel von
+          // Genre trennt statt Genre vom naechsten Titel.
           if (index < list.length - 1) {
             var sep = document.createElement('span');
             sep.className = 'portfolio-sep';
@@ -648,6 +651,17 @@
             sep.textContent = '/';
             container.appendChild(sep);
           }
+
+          // Genre direkt hinter Titel+Trenner, in derselben Zeile (bricht
+          // dank .portfolio-flow's flex-wrap von selbst um, falls kein
+          // Platz mehr ist) -- nur sichtbar, wenn dieser Titel gerade
+          // aufgeklappt ist (siehe togglePanel(), .is-open). Ersetzt die
+          // fruehere Genre-Zeile im Panel selbst (naeher am Bild), die
+          // dafuer entfaellt.
+          var itemGenre = document.createElement('span');
+          itemGenre.className = 'portfolio-item-genre';
+          itemGenre.textContent = item.genre;
+          container.appendChild(itemGenre);
 
           var panel = document.createElement('div');
           panel.className = 'portfolio-panel';
@@ -692,37 +706,31 @@
           panelOverlay.addEventListener('click', openMorePictures);
           panelMedia.appendChild(panelOverlay);
 
-          var panelGenre = document.createElement('span');
-          panelGenre.className = 'portfolio-panel-genre';
-          panelGenre.textContent = item.genre;
           var panelDesc = document.createElement('p');
           panelDesc.className = 'portfolio-panel-desc';
           panelDesc.textContent = item.desc;
           panelInner.appendChild(panelMedia);
-          panelInner.appendChild(panelGenre);
           panelInner.appendChild(panelDesc);
 
           // Pfeile unter der Kurzbeschreibung, als letztes Element im
           // Panel -- Sichtbarkeit haengt wieder direkt an der
           // max-height-Transition des Panels (.is-open), keine eigene
-          // Steuerung mehr noetig. panelNav ist die eng sitzende Pille
-          // (Hintergrund + Radius, siehe CSS), panelActions nur der
-          // zentrierende Aussenrahmen darum.
+          // Steuerung mehr noetig. Kein Hintergrund/Pille mehr (siehe
+          // CSS) -- reine Textlinks, Zurück links und Vor rechts
+          // aussen an den Panel-Raendern.
           var panelActions = document.createElement('div');
           panelActions.className = 'portfolio-panel-actions';
-          var panelNav = document.createElement('div');
-          panelNav.className = 'portfolio-panel-nav';
 
           var prevIcon = document.createElement('button');
           prevIcon.type = 'button';
           prevIcon.className = 'portfolio-panel-arrow-icon';
-          prevIcon.textContent = '‹ Zurück';
+          prevIcon.textContent = '‹';
           prevIcon.setAttribute('aria-label', 'Voriges Projekt');
 
           var nextIcon = document.createElement('button');
           nextIcon.type = 'button';
           nextIcon.className = 'portfolio-panel-arrow-icon';
-          nextIcon.textContent = 'Vor ›';
+          nextIcon.textContent = '›';
           nextIcon.setAttribute('aria-label', 'Nächstes Projekt');
 
           // button bezieht sich auf den zu diesem Panel gehoerenden
@@ -745,9 +753,8 @@
             scrollPanelIntoViewAfterOpen(target);
           });
 
-          panelNav.appendChild(prevIcon);
-          panelNav.appendChild(nextIcon);
-          panelActions.appendChild(panelNav);
+          panelActions.appendChild(prevIcon);
+          panelActions.appendChild(nextIcon);
           panelInner.appendChild(panelActions);
 
           panel.appendChild(panelInner);
@@ -774,7 +781,17 @@
       function getPanelForButton(button) {
         var el = button.nextElementSibling;
         if (el && el.classList.contains('portfolio-sep')) el = el.nextElementSibling;
+        if (el && el.classList.contains('portfolio-item-genre')) el = el.nextElementSibling;
         return el && el.classList.contains('portfolio-panel') ? el : null;
+      }
+
+      // portfolio-item-genre steht immer direkt hinter Titel-Button (und
+      // Trenner, falls vorhanden), siehe renderPortfolioItems() -- der
+      // Schraegstrich bleibt so am Titel, nicht am Genre.
+      function getGenreForButton(button) {
+        var el = button.nextElementSibling;
+        if (el && el.classList.contains('portfolio-sep')) el = el.nextElementSibling;
+        return el && el.classList.contains('portfolio-item-genre') ? el : null;
       }
 
       function visibleItems() {
@@ -824,16 +841,21 @@
       function togglePanel(button) {
         var panel = getPanelForButton(button);
         if (!panel) return;
+        var genre = getGenreForButton(button);
 
         var isOpen = panel.classList.contains('is-open');
 
         document.querySelectorAll('.portfolio-panel.is-open').forEach(function (p) {
           p.classList.remove('is-open');
         });
+        document.querySelectorAll('.portfolio-item-genre.is-open').forEach(function (g) {
+          g.classList.remove('is-open');
+        });
         items.forEach(function (el) { el.setAttribute('aria-expanded', 'false'); });
 
         if (!isOpen) {
           panel.classList.add('is-open');
+          if (genre) genre.classList.add('is-open');
           button.setAttribute('aria-expanded', 'true');
         }
       }
@@ -942,8 +964,10 @@
       var firstButton = portfolioFlowEl.querySelector('.portfolio-item');
       if (firstButton) {
         var firstPanel = getPanelForButton(firstButton);
+        var firstGenre = getGenreForButton(firstButton);
         if (firstPanel) {
           firstPanel.classList.add('is-open');
+          if (firstGenre) firstGenre.classList.add('is-open');
           firstButton.setAttribute('aria-expanded', 'true');
           revealPanelOverlay(firstPanel);
         }
@@ -1333,7 +1357,7 @@
         });
       });
 
-      // Elmo-Peekaboo auf Touch: kein CSS-Hover vorhanden, Tap ist der
+// Elmo-Peekaboo auf Touch: kein CSS-Hover vorhanden, Tap ist der
       // natuerliche Ersatz. Echtes click-Toggle statt sich auf :hover zu
       // verlassen, das auf iOS teils unzuverlaessig bei Touch feuert.
       // .is-elmo-visible steuert denselben Transform-Wert wie der
