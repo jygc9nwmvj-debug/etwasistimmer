@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=35">
+  <link rel="stylesheet" href="style.css?v=43">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -636,6 +636,70 @@
             return s.src + '|' + s.alt;
           }).join(','));
           button.textContent = item.title;
+          // Noch nicht angehaengt (container.appendChild(button) folgt erst
+          // nach panelActions weiter unten) -- die Pfeile sollen VOR dem
+          // Titel im DOM stehen, damit sie beim Aufklappen (flex-basis:100%,
+          // siehe CSS) auf einer eigenen Zeile UEBER dem Titel erscheinen,
+          // statt daneben/danach in der Titelliste zu stehen. Der button-
+          // Variable aendert das nichts, die Closures unten (prevIcon/
+          // nextIcon) greifen weiterhin per Referenz darauf zu.
+
+          // Pfeile als eigenstaendiges Element VOR dem zugehoerigen Titel
+          // (nicht mehr danach oder gar im Panel) -- inhaltlich gehoert
+          // der Titel direkt zum Bild darunter, die Pfeile stehen als
+          // eigene Navigationszeile darueber. Sichtbarkeit wird nicht mehr
+          // automatisch von der max-height-Transition des Panels erfasst,
+          // sondern separat von togglePanel() per .is-open-Klasse
+          // gesteuert (siehe unten). Kein "Mehr Bilder ansehen"-Text mehr
+          // hier, siehe panelOverlay weiter unten (ersetzt den frueheren
+          // separaten Button durch ein zeitverzoegert einblendendes
+          // Overlay direkt auf dem Bild).
+          var panelActions = document.createElement('div');
+          panelActions.className = 'portfolio-panel-actions';
+
+          // panelNav ist die eigentliche, eng sitzende Pille (Hintergrund
+          // + Radius, siehe CSS) -- panelActions selbst bleibt die volle
+          // Zeilenbreite (fuer den Zeilenumbruch in .portfolio-flow, siehe
+          // dort), zentriert panelNav aber nur ueber justify-content.
+          var panelNav = document.createElement('div');
+          panelNav.className = 'portfolio-panel-nav';
+
+          var prevIcon = document.createElement('button');
+          prevIcon.type = 'button';
+          prevIcon.className = 'portfolio-panel-arrow-icon';
+          prevIcon.textContent = '‹ Zurück';
+          prevIcon.setAttribute('aria-label', 'Voriges Projekt');
+
+          var nextIcon = document.createElement('button');
+          nextIcon.type = 'button';
+          nextIcon.className = 'portfolio-panel-arrow-icon';
+          nextIcon.textContent = 'Vor ›';
+          nextIcon.setAttribute('aria-label', 'Nächstes Projekt');
+
+          // button bezieht sich auf den zu diesem Panel gehoerenden
+          // .portfolio-item, per Closure aus dem forEach-Scope.
+          prevIcon.addEventListener('click', function (e) {
+            e.stopPropagation(); // verhindert, dass der Klick zusaetzlich den Panel-Toggle des Titel-Buttons ausloest
+            var shown = visibleItems();
+            var current = shown.indexOf(button);
+            var target = shown[(current - 1 + shown.length) % shown.length];
+            target.click(); // nutzt den bestehenden Klick-Handler: aktiviert Vorschau + oeffnet dessen Panel
+            scrollPanelIntoViewAfterOpen(target);
+          });
+
+          nextIcon.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var shown = visibleItems();
+            var current = shown.indexOf(button);
+            var target = shown[(current + 1) % shown.length];
+            target.click();
+            scrollPanelIntoViewAfterOpen(target);
+          });
+
+          panelNav.appendChild(prevIcon);
+          panelNav.appendChild(nextIcon);
+          panelActions.appendChild(panelNav);
+          container.appendChild(panelActions);
           container.appendChild(button);
 
           // Kein Trenner nach dem letzten Eintrag -- entspricht dem
@@ -670,49 +734,6 @@
             var desktopMedia = document.querySelector('.portfolio-media');
             if (desktopMedia) desktopMedia.click();
           }
-
-          // Pfeile zuerst, direkt unter dem Titel -- kein "Mehr Bilder
-          // ansehen"-Text mehr hier, siehe panelOverlay weiter unten
-          // (ersetzt den frueheren separaten Button durch ein
-          // zeitverzoegert einblendendes Overlay direkt auf dem Bild).
-          var panelActions = document.createElement('div');
-          panelActions.className = 'portfolio-panel-actions';
-
-          var prevIcon = document.createElement('button');
-          prevIcon.type = 'button';
-          prevIcon.className = 'portfolio-panel-arrow-icon';
-          prevIcon.innerHTML = '‹';
-          prevIcon.setAttribute('aria-label', 'Voriges Projekt');
-
-          var nextIcon = document.createElement('button');
-          nextIcon.type = 'button';
-          nextIcon.className = 'portfolio-panel-arrow-icon';
-          nextIcon.innerHTML = '›';
-          nextIcon.setAttribute('aria-label', 'Nächstes Projekt');
-
-          // button bezieht sich auf den zu diesem Panel gehoerenden
-          // .portfolio-item, per Closure aus dem forEach-Scope.
-          prevIcon.addEventListener('click', function (e) {
-            e.stopPropagation(); // verhindert, dass der Klick zusaetzlich den Panel-Toggle des Titel-Buttons ausloest
-            var shown = visibleItems();
-            var current = shown.indexOf(button);
-            var target = shown[(current - 1 + shown.length) % shown.length];
-            target.click(); // nutzt den bestehenden Klick-Handler: aktiviert Vorschau + oeffnet dessen Panel
-            scrollPanelIntoViewAfterOpen(target);
-          });
-
-          nextIcon.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var shown = visibleItems();
-            var current = shown.indexOf(button);
-            var target = shown[(current + 1) % shown.length];
-            target.click();
-            scrollPanelIntoViewAfterOpen(target);
-          });
-
-          panelActions.appendChild(prevIcon);
-          panelActions.appendChild(nextIcon);
-          panelInner.appendChild(panelActions);
 
           var panelMedia = document.createElement('div');
           panelMedia.className = 'portfolio-panel-media';
@@ -772,6 +793,14 @@
         return el && el.classList.contains('portfolio-panel') ? el : null;
       }
 
+      // panelActions steht seit renderPortfolioItems() direkt VOR seinem
+      // Titel-Button (nicht mehr danach), damit es beim Aufklappen auf
+      // einer eigenen Zeile darueber erscheint statt daneben/danach.
+      function getActionsForButton(button) {
+        var el = button.previousElementSibling;
+        return el && el.classList.contains('portfolio-panel-actions') ? el : null;
+      }
+
       function visibleItems() {
         return items.filter(function (el) { return !el.hidden; });
       }
@@ -819,16 +848,21 @@
       function togglePanel(button) {
         var panel = getPanelForButton(button);
         if (!panel) return;
+        var actions = getActionsForButton(button);
 
         var isOpen = panel.classList.contains('is-open');
 
         document.querySelectorAll('.portfolio-panel.is-open').forEach(function (p) {
           p.classList.remove('is-open');
         });
+        document.querySelectorAll('.portfolio-panel-actions.is-open').forEach(function (a) {
+          a.classList.remove('is-open');
+        });
         items.forEach(function (el) { el.setAttribute('aria-expanded', 'false'); });
 
         if (!isOpen) {
           panel.classList.add('is-open');
+          if (actions) actions.classList.add('is-open');
           button.setAttribute('aria-expanded', 'true');
         }
       }
@@ -937,8 +971,10 @@
       var firstButton = portfolioFlowEl.querySelector('.portfolio-item');
       if (firstButton) {
         var firstPanel = getPanelForButton(firstButton);
+        var firstActions = getActionsForButton(firstButton);
         if (firstPanel) {
           firstPanel.classList.add('is-open');
+          if (firstActions) firstActions.classList.add('is-open');
           firstButton.setAttribute('aria-expanded', 'true');
           revealPanelOverlay(firstPanel);
         }

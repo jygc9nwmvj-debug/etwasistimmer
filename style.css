@@ -1011,6 +1011,16 @@ html.hero-fixed .hero-line-wrapper {
   display: none;
 }
 
+/* .portfolio-panel-actions (die Vor/Zurueck-Pfeile) liegt seit der
+   Verschiebung vor das Panel (siehe JS: renderPortfolioItems()) nicht
+   mehr automatisch innerhalb von .portfolio-panel's display:none --
+   auf Desktop wird es hier nicht gebraucht (eigenes .portfolio-preview
+   uebernimmt die Navigation), auf Mobile schaltet .is-open es sichtbar
+   (siehe Media Query). */
+.portfolio-panel-actions {
+  display: none;
+}
+
 /* PORTFOLIO-LIGHTBOX (nur index.html): eigener, dauerhaft dunkler
    Vollbild-Layer -- bewusst immer dunkel, unabhängig vom Rest der
    Seite, wie bei Bildbetrachtern üblich. */
@@ -1559,29 +1569,56 @@ html.hero-fixed .hero-line-wrapper {
     line-height: 1.6;
   }
 
-  /* Pfeile direkt unter dem Titel, vor dem Bild -- .portfolio-panel-
-     inner traegt bereits 1rem Top-Padding, deshalb kein zusaetzliches
-     margin-top hier noetig. Kein Trennstrich mehr: die Zeile fuehrt
-     jetzt in den Panel-Inhalt ein, statt zwei Bloecke voneinander
-     abzugrenzen. Siehe JS: renderPortfolioItems(). */
-  .portfolio-panel-actions {
+  /* Eigene Zeile UEBER dem zugehoerigen Titel (nicht mehr daneben/danach
+     in der Titelliste) -- flex-basis:100% erzwingt den Zeilenumbruch
+     innerhalb von .portfolio-flow (siehe dortige flex-wrap-Regel),
+     direkt vor dem Titel-Button im DOM (siehe JS: renderPortfolioItems()).
+     .is-open wird von JS gesetzt (togglePanel()), synchron zum Panel
+     selbst, nicht mehr Teil von dessen max-height-Transition. Kein
+     eigener Hintergrund hier -- die volle Zeilenbreite dient nur dazu,
+     .portfolio-panel-nav (die eigentliche Pille) darin zu zentrieren. */
+  .portfolio-panel-actions.is-open {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.5rem 0.25rem; /* mehr Klickflaeche rundherum */
+    flex-basis: 100%;
+    justify-content: center;
+    padding: 0.5rem 0;
   }
 
+  /* Eine einzige, eng sitzende Pille um beide Buttons statt zwei
+     getrennter -- overflow:hidden sorgt dafuer, dass der Trennstrich
+     zwischen den Buttons (siehe :first-child) nicht ueber die
+     abgerundeten Ecken hinaussteht. */
+  .portfolio-panel-nav {
+    display: flex;
+    align-items: stretch;
+    background-color: color-mix(in srgb, var(--text-light) 3.5%, transparent);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  /* Textlabels ("‹ Zurück"/"Vor ›") statt reiner Pfeil-Glyphen --
+     Klassenname bewusst unveraendert gelassen (kein Umbenennen quer
+     durch JS/CSS fuer eine reine Beschriftungsaenderung). Grossschreibung/
+     Letter-Spacing wie .portfolio-panel-genre, damit sich die
+     Navigationszeile als eigene, kleinere Label-Ebene vom groesseren
+     Fliesstext darunter abhebt. */
   .portfolio-panel-arrow-icon {
     appearance: none;
     background: none;
     border: none;
     color: var(--muted-light);
-    width: 2.75rem; /* statt der bisher kleineren Groesse -- leichter treffbar */
-    height: 2.75rem;
-    font-size: 1.6rem;
-    line-height: 1;
-    padding: 0.4rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.85rem; /* Mindest-Klickflaeche trotz kleiner Schrift */
+  }
+
+  /* Duenner Trennstrich zwischen den beiden Buttons statt einer Luecke --
+     macht aus zwei Einzel-Buttons ein zusammengehoeriges Steuerelement. */
+  .portfolio-panel-nav .portfolio-panel-arrow-icon:first-child {
+    border-right: 1px solid var(--line);
   }
 
   .portfolio-panel-arrow-icon:active {
