@@ -6,11 +6,15 @@
   <title>Wolfram Huke — Filmemacher, Journalist, Medienberatung</title>
   <meta name="description" content="Wolfram Huke: Dokumentarfilm, TV-Reportage und Medienberatung. Geschichten entstehen dort, wo Reibung ist.">
 
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=50">
+  <link rel="stylesheet" href="style.css?v=51">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -320,7 +324,70 @@
       // active sperrt Scrollen waehrenddessen, und playIntroTransition()
       // spielt eine normale (nicht scrub-gesteuerte) GSAP-Timeline fixer
       // Laenge ab.
-      //
+
+      // Pfoten-Trail: einmalig ausgeloest genau dann, wenn der Hero
+      // tatsaechlich sichtbar wird (root.classList 'hero-fixed'), NICHT
+      // am window-load-Event -- laeuft der Trail stattdessen beim Laden
+      // los, waere er oft schon fertig durchgelaufen (Gesamtdauer ~3.5s),
+      // bevor jemand, der laenger am Gedicht liest, ueberhaupt den Hero
+      // zu sehen bekommt. pawSvg/runPawTrail() werden unten an beiden
+      // Stellen aufgerufen, an denen 'hero-fixed' gesetzt wird (Skip-Fall
+      // und normaler Uebergang, siehe jeweils dort).
+      var pawSvg = '<svg viewBox="0 0 100 100" fill="currentColor"><ellipse cx="50" cy="62" rx="26" ry="22"/><ellipse cx="20" cy="30" rx="11" ry="14" transform="rotate(-20 20 30)"/><ellipse cx="45" cy="16" rx="11" ry="14"/><ellipse cx="72" cy="18" rx="11" ry="14" transform="rotate(12 72 18)"/><ellipse cx="90" cy="38" rx="10" ry="13" transform="rotate(28 90 38)"/></svg>';
+      var pawTrailPlayed = false;
+
+      function runPawTrail() {
+        if (pawTrailPlayed) return; // einmalig, siehe Kommentar oben
+        pawTrailPlayed = true;
+
+        var stage = document.querySelector('.main-intro');
+        if (!stage) return;
+        var w = stage.clientWidth, h = stage.clientHeight;
+
+        // Realistisches Trab-Gangmuster: Hunde laufen im Trab fast
+        // einspurig, nicht in breitem Zickzack -- Vorder- und Hinterpfote
+        // landen naeherungsweise auf einer Linie, mit nur leichtem Links-
+        // Rechts-Wechsel. Zehen zeigen konsequent in Laufrichtung.
+        var startX = w * 0.08, startY = h * 0.85;
+        var endX   = w * 0.62, endY   = h * 0.22;
+        var dx = endX - startX, dy = endY - startY;
+        var pathLen = Math.sqrt(dx * dx + dy * dy);
+        var travelAngleDeg = Math.atan2(dy, dx) * 180 / Math.PI;
+        var perpX = -dy / pathLen, perpY = dx / pathLen;
+
+        var steps = 7;
+        var sideOffset = 6; // schmale, fast einspurige Trab-Linie statt breiter Graetsche
+        for (var i = 0; i < steps; i++) {
+          (function (i) {
+            var t = i / (steps - 1);
+            var isLeft = i % 2 === 0;
+            var baseX = startX + dx * t;
+            var baseY = startY + dy * t;
+            var x = baseX + perpX * (isLeft ? -sideOffset : sideOffset);
+            var y = baseY + perpY * (isLeft ? -sideOffset : sideOffset);
+            var rot = travelAngleDeg + 90 + (isLeft ? -10 : 10);
+
+            // Rotation sitzt auf dem aeusseren .paw-Element (statisch),
+            // die Scale/Opacity-Animation auf .paw-inner darin -- sonst
+            // wuerde paw-appear (animiert transform:scale) das per
+            // Inline-Style gesetzte rotate() hier ueberschreiben, siehe
+            // Kommentar in style.css.
+            var el = document.createElement('div');
+            el.className = 'paw';
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            el.style.transform = 'rotate(' + rot + 'deg)';
+            var inner = document.createElement('div');
+            inner.className = 'paw-inner';
+            inner.innerHTML = pawSvg;
+            inner.style.animation = 'paw-appear 3.2s ease forwards';
+            inner.style.animationDelay = (i * 0.25) + 's';
+            el.appendChild(inner);
+            stage.appendChild(el);
+          })(i);
+        }
+      }
+
       // Ausnahme: kommt man per Klick auf den Seitentitel direkt von
       // beratung.html/profil.html (siehe dortiges skipPoemOnce-Flag),
       // wird das Gedicht uebersprungen -- man hat es ja gerade erst auf
@@ -338,6 +405,7 @@
         gsap.set('#introText',    { opacity: 1, y: 0 });
         gsap.set('#introPortrait', { opacity: 1, y: 0 });
         window.scrollTo(0, 0);
+        runPawTrail();
       } else {
         document.body.classList.add('poem-active');
         gsap.set('#introText',   { opacity: 0, y: 30 });
@@ -420,6 +488,7 @@
           // wuerde dort kurz eine Luecke zwischen beiden zeigen.
           .call(function () {
             root.classList.add('nav-visible', 'hero-fixed');
+            runPawTrail();
           }, null, 0.9)
           .to('#introText',    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.3)
           .to('#introPortrait',{ opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.35)
