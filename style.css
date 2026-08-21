@@ -1321,29 +1321,39 @@ html.hero-fixed .hero-line-wrapper {
     --bottom-nav-height-mobile: 3rem;
   }
 
-  /* .elmo-peek haengt per bottom:0 (Desktop-Regel) an der Padding-Kante
-     von .intro-portrait -- auf Mobile hat .intro-portrait aber
-     padding-bottom:2rem (siehe dortige Regel), das Portrait selbst
-     endet also 2rem VOR dieser Kante. Ohne diesen Reset taucht Elmo
-     2rem zu tief auf, an der Hintergrundkante statt an der echten
-     Bildunterkante.
-     Die um 2rem angehobene Ankerkante verkleinert aber gleichzeitig den
-     Ruhezustand-Puffer bis zur overflow:hidden-Kante von .main-intro --
-     105% (Desktop-Wert) reichte dadurch nicht mehr, die Ohren blieben
-     sichtbar. 160% gemessen mit Sicherheitsabstand (Playwright,
-     iPhone-13-Breite: Kopf war bei 105% noch 63.75px ueber der
-     Clip-Kante sichtbar, bei 160% ca. 27px sicher darunter). */
-  .elmo-peek {
+  /* .elmo-peek-wrap wird auf Mobile zum echten Clip-Fenster (Desktop:
+     display:contents, siehe Basisregel weiter oben -- dort bleibt die
+     alte Optik unveraendert). bottom:2rem setzt die Fenster-Unterkante
+     exakt auf die echte Portraet-Unterkante (2rem = .intro-portrait's
+     eigenes padding-bottom, siehe dortige Regel). Alles unterhalb
+     dieser Kante wird hart abgeschnitten -- der Hund taucht sauber an
+     der Portraet-Unterkante ab, statt mit seiner eigenen (weichen)
+     Bildkante irgendwo mitten im Torso zu enden. Nach oben hin
+     (height:24rem) bleibt er weiterhin frei, ueberlappt das Portrait
+     wie gehabt. */
+  .intro-portrait .elmo-peek-wrap {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
     bottom: 2rem;
-    transform: translate(-50%, 160%);
+    height: 24rem;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 5; /* ueber dem Portrait */
+  }
+
+  /* Ruhezustand: 130% schiebt den Hund komplett unter die Fenster-
+     Unterkante (= Portraet-Kante), damit dort nichts durchscheint --
+     mit Sicherheitsabstand per Playwright verifiziert. */
+  .elmo-peek {
+    bottom: 0;
+    transform: translate(-50%, 130%);
     width: clamp(330px, 54vw, 630px); /* 1.5x von vormals clamp(220px, 36vw, 420px) */
   }
 
   /* Kein CSS-Hover auf Touch -- Tap auf .intro-portrait toggelt
-     stattdessen .is-elmo-visible per JS, siehe unten. Transform-Wert
-     identisch zum bestehenden .intro-portrait:hover .elmo-peek (16%,
-     nicht die im Auftrag angegebenen 25% -- Verifikation verlangt
-     "exakt gleiche Position wie Desktop"). */
+     stattdessen .is-elmo-visible per JS, siehe unten. */
   .intro-portrait.is-elmo-visible .elmo-peek {
     transform: translate(-50%, 16%);
   }
