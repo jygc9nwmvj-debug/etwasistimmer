@@ -1011,16 +1011,6 @@ html.hero-fixed .hero-line-wrapper {
   display: none;
 }
 
-/* .portfolio-panel-actions (die Vor/Zurueck-Pfeile) liegt seit der
-   Verschiebung vor das Panel (siehe JS: renderPortfolioItems()) nicht
-   mehr automatisch innerhalb von .portfolio-panel's display:none --
-   auf Desktop wird es hier nicht gebraucht (eigenes .portfolio-preview
-   uebernimmt die Navigation), auf Mobile schaltet .is-open es sichtbar
-   (siehe Media Query). */
-.portfolio-panel-actions {
-  display: none;
-}
-
 /* PORTFOLIO-LIGHTBOX (nur index.html): eigener, dauerhaft dunkler
    Vollbild-Layer -- bewusst immer dunkel, unabhängig vom Rest der
    Seite, wie bei Bildbetrachtern üblich. */
@@ -1569,19 +1559,15 @@ html.hero-fixed .hero-line-wrapper {
     line-height: 1.6;
   }
 
-  /* Eigene Zeile UEBER dem zugehoerigen Titel (nicht mehr daneben/danach
-     in der Titelliste) -- flex-basis:100% erzwingt den Zeilenumbruch
-     innerhalb von .portfolio-flow (siehe dortige flex-wrap-Regel),
-     direkt vor dem Titel-Button im DOM (siehe JS: renderPortfolioItems()).
-     .is-open wird von JS gesetzt (togglePanel()), synchron zum Panel
-     selbst, nicht mehr Teil von dessen max-height-Transition. Kein
-     eigener Hintergrund hier -- die volle Zeilenbreite dient nur dazu,
-     .portfolio-panel-nav (die eigentliche Pille) darin zu zentrieren. */
-  .portfolio-panel-actions.is-open {
+  /* Letztes Element im Panel, unter der Kurzbeschreibung -- Sichtbarkeit
+     haengt wieder direkt an der max-height-Transition des Panels, keine
+     eigene .is-open-Steuerung mehr noetig (siehe JS: togglePanel()).
+     Kein eigener Hintergrund hier -- dient nur dazu, .portfolio-panel-nav
+     (die eigentliche Pille) zu zentrieren. */
+  .portfolio-panel-actions {
     display: flex;
-    flex-basis: 100%;
     justify-content: center;
-    padding: 0.5rem 0;
+    margin-top: 1.25rem;
   }
 
   /* Eine einzige, eng sitzende Pille um beide Buttons statt zwei
@@ -1598,20 +1584,18 @@ html.hero-fixed .hero-line-wrapper {
 
   /* Textlabels ("‹ Zurück"/"Vor ›") statt reiner Pfeil-Glyphen --
      Klassenname bewusst unveraendert gelassen (kein Umbenennen quer
-     durch JS/CSS fuer eine reine Beschriftungsaenderung). Grossschreibung/
-     Letter-Spacing wie .portfolio-panel-genre, damit sich die
-     Navigationszeile als eigene, kleinere Label-Ebene vom groesseren
-     Fliesstext darunter abhebt. */
+     durch JS/CSS fuer eine reine Beschriftungsaenderung). Deutlich
+     leichter als die Titelliste (font-weight:400 dort) -- die vorherige
+     900er-Grossschreibung wirkte trotz kleinerer Schrift schwerer als
+     die Titel darueber und lenkte davon ab. */
   .portfolio-panel-arrow-icon {
     appearance: none;
     background: none;
     border: none;
     color: var(--muted-light);
     font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 900;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-size: 0.85rem;
+    font-weight: 500;
     padding: 0.5rem 0.85rem; /* Mindest-Klickflaeche trotz kleiner Schrift */
   }
 
