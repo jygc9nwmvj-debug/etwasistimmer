@@ -481,7 +481,7 @@ html.hero-fixed .hero-line-wrapper {
   align-items: baseline;
   gap: 0.5rem;
   font-family: 'Inter', sans-serif;
-  font-size: 0.95rem;
+  font-size: 1.05rem; /* statt 0.95rem, jetzt konsistent mit .portfolio-subline und anderen Fliesstext-Stellen */
   color: var(--muted-light);
 }
 
@@ -1424,6 +1424,11 @@ html.hero-fixed .hero-line-wrapper {
        haengt das <img> als Block-Element innerhalb von <picture> links statt
        zentriert. */
     margin: 0 auto;
+    /* Weicher Schlagschatten statt hartem Rand -- verbindet das Bild
+       optisch mit der Trennlinie zur naechsten Section. Versatz an den
+       real gemessenen Abstand Bildunterkante-zu-Trennlinie angepasst
+       (~72px = 4.5rem), statt der Platzhalter-1.5rem. */
+    box-shadow: 0 3rem 3rem -1.25rem rgba(0, 0, 0, 0.35);
   }
 
   .page-sections { gap: 2.5rem; margin-top: 4rem; padding-top: 4rem; }
