@@ -1336,6 +1336,7 @@ html.hero-fixed .hero-line-wrapper {
   .elmo-peek {
     bottom: 2rem;
     transform: translate(-50%, 160%);
+    width: clamp(330px, 54vw, 630px); /* 1.5x von vormals clamp(220px, 36vw, 420px) */
   }
 
   /* Kein CSS-Hover auf Touch -- Tap auf .intro-portrait toggelt
