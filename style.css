@@ -415,9 +415,7 @@ html.hero-fixed .hero-line-wrapper {
 /* Easter Egg: springt bei Hover mittig und deutlich groesser vor das
    Portrait (siehe cubic-bezier fuer den kleinen Ueberschwung), bleibt
    dabei unten hart an der Section-Kante abgeschnitten (overflow:hidden
-   auf .main-intro). Im Ruhezustand komplett unter die Kante verschoben.
-   Nur Desktop/Hover-faehige Geraete (siehe Media Query), auf Touch waere
-   er sonst dauerhaft unsichtbar. */
+   auf .main-intro). Im Ruhezustand komplett unter die Kante verschoben. */
 .elmo-peek {
   position: absolute;
   bottom: 0;
@@ -430,8 +428,15 @@ html.hero-fixed .hero-line-wrapper {
   z-index: 5; /* ueber dem Portrait */
 }
 
-.intro-portrait:hover .elmo-peek {
-  transform: translate(-50%, 16%);
+/* hover:hover/pointer:fine statt einer reinen :hover-Regel -- sonst
+   bleibt dieser Zustand auf Touch nach dem Tap haengen (kein Mauszeiger,
+   der ihn wieder verlaesst) und ueberschreibt dauerhaft das JS-Timeout
+   von .is-elmo-visible unten, Elmo verschwindet dann nie wieder. Auf
+   echten Hover-Geraeten unveraendert. */
+@media (hover: hover) and (pointer: fine) {
+  .intro-portrait:hover .elmo-peek {
+    transform: translate(-50%, 16%);
+  }
 }
 
 /* Oberster Content-Block auf beratung.html/profil.html -- dieselbe
@@ -568,9 +573,14 @@ html.hero-fixed .hero-line-wrapper {
   z-index: 1;
 }
 
-.intro-portrait:hover .portrait-freistehend {
-  opacity: 1;
-  transform: scale(1.02);
+/* Gleicher Grund wie beim Elmo-Hover oben: ohne hover:hover/pointer:fine
+   bliebe das Porträt nach einem Tap auf Touch dauerhaft gezoomt/voll
+   deckend haengen. */
+@media (hover: hover) and (pointer: fine) {
+  .intro-portrait:hover .portrait-freistehend {
+    opacity: 1;
+    transform: scale(1.02);
+  }
 }
 
 /* BERATUNG/PROFIL (nur index.html) -- zwei eigenstaendige Flaechen mit
