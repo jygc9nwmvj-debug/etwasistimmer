@@ -1394,9 +1394,16 @@ html.hero-fixed .hero-line-wrapper {
   }
 
   /* Kein CSS-Hover auf Touch -- Tap auf .intro-portrait toggelt
-     stattdessen .is-elmo-visible per JS, siehe unten. */
+     stattdessen .is-elmo-visible per JS, siehe unten.
+     25% statt vormals 16%: elmo.png hat oben selbst ~13% transparenten
+     Rand vor dem eigentlichen Kopf (per Pixel-Alpha vermessen), die
+     16%-Position liess den Kopf dadurch bis knapp unter die Mundpartie
+     des Portraets hochrutschen. 25% richtet die Kopf-Oberkante (nicht
+     die Element-Kante) am Kinn aus -- bezogen auf die reale Position
+     des Portraets in wolfram-huke-cutout.png (Kinnunterkante bei ca.
+     48% der Bildhoehe) bei object-fit:contain auf 300px Renderhoehe. */
   .intro-portrait.is-elmo-visible .elmo-peek {
-    transform: translate(-50%, 16%);
+    transform: translate(-50%, 25%);
   }
 
   .poem-block {
