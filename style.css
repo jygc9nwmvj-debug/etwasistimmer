@@ -1557,7 +1557,7 @@ html.hero-fixed .hero-line-wrapper {
     display: none;
     font-family: 'Inter', sans-serif;
     font-size: 0.8rem;
-    font-weight: 900;
+    font-weight: 400;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--muted-light);
