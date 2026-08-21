@@ -312,8 +312,16 @@ html.hero-fixed .hero-line-wrapper {
   transition: border-color var(--fade);
 }
 
+/* Faehrt beim Einblenden zusaetzlich ein kurzes Stueck von unten hoch
+   (translateY), statt nur an Ort und Stelle zu erscheinen -- waehrend
+   der 1.2s-Verzoegerung davor bleibt der Hint per Basis-opacity:0
+   ohnehin unsichtbar, der Sprung von "kein Transform" auf
+   translateY(24px) im selben Moment faellt daher nicht auf. Ab hier
+   uebernimmt (nahtlos, siehe unten) scroll-hint-pulse den transform-
+   Wert wieder komplett. */
 @keyframes scroll-hint-fade-in {
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scroll-hint-pulse {
@@ -410,44 +418,6 @@ html.hero-fixed .hero-line-wrapper {
      gleich, im Gegensatz zum frueheren overflow:visible, das sich auf
      Paint-Reihenfolge zwischen Geschwister-Sections verliess. */
   overflow: hidden;
-}
-
-/* Pfoten-Trail: einmalig beim ersten Sichtbarwerden des Heros erzeugte
-   Reihe von .paw-Elementen (siehe JS: runPawTrail()), die einzeln
-   ein- und wieder ausblenden. .main-intro's overflow:hidden (s.o.)
-   schneidet sie an der Section-Kante ab, position:relative dort ist
-   ihr Bezugsrahmen fuer die Koordinaten.
-   Rotation (Laufrichtung) sitzt bewusst auf .paw selbst (statisch,
-   per Inline-Style von JS gesetzt) statt zusammen mit der Animation
-   auf demselben Element -- eine CSS-Animation, die transform
-   animiert, ueberschreibt dessen kompletten Wert fuer die Dauer der
-   Animation, ein per Inline-Style gesetztes rotate() ginge sonst
-   verloren, sobald paw-appear startet. .paw-inner traegt daher die
-   eigentliche Scale/Opacity-Animation als separate Transform-Ebene. */
-.paw {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  pointer-events: none;
-}
-.paw-inner {
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  color: rgba(50, 46, 40, 0.55);
-  filter: blur(0.3px);
-}
-.paw-inner svg { width: 100%; height: 100%; display: block; }
-
-@keyframes paw-appear {
-  0%   { opacity: 0; transform: scale(0.55); }
-  12%  { opacity: 0.6; transform: scale(1); }
-  60%  { opacity: 0.35; }
-  100% { opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .paw { display: none; }
 }
 
 /* Easter Egg: springt bei Hover mittig und deutlich groesser vor das
