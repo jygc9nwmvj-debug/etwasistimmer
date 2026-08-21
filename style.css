@@ -1719,6 +1719,20 @@ html.hero-fixed .hero-line-wrapper {
     margin-top: 1rem;
   }
 
+  /* Auf Mobile Genre und Titel in einer Zeile statt gestapelt, Genre
+     nicht mehr fett -- beide auf display:inline, damit der Whitespace
+     zwischen den Tags im Markup (siehe HTML) als Wortabstand wirkt. */
+  .lightbox-genre {
+    display: inline;
+    font-weight: 400;
+  }
+
+  .lightbox-title {
+    display: inline;
+    margin-top: 0;
+    margin-left: 0.5em;
+  }
+
   .lightbox-frame { inset: 4rem 0.75rem; }
   .lightbox-desc { font-size: 0.85rem; }
   .filmstrip-thumb { width: 4.5rem; }

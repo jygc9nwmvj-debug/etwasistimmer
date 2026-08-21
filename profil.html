@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=51">
+  <link rel="stylesheet" href="style.css?v=52">
 </head>
 <body>
 
@@ -73,6 +73,79 @@
       sessionStorage.setItem('skipPoemOnce', '1');
       window.location.href = 'index.html';
     });
+  </script>
+
+  <!-- Bearbeitungsmodus: nur aktiv mit ?edit=true in der URL, macht Text-
+       Elemente der Seite contenteditable und sammelt sie per Klick
+       formatiert in die Zwischenablage -- kein Speichern, nur Export zum
+       manuellen Einfuegen hier im Chat oder direkt in Claude Code.
+       Generischer Selektor statt fester Liste: erfasst automatisch jedes
+       Text-Element der Seite, auch spaeter neu hinzugekommene. -->
+  <script>
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('edit') !== 'true') return;
+
+    var editableSelectors = [
+      'h1', 'h2', 'h3', 'p', 'span', 'a', 'li', 'button'
+    ];
+
+    // Ausschlussliste: Elemente, die technisch Text enthalten, aber NICHT
+    // von Hand editiert werden sollen (Icons, Pfeile, per JS generierte
+    // Portfolio-Inhalte, Nav-Links selbst als Struktur, etc.)
+    var excludeSelectors = [
+      '.scroll-hint', '.scroll-hint-chevron', '.lightbox-arrow',
+      '.portfolio-arrow', '.lightbox-close', '.site-nav a',
+      '.portfolio-media-title-arrow', '.hero-cursor', '.footnote-pulse',
+      'script', 'style'
+    ].join(',');
+
+    document.querySelectorAll(editableSelectors.join(',')).forEach(function (el) {
+      // Nur Elemente mit tatsaechlichem, direktem Text editierbar machen --
+      // keine reinen Container ohne eigenen Textinhalt, keine ausge-
+      // schlossenen Elemente, keine Kind-Elemente von bereits editierbaren
+      // Eltern (verhindert verschachtelte contenteditable-Bereiche).
+      if (el.closest(excludeSelectors)) return;
+      if (el.closest('[contenteditable="true"]')) return;
+      var hasDirectText = Array.prototype.some.call(el.childNodes, function (n) {
+        return n.nodeType === 3 && n.textContent.trim().length > 0;
+      });
+      if (!hasDirectText) return;
+
+      el.setAttribute('contenteditable', 'true');
+      el.style.outlineOffset = '3px';
+      el.style.transition = 'outline-color 0.15s ease';
+      el.style.outline = '1px dashed transparent';
+      el.addEventListener('focus', function () { el.style.outline = '1px dashed var(--accent, #FF4D00)'; });
+      el.addEventListener('blur', function () { el.style.outline = '1px dashed transparent'; });
+    });
+
+    var banner = document.createElement('div');
+    banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#FF4D00;color:#fff;padding:0.6rem 1rem;font-family:Inter,sans-serif;font-size:0.85rem;z-index:999;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;';
+
+    var text = document.createElement('span');
+    text.textContent = 'Bearbeitungsmodus — jeder Text auf der Seite ist anklickbar, nichts wird gespeichert.';
+
+    var button = document.createElement('button');
+    button.textContent = 'Alle Texte kopieren';
+    button.style.cssText = 'background:#fff;color:#FF4D00;border:0;border-radius:0.4rem;padding:0.4rem 0.9rem;font-weight:700;cursor:pointer;';
+
+    button.addEventListener('click', function () {
+      var out = [];
+      document.querySelectorAll('[contenteditable="true"]').forEach(function (el) {
+        var label = el.tagName.toLowerCase() + (el.className ? '.' + el.className.split(' ')[0] : '');
+        out.push(label + ':\n' + el.textContent.trim());
+      });
+      navigator.clipboard.writeText(out.join('\n\n---\n\n')).then(function () {
+        button.textContent = 'Kopiert ✓';
+        setTimeout(function () { button.textContent = 'Alle Texte kopieren'; }, 2000);
+      });
+    });
+
+    banner.appendChild(text);
+    banner.appendChild(button);
+    document.body.appendChild(banner);
+  })();
   </script>
 </body>
 </html>
