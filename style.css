@@ -1311,7 +1311,24 @@ html.hero-fixed .hero-line-wrapper {
     --bottom-nav-height-mobile: 3rem;
   }
 
-  .elmo-peek { display: none; } /* kein Hover auf Touch, waere nie sichtbar */
+  /* .elmo-peek haengt per bottom:0 (Desktop-Regel) an der Padding-Kante
+     von .intro-portrait -- auf Mobile hat .intro-portrait aber
+     padding-bottom:2rem (siehe dortige Regel), das Portrait selbst
+     endet also 2rem VOR dieser Kante. Ohne diesen Reset taucht Elmo
+     2rem zu tief auf, an der Hintergrundkante statt an der echten
+     Bildunterkante. */
+  .elmo-peek {
+    bottom: 2rem;
+  }
+
+  /* Kein CSS-Hover auf Touch -- Tap auf .intro-portrait toggelt
+     stattdessen .is-elmo-visible per JS, siehe unten. Transform-Wert
+     identisch zum bestehenden .intro-portrait:hover .elmo-peek (16%,
+     nicht die im Auftrag angegebenen 25% -- Verifikation verlangt
+     "exakt gleiche Position wie Desktop"). */
+  .intro-portrait.is-elmo-visible .elmo-peek {
+    transform: translate(-50%, 16%);
+  }
 
   .poem-block {
     left: 6vw; right: 6vw; padding-right: 0;
