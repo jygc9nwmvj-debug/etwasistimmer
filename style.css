@@ -1326,9 +1326,16 @@ html.hero-fixed .hero-line-wrapper {
      padding-bottom:2rem (siehe dortige Regel), das Portrait selbst
      endet also 2rem VOR dieser Kante. Ohne diesen Reset taucht Elmo
      2rem zu tief auf, an der Hintergrundkante statt an der echten
-     Bildunterkante. */
+     Bildunterkante.
+     Die um 2rem angehobene Ankerkante verkleinert aber gleichzeitig den
+     Ruhezustand-Puffer bis zur overflow:hidden-Kante von .main-intro --
+     105% (Desktop-Wert) reichte dadurch nicht mehr, die Ohren blieben
+     sichtbar. 160% gemessen mit Sicherheitsabstand (Playwright,
+     iPhone-13-Breite: Kopf war bei 105% noch 63.75px ueber der
+     Clip-Kante sichtbar, bei 160% ca. 27px sicher darunter). */
   .elmo-peek {
     bottom: 2rem;
+    transform: translate(-50%, 160%);
   }
 
   /* Kein CSS-Hover auf Touch -- Tap auf .intro-portrait toggelt
