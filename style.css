@@ -49,6 +49,16 @@
      Links, aktiver Zustand), nicht fuer statische Section-Kicker. */
   --accent:     #FF4D00;
 
+  /* ZWEITE AKZENTFARBE (PETROL) -- exklusiv fuer rein informative,
+     NICHT klickbare Elemente (Kicker-/Genre-Labels, Fussnoten-
+     Markierung). Traegt keine Interaktionsbedeutung, damit "Orange =
+     hier klicken" eindeutig bleibt. Zwei Varianten: --accent-2 fuer
+     helle Hintergruende, --accent-2-on-dark (heller/entsaettigter) fuer
+     die dauerhaft dunklen Flaechen (Lightbox, Portfolio-Vorschau-
+     Overlay), wo das dunkle Petrol sonst nicht lesbar waere. */
+  --accent-2:         #175A5E;
+  --accent-2-on-dark: #6FC2C0;
+
   --line:  rgba(120, 120, 115, 0.2);
 
   --fade: 0.5s ease;
@@ -536,10 +546,12 @@ html.hero-fixed .hero-line-wrapper {
    (kein Scale/Sweep, dadurch ruhiger), etwa wie ein leise atmendes
    Zitat-/Fussnotenzeichen. Farbe bewusst NICHT --accent (Orange bleibt
    laut Konvention exklusiv fuer Interaktion, siehe --accent-Kommentar
-   oben) -- an --text-secondary angeglichen (siehe .name-sub-footnote),
-   damit Strich und Text gleich dunkel wirken. War zunaechst 1px/Orange
-   -- zu duenn/zu praesent fuer ein rein dekoratives Element, jetzt 2px
-   kraeftiger. */
+   oben) -- --accent-2 (Petrol) stattdessen: reines Status-/"aktuell"-
+   Signal, kein Interaktionselement, damit die zweite Akzentfarbe fuer
+   informative Markierungen (siehe auch Kicker/Genre-Labels) genutzt
+   wird statt fuer noch mehr Grau. War zunaechst 1px/Orange, dann
+   --text-secondary-Grau -- zu duenn bzw. zu wenig eigenstaendig fuer
+   ein rein dekoratives Element, jetzt 2px in Petrol. */
 .name-sub-footnote::before {
   content: '';
   position: absolute;
@@ -547,7 +559,7 @@ html.hero-fixed .hero-line-wrapper {
   top: 0.15em;
   bottom: 0.15em;
   width: 2px;
-  background-color: var(--text-secondary);
+  background-color: var(--accent-2);
   animation: footnote-mark-pulse 3s ease-in-out infinite;
 }
 
@@ -757,9 +769,10 @@ html.hero-fixed .hero-line-wrapper {
   text-decoration: none;
 }
 
-/* TEXTSEITEN (beratung.html, profil.html) -- Kicker/Headline/Lead im
-   selben Ton wie die Kachel-Labels auf index.html (rgba(20,16,13,0.55)
-   statt --accent: Orange bleibt exklusiv fuer Interaktion). */
+/* TEXTSEITEN (beratung.html, profil.html) -- Kicker/Headline/Lead.
+   War rgba(20,16,13,0.55) (neutrales Grau) -- jetzt --accent-2 (Petrol):
+   rein informatives Label, kein Link, daher NICHT --accent (Orange
+   bleibt exklusiv fuer Interaktion). */
 .page-kicker {
   display: block;
   font-family: 'Inter', sans-serif;
@@ -767,7 +780,7 @@ html.hero-fixed .hero-line-wrapper {
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(20, 16, 13, 0.55);
+  color: var(--accent-2);
   margin-bottom: 1.5rem;
 }
 
@@ -902,7 +915,10 @@ html.hero-fixed .hero-line-wrapper {
   font-size: 0.8rem; /* war 0.75rem -- reiht sich jetzt bei den uebrigen Uppercase-Labels (Kicker, Genre-Tags) ein statt knapp danebenzuliegen */
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.8);
+  /* War rgba(255,255,255,0.8) -- jetzt --accent-2-on-dark (helles
+     Petrol), liegt auf dem dunklen Foto-Overlay, siehe --accent-2-
+     Definition oben. Reines Label, kein Link. */
+  color: var(--accent-2-on-dark);
 }
 
 .portfolio-media-title {
@@ -1160,7 +1176,9 @@ html.hero-fixed .hero-line-wrapper {
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--muted-on-dark);
+  /* War --muted-on-dark (neutrales Grau) -- jetzt --accent-2-on-dark
+     (helles Petrol), analog zu .portfolio-media-genre. */
+  color: var(--accent-2-on-dark);
 }
 
 .lightbox-title {
@@ -1408,6 +1426,16 @@ html.hero-fixed .hero-line-wrapper {
        der ist jetzt position:fixed und schuetzt sich per env() selbst
        vor Safaris unterer Systemleiste (siehe .scroll-hint). */
   }
+
+  /* Mobile: die (jetzt groessere) Zeigehand ruecke sonst zu nah an
+     "KURT TUCHOLSKY" heran -- ein groesserer bottom-Wert schiebt sie
+     (falsch herum gedacht im ersten Versuch) naeher an den Text statt
+     weiter weg, da "bottom" von der Bildschirmunterkante aus zaehlt.
+     Kleinerer Wert als die 10vh-Basis (die selbst schon knapp war,
+     seit die Hand vergroessert wurde) schafft mehr Abstand nach oben. */
+  .scroll-hint {
+    bottom: calc(6vh + env(safe-area-inset-bottom));
+  }
   .poem-line { font-size: 1.35rem; white-space: normal; }
   .site-title {
     /* Vertikal mittig im (jetzt kompakteren) Kopfbereich statt fixem
@@ -1584,7 +1612,9 @@ html.hero-fixed .hero-line-wrapper {
     font-weight: 400;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--muted-light);
+    /* War --muted-light -- jetzt --accent-2, analog zu den uebrigen
+       Genre-/Kicker-Labels. */
+    color: var(--accent-2);
   }
 
   .portfolio-item-genre.is-open {
