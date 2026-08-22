@@ -583,12 +583,18 @@ html.hero-fixed .hero-line-wrapper {
    sonst "materialisiert" sich die Welle sichtbar mitten im Text statt
    wirklich links loszulaufen (war vorher der Fall: Opacity war schon
    bei 40% voll da, waehrend die Position erst bei ~24% Fahrtstrecke
-   war). Symmetrisch gespiegelt fuer den Austritt rechts. */
+   war). Symmetrisch gespiegelt fuer den Austritt rechts.
+
+   background-position bewusst NUR bei 0%/100% gesetzt, nirgends
+   dazwischen (auch nicht bei 50%) -- ein mittlerer Kontrollpunkt haette
+   die Fahrt in zwei separate ease-in-out-Segmente aufgeteilt, die
+   jeweils VOR ihrem eigenen Endpunkt abbremsen und danach wieder neu
+   anlaufen: sichtbares Stocken genau in der Mitte der Bewegung. Ohne
+   Zwischenpunkt ist es eine einzige durchgehende Fahrt. */
 @keyframes footnote-sweep-bg {
   0%   { background-position: -80% 0;  opacity: 0; }
   8%   { opacity: 0; }
   30%  { opacity: 1; }
-  50%  { background-position: 50% 0; }
   70%  { opacity: 1; }
   92%  { opacity: 0; }
   100% { background-position: 180% 0; opacity: 0; }
