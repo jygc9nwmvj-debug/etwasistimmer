@@ -59,7 +59,7 @@
      fixierte, teiltransparente Logo-Bar und wirkt oben angeschnitten.
      Als Variable statt unabhaengiger Werte, die bei einem Redesign
      leise auseinanderlaufen koennen. */
-  --logo-bar-height: 8rem;
+  --logo-bar-height: 7.25rem;
   --logo-bar-height-mobile: 7rem;
 }
 
@@ -101,7 +101,7 @@ body {
    Unterseiten ohne Uebergang. */
 .site-title {
   position: fixed;
-  top: 20px; /* war zuletzt 28px -- jetzt symmetrisch zum 20px-Abstand zwischen .site-nav-Unterkante und Logo-Bar-Unterkante (siehe dort) */
+  top: 16px; /* war zuletzt 20px -- weiter verkleinert, siehe auch line-height unten */
   left: 50%;
   transform: translateX(-50%);
   z-index: 25;
@@ -113,11 +113,21 @@ body {
   font-size: clamp(1.4rem, 2.5vw, 2.4rem);
   font-weight: 500;
   letter-spacing: 0.01em;
-  line-height: 1.6;
+  /* War 1.6 -- fuer eine einzeilige Kopfzeile unnoetig viel eigener
+     Leerraum ueber/unter dem Text, den die Kopfleiste insgesamt groesser
+     wirken liess, als der sichtbare Titel selbst braucht. */
+  line-height: 1.3;
   color: var(--text-light);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
+}
+
+/* Einzelne Buchstaben-Spans, per JS erzeugt (siehe <script> vor </body>
+   auf allen drei Seiten) -- display:inline-block noetig, damit sich
+   jeder Buchstabe per GSAP unabhaengig transformieren laesst. */
+.site-title .letter {
+  display: inline-block;
 }
 
 .logo-bar {
@@ -135,7 +145,12 @@ body {
 
 .site-nav {
   position: fixed;
-  top: 5.5rem; /* direkt an .site-titles neuen Werten (top:20px + eigene Zeilenhoehe) ausgerichtet */
+  /* 5rem: direkt an .site-titles neuen Werten (top:16px + eigene, jetzt
+     kompaktere Zeilenhoehe) ausgerichtet -- zusammen mit
+     --logo-bar-height ergibt sich oben wie unten derselbe 16px-Abstand
+     (Titel-Oberkante zur Logo-Bar-Kante bzw. Nav-Unterkante zur
+     Logo-Bar-Unterkante). */
+  top: 5rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 30;
@@ -286,7 +301,7 @@ html.hero-fixed .hero-line-wrapper {
   justify-content: center;
   width: 3rem;
   height: 3rem;
-  margin-top: 2.5rem;
+  margin: 2.5rem auto 0; /* auto links/rechts: horizontal zentriert unter dem Gedichttext statt linksbuendig */
   border: 1px solid var(--text-dark); /* war --muted-dark -- kraeftigerer Kontrast statt fein/verwaschen */
   border-radius: 50%;
   appearance: none;
@@ -405,9 +420,11 @@ html.hero-fixed .hero-line-wrapper {
 .main-intro {
   /* An --logo-bar-height gekoppelt statt eines unabhaengigen Werts --
      garantiert, dass der Content immer unterhalb der fixierten
-     Logo-Bar beginnt. */
-  padding: calc(var(--logo-bar-height) + 1.5rem) 0 0 0;
-  scroll-margin-top: 12rem;
+     Logo-Bar beginnt. +3rem statt vormals +1.5rem: mehr Headroom
+     zwischen Kopfleiste und Hero-Inhalt (Text/Portrait), unabhaengig
+     von der kompakteren Kopfleiste selbst. */
+  padding: calc(var(--logo-bar-height) + 3rem) 0 0 0;
+  scroll-margin-top: calc(var(--logo-bar-height) + 1.5rem); /* war hart 12rem -- veraltet seit die Kopfleiste verkleinert wurde, jetzt an --logo-bar-height gekoppelt wie die uebrigen Anker-Ziele */
   position: relative;
   /* Verhindert, dass .portrait-freistehends leichter Hover-Zoom
      (transform: scale(1.02)) an der Section-Kante ueber den Rand
@@ -421,8 +438,8 @@ html.hero-fixed .hero-line-wrapper {
    hier steht nur Text/Kacheln, kein Bild, das buendig am unteren
    Section-Rand sitzen muss. */
 .page-intro {
-  padding: calc(var(--logo-bar-height) + 1.5rem) 0 4rem 0;
-  scroll-margin-top: 12rem;
+  padding: calc(var(--logo-bar-height) + 3rem) 0 4rem 0; /* +3rem statt +1.5rem, konsistent mit .main-intro */
+  scroll-margin-top: calc(var(--logo-bar-height) + 1.5rem); /* war hart 12rem -- veraltet seit die Kopfleiste verkleinert wurde, jetzt an --logo-bar-height gekoppelt wie die uebrigen Anker-Ziele */
 }
 
 .main-intro-inner {
@@ -467,9 +484,6 @@ html.hero-fixed .hero-line-wrapper {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.9rem;
-  border-radius: 0.75rem;
-  background-color: color-mix(in srgb, var(--accent) 8%, transparent);
   font-family: 'Inter', sans-serif;
   font-size: 1.05rem; /* statt 0.95rem, jetzt konsistent mit .portfolio-subline und anderen Fliesstext-Stellen */
   color: var(--muted-light);
@@ -753,7 +767,7 @@ html.hero-fixed .hero-line-wrapper {
 /* PORTFOLIO: Bildvorschau + fließende Titelliste (nur index.html) */
 .portfolio-section {
   padding: 7rem 0;
-  scroll-margin-top: 12rem;
+  scroll-margin-top: calc(var(--logo-bar-height) + 1.5rem); /* war hart 12rem -- veraltet seit die Kopfleiste verkleinert wurde, jetzt an --logo-bar-height gekoppelt wie die uebrigen Anker-Ziele */
 }
 
 .portfolio-preview {
@@ -768,9 +782,15 @@ html.hero-fixed .hero-line-wrapper {
   /* Analog zu .lightbox-media: Hoehe bleibt auf einen Anteil der
      Bildschirmhoehe begrenzt, Breite folgt daraus -- ohne diese Bremse
      wurde das Bild auf breiten, aber nicht sehr hohen Laptop-Bild-
-     schirmen bei voller Breite und 16:9 unverhaeltnismaessig hoch. */
-  width: min(100%, calc(56vh * 16 / 9));
-  margin: 0 auto;
+     schirmen bei voller Breite und 16:9 unverhaeltnismaessig hoch.
+     42vh statt vormals 56vh: kleinere Vorschau, damit Ueberschrift und
+     mehr von der Titelliste ohne Scrollen mit ins Bild passen -- die
+     grosse Ansicht kommt ohnehin per Klick/Lightbox. */
+  width: min(100%, calc(42vh * 16 / 9));
+  /* War "0 auto" (zentriert) -- dadurch stand die linke Bildkante nicht
+     buendig mit Ueberschrift/Titelliste, die beide am Container-Rand
+     beginnen. Jetzt linksbuendig. */
+  margin: 0;
   overflow: hidden;
   background-color: var(--line);
   cursor: pointer;
@@ -1252,7 +1272,7 @@ html.hero-fixed .hero-line-wrapper {
 /* KONTAKT (alle drei Seiten) */
 .contact-section {
   padding: 4rem 0 2rem;
-  scroll-margin-top: 12rem;
+  scroll-margin-top: calc(var(--logo-bar-height) + 1.5rem); /* war hart 12rem -- veraltet seit die Kopfleiste verkleinert wurde, jetzt an --logo-bar-height gekoppelt wie die uebrigen Anker-Ziele */
 }
 
 .contact-section h2 {
@@ -1329,12 +1349,6 @@ html.hero-fixed .hero-line-wrapper {
     padding-bottom: calc(2rem + env(safe-area-inset-bottom)); /* haelt den Scroll-Hint frei von Safaris unterer Systemleiste/Reader-Bar */
   }
   .poem-line { font-size: 1.35rem; white-space: normal; }
-  /* .poem-block ist auf Mobile links-/rechtsbuendig ueber die volle
-     Breite (left/right:6vw statt einer festen linksseitigen Position
-     wie am Desktop) -- der Hint soll dort horizontal zentriert stehen
-     statt wie der uebrige, linksbuendige Gedichttext an der linken
-     Kante zu kleben. */
-  .scroll-hint { margin-left: auto; margin-right: auto; }
   .site-title {
     /* Vertikal mittig im (jetzt kompakteren) Kopfbereich statt fixem
        top-Wert -- haengt sich an --logo-bar-height-mobile statt an einem
