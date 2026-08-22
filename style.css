@@ -520,22 +520,18 @@ html.hero-fixed .hero-line-wrapper {
 /* Eigenstaendige Chip statt fliessender Fliesstext-Zeile -- liest sich
    dadurch als bewusst eingeschobener Status-Hinweis statt als weitere
    Absatzzeile, die den Lesefluss von Bio-Text zu Portraet unterbricht.
-   display:inline-block (statt inline-flex) + padding statt gap: die
-   Klammern (siehe ::before/::after unten) sind keine Textzeichen mehr,
-   sondern gezeichnete Rahmen-Ecken, die per position:absolute + top:0/
-   bottom:0 die volle Hoehe des (ggf. mehrzeiligen, siehe Mobile)
-   Textblocks umfassen -- das geht nur, wenn .name-sub-footnote selbst
-   der Hoehenanker ist (position:relative), nicht nur einzelne Flex-
-   Kinder. padding-left/right eng gehalten (0.55em), damit die Klammern
-   nah am Text sitzen statt abgerueckt zu wirken. */
+   display:inline-block + padding-left: Platz fuer den Markierungsstrich
+   (siehe ::before unten), der per position:absolute + top:0/bottom:0
+   die volle Hoehe des (ggf. mehrzeiligen, siehe Mobile) Textblocks
+   umfasst -- das geht nur, wenn .name-sub-footnote selbst der Hoehen-
+   anker ist (position:relative). */
 .name-sub-footnote {
   position: relative;
   margin-top: 1rem;
-  padding: 0.1em 0.55em;
+  padding-left: 0.85rem;
   display: inline-block;
   font-family: 'Inter', sans-serif;
   font-size: 1.05rem; /* statt 0.95rem, jetzt konsistent mit .portfolio-subline und anderen Fliesstext-Stellen */
-  line-height: 1.5;
   /* War --muted-light -- das war fuer die fruehere Chip-Optik (mit
      Hintergrund) gedacht; ohne eigenen Hintergrund (siehe oben) wirkte
      der Text zu blass. --text-secondary ist der Ton fuer echten
@@ -544,35 +540,25 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--text-secondary);
 }
 
-/* Gezeichnete eckige Klammern statt Textzeichen "[ ]" -- Border-Ecken
-   (oben/unten + eine Seite), die per top:0/bottom:0 relativ zu
-   .name-sub-footnote (siehe dort) die GESAMTE Hoehe des Textblocks
-   umfassen, auch wenn der Text auf Mobile mehrzeilig umbricht (echte
-   "["-Zeichen waeren dafuer nur schrift-hoch, nicht block-hoch
-   gewesen). Pulsiert weiterhin nur in der Deckkraft, beide Klammern
-   synchron. Farbe bewusst NICHT --accent (Orange bleibt laut
-   Konvention exklusiv fuer Interaktion) -- --accent-2 (Petrol),
-   dieselbe zweite Akzentfarbe wie bei Kicker/Genre-Labels. */
-.name-sub-footnote::before,
-.name-sub-footnote::after {
+/* Zurueck zur typografischen Fussnoten-Markierung (nach zwei nicht
+   ueberzeugenden Zwischenstationen: Unterstrich-Sweep, dann eckige
+   Klammern) -- ein einzelner senkrechter Strich links der gesamten
+   Fussnote, wie ein klassisches Buchsatz-Zeichen. top:0/bottom:0 statt
+   der urspruenglichen 0.15em-Einrueckung, damit der Strich auch auf
+   Mobile die volle Hoehe des mehrzeilig umbrechenden Textblocks
+   umfasst. Pulsiert nur in der Deckkraft. Farbe bewusst NICHT --accent
+   (Orange bleibt laut Konvention exklusiv fuer Interaktion) --
+   --accent-2 (Petrol), dieselbe zweite Akzentfarbe wie bei Kicker/
+   Genre-Labels. */
+.name-sub-footnote::before {
   content: '';
   position: absolute;
+  left: 0;
   top: 0;
   bottom: 0;
-  width: 0.4em;
-  border-top: 2px solid var(--accent-2);
-  border-bottom: 2px solid var(--accent-2);
+  width: 2px;
+  background-color: var(--accent-2);
   animation: footnote-mark-pulse 3s ease-in-out infinite;
-}
-
-.name-sub-footnote::before {
-  left: 0;
-  border-left: 2px solid var(--accent-2);
-}
-
-.name-sub-footnote::after {
-  right: 0;
-  border-right: 2px solid var(--accent-2);
 }
 
 @keyframes footnote-mark-pulse {
@@ -581,8 +567,7 @@ html.hero-fixed .hero-line-wrapper {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .name-sub-footnote::before,
-  .name-sub-footnote::after {
+  .name-sub-footnote::before {
     animation: none;
     opacity: 0.85;
   }
@@ -731,13 +716,17 @@ html.hero-fixed .hero-line-wrapper {
   .nav-flash { animation: none; }
 }
 
+/* War rgba(20,16,13,0.55) -- beim ersten Petrol-Umbau uebersehen, da
+   diese Regel (Homepage-Teaser-Karten) separat von .page-kicker (echte
+   Unterseiten) existiert, obwohl beide optisch dieselbe Rolle spielen.
+   Jetzt an --accent-2 angeglichen. */
 .col-card h2 {
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(20, 16, 13, 0.55);
+  color: var(--accent-2);
   margin-bottom: 1.5rem;
 }
 
@@ -820,13 +809,15 @@ html.hero-fixed .hero-line-wrapper {
   border-top: 1px solid var(--line);
 }
 
+/* War rgba(20,16,13,0.55) -- dieselbe Kicker-Rolle wie .page-kicker/
+   .col-card h2/.contact-section h2, daher ebenfalls --accent-2 (Petrol). */
 .page-section h2 {
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(20, 16, 13, 0.55);
+  color: var(--accent-2);
   margin-bottom: 1.5rem;
 }
 
@@ -1365,13 +1356,15 @@ html.hero-fixed .hero-line-wrapper {
   scroll-margin-top: calc(var(--logo-bar-height) + 1.5rem); /* war hart 12rem -- veraltet seit die Kopfleiste verkleinert wurde, jetzt an --logo-bar-height gekoppelt wie die uebrigen Anker-Ziele */
 }
 
+/* War rgba(20,16,13,0.55) -- dieselbe Kicker-Rolle wie .page-kicker/
+   .col-card h2, daher ebenfalls --accent-2 (Petrol). */
 .contact-section h2 {
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(20, 16, 13, 0.55);
+  color: var(--accent-2);
   margin-bottom: 2rem;
 }
 
