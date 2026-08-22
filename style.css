@@ -310,6 +310,20 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--text-dark);
 }
 
+/* Gedichttitel als eigene Zeile unter der Autor-Zeile -- knapperer
+   margin-top als bei .poem-author (die den groesseren Abstand zum
+   Gedichttext selbst traegt), damit Autor+Titel als zusammengehoeriges
+   Zitat-Paar wirken. Kein Uppercase/Sperrung wie beim Autornamen,
+   Anfuehrungszeichen tragen hier die Auszeichnung. Etwas gedaempfter
+   (--muted-dark) als der Autorname, da nachrangige Angabe. */
+.poem-title {
+  margin-top: 0.5rem;
+  font-family: 'EB Garamond', serif;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--muted-dark);
+}
+
 .poem-ellipsis {
   color: var(--muted-dark);
 }
