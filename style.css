@@ -521,15 +521,14 @@ html.hero-fixed .hero-line-wrapper {
    dadurch als bewusst eingeschobener Status-Hinweis statt als weitere
    Absatzzeile, die den Lesefluss von Bio-Text zu Portraet unterbricht.
    display:inline-flex begrenzt die Breite auf den Inhalt (statt volle
-   Breite wie ein Blockelement). Der linke Rand-Strich (siehe ::before
-   unten) braucht eigenen Platz -- daher position:relative + padding-
-   left statt gap, das Trennzeichen ist ja kein eigenes Flex-Kind. */
+   Breite wie ein Blockelement). gap statt padding: die eckigen Klammern
+   (siehe ::before/::after unten) sind jetzt eigene Pseudo-Elemente vor
+   und nach dem Text, kein absolut positionierter Strich mehr. */
 .name-sub-footnote {
-  position: relative;
   margin-top: 1rem;
-  padding-left: 0.85rem;
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
+  gap: 0.35rem;
   font-family: 'Inter', sans-serif;
   font-size: 1.05rem; /* statt 0.95rem, jetzt konsistent mit .portfolio-subline und anderen Fliesstext-Stellen */
   /* War --muted-light -- das war fuer die fruehere Chip-Optik (mit
@@ -540,40 +539,35 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--text-secondary);
 }
 
-/* Wie eine typografische Fussnoten-Markierung: ein senkrechter Strich
-   links der gesamten Fussnote statt eines separaten Icons oder einer
-   Unterstreichung mitten im Text -- pulsiert nur in der Deckkraft
-   (kein Scale/Sweep, dadurch ruhiger), etwa wie ein leise atmendes
-   Zitat-/Fussnotenzeichen. Farbe bewusst NICHT --accent (Orange bleibt
-   laut Konvention exklusiv fuer Interaktion, siehe --accent-Kommentar
-   oben) -- --accent-2 (Petrol) stattdessen: reines Status-/"aktuell"-
-   Signal, kein Interaktionselement, damit die zweite Akzentfarbe fuer
-   informative Markierungen (siehe auch Kicker/Genre-Labels) genutzt
-   wird statt fuer noch mehr Grau. War zunaechst 1px/Orange, dann
-   --text-secondary-Grau -- zu duenn bzw. zu wenig eigenstaendig fuer
-   ein rein dekoratives Element, jetzt 2px in Petrol. */
-.name-sub-footnote::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.15em;
-  bottom: 0.15em;
-  width: 2px;
-  background-color: var(--accent-2);
+/* Eckige Klammern statt Strich/Punkt/Sweep -- "[ ... ]" um die ganze
+   Fussnote, wie eine redaktionelle "hier ist gerade was Aktuelles"-
+   Notation. Deutlich praesenter als der vorherige 2px-Strich (echte
+   Zeichen statt duennem Balken), pulsiert weiterhin nur in der
+   Deckkraft, beide Klammern synchron -- liest sich wie ein sanft
+   atmender Rahmen um den Hinweis. Farbe bewusst NICHT --accent (Orange
+   bleibt laut Konvention exklusiv fuer Interaktion) -- --accent-2
+   (Petrol), dieselbe zweite Akzentfarbe wie bei Kicker/Genre-Labels. */
+.name-sub-footnote::before,
+.name-sub-footnote::after {
+  font-weight: 700;
+  color: var(--accent-2);
   animation: footnote-mark-pulse 3s ease-in-out infinite;
 }
 
-/* War 0.4-1 -- bei dem eher hellen --muted-light-Grauton kaum
-   wahrnehmbar, da schon der "leise" Zustand zu nah am "vollen" lag.
-   Groesserer Bereich (0.12-1) macht die Bewegung sichtbarer, ohne die
-   Deckfarbe selbst zu aendern. */
+.name-sub-footnote::before { content: '['; }
+.name-sub-footnote::after  { content: ']'; }
+
 @keyframes footnote-mark-pulse {
-  0%, 100% { opacity: 0.12; }
+  0%, 100% { opacity: 0.3; }
   50%      { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .name-sub-footnote::before { animation: none; opacity: 0.7; }
+  .name-sub-footnote::before,
+  .name-sub-footnote::after {
+    animation: none;
+    opacity: 0.85;
+  }
 }
 
 .name-sub-footnote a {
