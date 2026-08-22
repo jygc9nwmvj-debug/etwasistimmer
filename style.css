@@ -563,30 +563,26 @@ html.hero-fixed .hero-line-wrapper {
    Inline-Textfluss (siehe Stacking-Reihenfolge), inset ueber die volle
    (ggf. mehrzeilige) Blockhoehe, wirkt bei mehreren Zeilen wie ein
    Lichtstreifen, der senkrecht durch den ganzen Absatz wandert. */
-/* War ein harter linearer Farbverlauf als Streifen -- das ist genau
-   der "Glanz-Hover-Button"-Mechanismus aus der fruehen Web-2.0-Zeit
-   (glossy Sheen-Effekt), egal wie fein er sonst getuned ist. Jetzt
-   stattdessen ein weicher, unscharfer Lichtfleck (radialer statt
-   linearer Verlauf + filter:blur) -- wirkt organischer, eher wie ein
-   sanftes Aufleuchten als wie ein Reflex auf einer Glasflaeche. */
-/* filter:blur() komplett entfernt -- das war vermutlich durchgehend
-   die eigentliche Ursache der Safari-Kante (zwei Groessen-Anpassungen
-   vorher haben sie nicht zuverlaessig weggekriegt). Weichheit kommt
-   jetzt allein aus mehreren Farbverlauf-Stufen (55% -> 22% -> 0%
-   Petrol-Anteil statt nur zwei Stufen) statt aus einem Weichzeichner --
-   dadurch keine Abhaengigkeit mehr von WebKits Filter-Rendering, das
-   in mehreren Anlaeufen (erst Bleed vergroessert, dann die Flecken-
-   groesse selbst reduziert) nicht zuverlaessig sauber blieb. */
+/* Nach zwei Anlaeufen mit einem Hintergrund-Fleck (erst linearer
+   Streifen, dann weicher radialer Fleck mit/ohne Blur -- beide Male
+   Kanten-Artefakte in Safari, die trotz mehrfacher Groessen-/Blur-
+   Anpassungen nicht zuverlaessig weggingen) jetzt ein grundsaetzlich
+   anderer, einfacherer Mechanismus: eine duenne Linie UNTER der
+   Fussnote, die in derselben Geschwindigkeit/Choreografie (siehe
+   footnote-sweep-bg) links nach rechts durchlaeuft, ein-/ausblendend.
+   Keine Flaeche/kein Blur mehr -- nur ein 2px hoher linearer
+   Verlauf, der randlos in Transparenz ausläuft (position:absolute mit
+   left/right:0 statt inset auf allen Seiten, da hier keine Hoehe/Breite
+   des Textblocks mehr nachgebildet werden muss). */
 .name-sub-footnote::after {
   content: '';
   position: absolute;
-  inset: -0.3em -0.3em;
-  z-index: -1;
-  background: radial-gradient(circle closest-side,
-    color-mix(in srgb, var(--accent-2) 55%, transparent) 0%,
-    color-mix(in srgb, var(--accent-2) 22%, transparent) 55%,
-    transparent 100%);
-  background-size: 16% 110%;
+  left: 0;
+  right: 0;
+  bottom: -0.35em;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent-2) 50%, transparent 100%);
+  background-size: 24% 100%;
   background-repeat: no-repeat;
   background-position: -80% 0;
   opacity: 0;
