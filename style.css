@@ -33,8 +33,13 @@
      aber nur noch als explizite Section-Fuellfarbe verwendet, nicht
      mehr als Body-Hintergrund. Erzeugt den "Naht"-Abstand zwischen
      den Content-Bloecken, auf allen drei Seiten gleich. */
-  --bg-page:     #fdfcfa;
-  --bg-light:    #e5e9ea;
+  --bg-page:     #fdfbf6;
+  /* War #e5e9ea -- minimal kuehl (B/G leicht ueber R), verstaerkte den
+     "monochrom/klinisch"-Eindruck neben dem S/W-Foto. Jetzt Richtung
+     warmes, helles Beige-Grau statt Blau-Grau -- erst #e9e4da (gleiche
+     Helligkeit wie vorher, nur Farbtemperatur gedreht), dann nochmal
+     etwas aufgehellt. */
+  --bg-light:    #eee9df;
   --text-light:  #121211;
   --muted-light: #706f6b;
 
@@ -625,10 +630,100 @@ html.hero-fixed .hero-line-wrapper {
   z-index: 1;
 }
 
+/* KRITZEL-EASTEREGG: Filzstift-artige Pfeile + handschriftliche Labels
+   ("Elmo"/"Wolfram"), die bei Hover auf das Hero-Portrait einblenden --
+   rein spielerisch, kein Informationsgewinn (beide sind im Foto
+   eindeutig erkennbar), deshalb bewusst NUR bei echtem Hover sichtbar
+   (siehe Media-Query unten, gleiches Gate wie .portrait-freistehend
+   oben) und nicht dauerhaft eingeblendet. Farben bewusst NICHT an die
+   "Orange exklusiv fuer Interaktion"-Konvention gebunden -- das ist
+   hier explizit ein dekorativer Sonderfall, kein UI-Element.
+
+   Baut sich wie echtes Reinkritzeln auf statt nur einzublenden: die
+   Linie "zeichnet" sich zuerst per stroke-dashoffset (SVG pathLength=1-
+   Trick, siehe HTML -- dadurch reicht ein CSS-Wert von 0/1 unabhaengig
+   von der tatsaechlichen Pfad-Laenge), erst wenn sie fertig ist,
+   poppt die Pfeilspitze (echtes gefuelltes Dreieck statt zwei duenner
+   Linien) auf, zuletzt das Label -- zeitversetzt per transition-delay,
+   dieselbe Reihenfolge, in der man von Hand kritzeln wuerde. */
+.portrait-scribble {
+  position: absolute;
+  z-index: 3;
+  width: 7rem;
+  pointer-events: none;
+}
+
+/* War oben/rechts-buendig wie .portrait-scribble-wolfram -- jetzt
+   umgedreht: Pfeil kommt von unten-links (darf per negativem left
+   auch links aus dem Foto herauslaufen, .intro-portrait selbst hat
+   kein overflow:hidden) und zeigt nach oben-rechts auf den Kopf des
+   Hundes, statt das Foto von oben zu ueberdecken. */
+.portrait-scribble-elmo   { top: 42%; left: -12%; }
+.portrait-scribble-wolfram { top: 3%; right: 3%; text-align: right; }
+
+.scribble-arrow {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+}
+
+.scribble-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.45s ease;
+}
+
+.scribble-arrowhead {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.scribble-label {
+  display: block;
+  font-family: 'Permanent Marker', cursive;
+  font-size: 1.4rem;
+  line-height: 1;
+  opacity: 0;
+  transform: translateY(4px) rotate(-2deg);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.portrait-scribble-wolfram .scribble-label {
+  transform: translateY(4px) rotate(2deg);
+}
+
+.scribble-label-elmo    { color: var(--accent-2); }
+.scribble-label-wolfram { color: var(--accent); }
+
 /* hover:hover/pointer:fine statt einer reinen :hover-Regel -- sonst
    bliebe das Porträt nach einem Tap auf Touch dauerhaft gezoomt/voll
    deckend haengen. */
 @media (hover: hover) and (pointer: fine) {
+  .intro-portrait:hover .scribble-line {
+    stroke-dashoffset: 0;
+  }
+
+  .intro-portrait:hover .scribble-arrowhead {
+    opacity: 1;
+    transition-delay: 0.4s;
+  }
+
+  .intro-portrait:hover .scribble-label {
+    opacity: 1;
+    transition-delay: 0.5s;
+  }
+
+  .intro-portrait:hover .portrait-scribble-elmo .scribble-label {
+    transform: translateY(0) rotate(-2deg);
+    transition-delay: 0.5s;
+  }
+
+  .intro-portrait:hover .portrait-scribble-wolfram .scribble-label {
+    transform: translateY(0) rotate(2deg);
+    transition-delay: 0.5s;
+  }
+
   .intro-portrait:hover .portrait-freistehend {
     opacity: 1;
     transform: scale(1.02);
