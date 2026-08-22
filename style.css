@@ -569,29 +569,26 @@ html.hero-fixed .hero-line-wrapper {
    stattdessen ein weicher, unscharfer Lichtfleck (radialer statt
    linearer Verlauf + filter:blur) -- wirkt organischer, eher wie ein
    sanftes Aufleuchten als wie ein Reflex auf einer Glasflaeche. */
+/* filter:blur() komplett entfernt -- das war vermutlich durchgehend
+   die eigentliche Ursache der Safari-Kante (zwei Groessen-Anpassungen
+   vorher haben sie nicht zuverlaessig weggekriegt). Weichheit kommt
+   jetzt allein aus mehreren Farbverlauf-Stufen (55% -> 22% -> 0%
+   Petrol-Anteil statt nur zwei Stufen) statt aus einem Weichzeichner --
+   dadurch keine Abhaengigkeit mehr von WebKits Filter-Rendering, das
+   in mehreren Anlaeufen (erst Bleed vergroessert, dann die Flecken-
+   groesse selbst reduziert) nicht zuverlaessig sauber blieb. */
 .name-sub-footnote::after {
   content: '';
   position: absolute;
-  /* War zunaechst -0.3em/-0.5em, dann versuchsweise auf -1.2em/-1.5em
-     vergroessert (Annahme: WebKit schneidet filter:blur() hart an der
-     Elementgrenze zu) -- der eigentliche Grund war aber vermutlich viel
-     simpler: der Fleck selbst war (Erbe des juengeren Sweep-Designs,
-     das noch als durchgehender Streifen ueber die volle mehrzeilige
-     Blockhoehe gedacht war) mit 220% Bild-Hoehe deutlich groesser als
-     die eigentliche Textzeile, wodurch in Safari/Mobile die eigene
-     Boxkante sichtbar wurde. Jetzt spuerbar kleiner (naeher an der
-     Zeilenhoehe), dazu "closest-side" statt der Default-Kreisgroesse
-     (verhindert, dass der Kreisradius durch die schmale/hohe Box
-     unnoetig aufgeblasen wird) und weniger Blur/Bleed, da der Fleck
-     selbst schon kleiner ist. */
-  inset: -0.4em -0.4em;
+  inset: -0.3em -0.3em;
   z-index: -1;
-  background: radial-gradient(circle closest-side, color-mix(in srgb, var(--accent-2) 45%, transparent) 0%, transparent 100%);
-  background-size: 16% 130%;
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--accent-2) 55%, transparent) 0%,
+    color-mix(in srgb, var(--accent-2) 22%, transparent) 55%,
+    transparent 100%);
+  background-size: 16% 110%;
   background-repeat: no-repeat;
   background-position: -80% 0;
-  filter: blur(5px);
-  will-change: filter, background-position, opacity;
   opacity: 0;
   animation: footnote-sweep-bg 9s ease-in-out infinite;
 }
@@ -823,7 +820,15 @@ html.hero-fixed .hero-line-wrapper {
   }
 
   .intro-portrait:hover .scribble-label {
-    clip-path: inset(0 0% 0 0);
+    /* -15% statt exakt 0%: Caveat ist eine Schreibschrift, deren
+       Buchstaben-Ausbuchtungen (Schwuenge, Schleifen) optisch ueber die
+       eigene Advance-Width-Box hinausragen koennen -- bei einem
+       randscharfen 0%-Clip wurde genau dieser Ueberhang am jeweils
+       letzten Buchstaben (das "o" bei Elmo, minimal das "m" bei
+       Wolfram) abgeschnitten, in Chrome UND Safari gleichermassen (kein
+       Browser-Bug, echter Font-Ink-Ueberhang). Grosszuegiger Sicher-
+       heitsabstand rechts behebt das unabhaengig vom exakten Font. */
+    clip-path: inset(0 -15% 0 0);
     transition-delay: 0.5s;
   }
 
