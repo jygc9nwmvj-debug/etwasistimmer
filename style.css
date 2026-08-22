@@ -710,7 +710,16 @@ html.hero-fixed .hero-line-wrapper {
      werden KANN -- der zeitliche Ablauf kommt weiterhin von den
      einzelnen dashoffset/clip-path-Transitions ihrer Kinder. */
   opacity: 0;
-  transition: opacity 0.05s linear;
+  /* Asymmetrisch: schnelles Einblenden (0.05s, siehe Kommentar oben --
+     das Sicherheitsnetz gegen den Punkt-Bug braucht sofortiges
+     opacity:1), aber langsames Ausblenden (0.65s, deckt die volle
+     Ruecknahme-Sequenz von Label/Pfeilspitze/Linie ab, siehe deren
+     delays), damit beim Verlassen des Hovers Zeit fuer eine echte
+     Ruecknahme-Animation bleibt statt eines harten Abschneidens. Die
+     schnelle Einblend-Dauer wird auf den Hover-/is-scribbling-Regeln
+     unten per transition-duration ueberschrieben (die gelten nur beim
+     Reingehen); ohne Hover greift wieder diese langsamere Basis-Dauer. */
+  transition: opacity 0.65s ease;
 }
 
 /* War oben/rechts-buendig wie .portrait-scribble-wolfram -- jetzt
@@ -725,7 +734,6 @@ html.hero-fixed .hero-line-wrapper {
   display: block;
   width: 100%;
   height: auto;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
 }
 
 /* stroke-linecap hier bewusst auf "butt" ueberschrieben -- das HTML
@@ -739,11 +747,19 @@ html.hero-fixed .hero-line-wrapper {
    kurzzeitig als volle Kreisflaeche. "butt" (flaches Ende) hat dieses
    Problem nicht -- optisch bei 3.5px Strichbreite kaum ein
    Unterschied. */
+/* transition-delay hier (0.25s) gilt nur fuers Zurueckziehen (Ausgang
+   ohne Hover/is-scribbling): die Linie wurde zuerst gezeichnet, soll
+   beim Verschwinden also zuletzt zurueckgezogen werden -- nach Label
+   und Pfeilspitze (siehe deren kuerzere/keine Delays unten), fuer eine
+   Ruecknahme in umgekehrter Reihenfolge statt eines gleichzeitigen
+   Verschwindens aller drei. Die Hover-/is-scribbling-Regeln setzen für
+   den Eingang explizit delay:0s (dort weiter unten), sonst wuerde
+   dieser Exit-Delay auch das Reinzeichnen verzoegern. */
 .scribble-line {
   stroke-linecap: butt;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0.45s ease;
+  transition: stroke-dashoffset 0.35s ease 0.25s;
 }
 
 /* War ein gefuelltes Dreieck (<polygon>) -- wirkte "ausgemalt" statt
@@ -755,7 +771,9 @@ html.hero-fixed .hero-line-wrapper {
   stroke-linecap: butt;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0.18s ease;
+  /* delay 0.1s: zieht sich beim Ausgang nach dem Label, aber vor der
+     Linie zurueck (umgekehrte Zeichenreihenfolge), siehe .scribble-line. */
+  transition: stroke-dashoffset 0.15s ease 0.1s;
 }
 
 /* War 'Permanent Marker' -- optisch eine Druckschrift im Filzstift-
@@ -802,16 +820,25 @@ html.hero-fixed .hero-line-wrapper {
    bliebe das Porträt nach einem Tap auf Touch dauerhaft gezoomt/voll
    deckend haengen. */
 @media (hover: hover) and (pointer: fine) {
+  /* transition-duration/-delay hier jeweils explizit auf die
+     urspruenglichen Eingangs-Werte gesetzt -- die Basisregeln oben
+     (.scribble-line/-arrowhead) tragen inzwischen andere Werte fuer
+     die Ruecknahme-Animation beim Verlassen, ohne diese Ueberschreibung
+     wuerden die Exit-Delays auch das Reinzeichnen verzoegern. */
   .intro-portrait:hover .portrait-scribble {
     opacity: 1;
+    transition-duration: 0.05s;
   }
 
   .intro-portrait:hover .scribble-line {
     stroke-dashoffset: 0;
+    transition-duration: 0.45s;
+    transition-delay: 0s;
   }
 
   .intro-portrait:hover .scribble-arrowhead {
     stroke-dashoffset: 0;
+    transition-duration: 0.18s;
     transition-delay: 0.4s;
   }
 
@@ -846,19 +873,29 @@ html.hero-fixed .hero-line-wrapper {
    statt :hover ausgeloest. */
 .intro-portrait.is-scribbling .portrait-scribble {
   opacity: 1;
+  transition-duration: 0.05s;
 }
 
 .intro-portrait.is-scribbling .scribble-line {
   stroke-dashoffset: 0;
+  transition-duration: 0.45s;
+  transition-delay: 0s;
 }
 
 .intro-portrait.is-scribbling .scribble-arrowhead {
   stroke-dashoffset: 0;
+  transition-duration: 0.18s;
   transition-delay: 0.4s;
 }
 
 .intro-portrait.is-scribbling .scribble-label {
-  clip-path: inset(0 0% 0 0);
+  /* -15% statt 0% -- derselbe Sicherheitsabstand wie bei der Hover-
+     Variante oben (siehe dortiger Kommentar), hier beim Tap-Pendant
+     versehentlich vergessen. Genau DAS war der Grund, warum "Elmo" auf
+     Touch-Geraeten (Tap loest .is-scribbling aus, nicht :hover) trotz
+     des Hover-Fixes weiter angeschnitten blieb -- Mobile nutzt
+     ausschliesslich diesen Pfad, nie :hover. */
+  clip-path: inset(0 -15% 0 0);
   transition-delay: 0.5s;
 }
 
