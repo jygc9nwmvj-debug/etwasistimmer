@@ -517,24 +517,28 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--muted-light);
 }
 
-/* Wie eine typografische Fussnoten-Markierung: ein duenner, senkrechter
-   Strich links der gesamten Fussnote statt eines separaten Icons oder
-   einer Unterstreichung mitten im Text -- pulsiert nur in der
-   Deckkraft (kein Scale/Sweep, dadurch ruhiger), etwa wie ein leise
-   atmendes Zitat-/Fussnotenzeichen. */
+/* Wie eine typografische Fussnoten-Markierung: ein senkrechter Strich
+   links der gesamten Fussnote statt eines separaten Icons oder einer
+   Unterstreichung mitten im Text -- pulsiert nur in der Deckkraft
+   (kein Scale/Sweep, dadurch ruhiger), etwa wie ein leise atmendes
+   Zitat-/Fussnotenzeichen. Farbe bewusst NICHT --accent (Orange bleibt
+   laut Konvention exklusiv fuer Interaktion, siehe --accent-Kommentar
+   oben) -- --muted-light stattdessen, dieselbe Tonfamilie wie Kicker/
+   Footer/Genre-Tags. War zunaechst 1px/Orange -- zu duenn/zu praesent
+   fuer ein rein dekoratives Element, jetzt 2px kraeftiger. */
 .name-sub-footnote::before {
   content: '';
   position: absolute;
   left: 0;
   top: 0.15em;
   bottom: 0.15em;
-  width: 1px;
-  background-color: var(--accent);
+  width: 2px;
+  background-color: var(--muted-light);
   animation: footnote-mark-pulse 3s ease-in-out infinite;
 }
 
 @keyframes footnote-mark-pulse {
-  0%, 100% { opacity: 0.35; }
+  0%, 100% { opacity: 0.4; }
   50%      { opacity: 1; }
 }
 
@@ -802,13 +806,15 @@ html.hero-fixed .hero-line-wrapper {
   scroll-margin-top: calc(var(--logo-bar-height) + 1.5rem); /* war hart 12rem -- veraltet seit die Kopfleiste verkleinert wurde, jetzt an --logo-bar-height gekoppelt wie die uebrigen Anker-Ziele */
 }
 
-/* .portfolio-preview und .portfolio-list teilen dieselbe max-width und
-   werden beide zentriert -- dadurch schliessen Vorschaubild und Titel-
-   liste links buendig miteinander ab (beide starten am linken Rand
-   ihrer jeweils gleich breiten, zentrierten Box), UND die Gruppe wirkt
-   als Ganzes zentriert unter der zentrierten Ueberschrift, statt (wie
-   zuvor bei margin:0) an der linken Kante des vollen 1200px-Section-
-   Inhalts zu kleben. */
+/* .portfolio-list bleibt auf voller Sektionsbreite (wie der Rest der
+   Seite, z.B. .page-section) -- das war der eigentliche Fix fuer "faellt
+   aus dem Rahmen" (vorherige Variante zwang mit gleicher max-width auch
+   die Liste auf Bildbreite zusammen). .portfolio-preview bekommt eine
+   eigene, schmalere max-width und wird darueber zentriert (margin:auto)
+   statt linksbuendig -- linksbuendig liess das schmalere Bild neben viel
+   Leerraum "an den Rand geschoben" wirken, zentriert ist ausgewogener,
+   auch wenn die Bildkante dadurch nicht mehr mit der Listenkante darunter
+   fluchtet. */
 .portfolio-preview {
   position: static;
   width: 100%;
@@ -818,8 +824,6 @@ html.hero-fixed .hero-line-wrapper {
 
 .portfolio-list {
   width: 100%;
-  max-width: min(100%, calc(42vh * 16 / 9));
-  margin: 0 auto;
 }
 
 .portfolio-media {
