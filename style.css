@@ -59,7 +59,7 @@
      fixierte, teiltransparente Logo-Bar und wirkt oben angeschnitten.
      Als Variable statt unabhaengiger Werte, die bei einem Redesign
      leise auseinanderlaufen koennen. */
-  --logo-bar-height: 8.5rem;
+  --logo-bar-height: 8rem;
   --logo-bar-height-mobile: 7rem;
 }
 
@@ -101,7 +101,7 @@ body {
    Unterseiten ohne Uebergang. */
 .site-title {
   position: fixed;
-  top: 28px; /* war 48px -- zusammen mit --logo-bar-height und .site-nav's top verkleinert, die Kopfleiste hatte zu viel Luft */
+  top: 20px; /* war zuletzt 28px -- jetzt symmetrisch zum 20px-Abstand zwischen .site-nav-Unterkante und Logo-Bar-Unterkante (siehe dort) */
   left: 50%;
   transform: translateX(-50%);
   z-index: 25;
@@ -135,7 +135,7 @@ body {
 
 .site-nav {
   position: fixed;
-  top: 6rem; /* war 7.25rem, direkt an .site-titles neuen Werten (top:28px + eigene Zeilenhoehe) ausgerichtet */
+  top: 5.5rem; /* direkt an .site-titles neuen Werten (top:20px + eigene Zeilenhoehe) ausgerichtet */
   left: 50%;
   transform: translateX(-50%);
   z-index: 30;
@@ -409,42 +409,10 @@ html.hero-fixed .hero-line-wrapper {
   padding: calc(var(--logo-bar-height) + 1.5rem) 0 0 0;
   scroll-margin-top: 12rem;
   position: relative;
-  /* overflow:hidden schneidet .elmo-peek (Kind von .intro-portrait, nicht
-     mehr direktes Kind von .main-intro) trotzdem hart an dieser Section-
-     Kante ab -- jeder Vorfahre mit overflow:hidden clippt positionierte
-     Nachfahren, unabhaengig davon, welcher naehere Vorfahre ihr
-     eigentlicher Containing Block ist (das ist jetzt .intro-portrait,
-     siehe dortiges position:relative). Deterministisch in jedem Browser
-     gleich, im Gegensatz zum frueheren overflow:visible, das sich auf
-     Paint-Reihenfolge zwischen Geschwister-Sections verliess. */
+  /* Verhindert, dass .portrait-freistehends leichter Hover-Zoom
+     (transform: scale(1.02)) an der Section-Kante ueber den Rand
+     hinausragt. */
   overflow: hidden;
-}
-
-/* Easter Egg: springt bei Hover mittig und deutlich groesser vor das
-   Portrait (siehe cubic-bezier fuer den kleinen Ueberschwung), bleibt
-   dabei unten hart an der Section-Kante abgeschnitten (overflow:hidden
-   auf .main-intro). Im Ruhezustand komplett unter die Kante verschoben. */
-.elmo-peek {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translate(-50%, 105%);
-  width: clamp(220px, 36vw, 420px);
-  height: auto;
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  pointer-events: none;
-  z-index: 5; /* ueber dem Portrait */
-}
-
-/* hover:hover/pointer:fine statt einer reinen :hover-Regel -- sonst
-   bleibt dieser Zustand auf Touch nach dem Tap haengen (kein Mauszeiger,
-   der ihn wieder verlaesst) und ueberschreibt dauerhaft das JS-Timeout
-   von .is-elmo-visible unten, Elmo verschwindet dann nie wieder. Auf
-   echten Hover-Geraeten unveraendert. */
-@media (hover: hover) and (pointer: fine) {
-  .intro-portrait:hover .elmo-peek {
-    transform: translate(-50%, 16%);
-  }
 }
 
 /* Oberster Content-Block auf beratung.html/profil.html -- dieselbe
@@ -543,14 +511,14 @@ html.hero-fixed .hero-line-wrapper {
   justify-content: flex-end;
   align-items: flex-end;
   align-self: stretch;
-  /* Feste, echte Bezugsgroesse fuer .portrait-freistehend's height:100%
-     (und damit fuer .main-intro's overflow:hidden-Kante bei Elmo) --
+  /* Feste, echte Bezugsgroesse fuer .portrait-freistehend's height:100% --
      entspricht dem tatsaechlichen Seitenverhaeltnis von
-     wolfram-huke-cutout.png (800x800, quadratisch). Ersetzt das
-     frühere min-height:32rem auf .main-intro-inner, das die ganze
-     Grid-Zeile auf eine hoehere/schmalere Form zwang als das Foto
+     wolfram-huke-cutout.png (1872x1422, Hund+Mensch nebeneinander,
+     daher deutlich breiter als das fruehere quadratische Portrait).
+     Ersetzt das frühere min-height:32rem auf .main-intro-inner, das die
+     ganze Grid-Zeile auf eine hoehere/schmalere Form zwang als das Foto
      hergibt und dadurch unnoetig stark beschnitt. */
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1872 / 1422;
 }
 
 /* <picture> ist per Default nur inline und wuerde sich sonst als
@@ -562,16 +530,6 @@ html.hero-fixed .hero-line-wrapper {
   display: block;
   width: 100%;
   height: 100%;
-}
-
-/* .elmo-peek-wrap ist die zweite <picture> in .intro-portrait (Wrapper
-   um .elmo-peek) -- ohne diese Regel wuerde sie die obige width/height:
-   100%-Regel ebenfalls treffen und als zweites Flex-Kind die Portrait-
-   Flaeche zusammenquetschen. display:contents nimmt ihr die eigene Box
-   komplett (kein Flex-Teilnehmer mehr), .elmo-peek (das <img> darin)
-   positioniert sich dadurch effektiv direkt relativ zu .intro-portrait. */
-.intro-portrait .elmo-peek-wrap {
-  display: contents;
 }
 
 .portrait-freistehend {
@@ -590,7 +548,7 @@ html.hero-fixed .hero-line-wrapper {
   z-index: 1;
 }
 
-/* Gleicher Grund wie beim Elmo-Hover oben: ohne hover:hover/pointer:fine
+/* hover:hover/pointer:fine statt einer reinen :hover-Regel -- sonst
    bliebe das Porträt nach einem Tap auf Touch dauerhaft gezoomt/voll
    deckend haengen. */
 @media (hover: hover) and (pointer: fine) {
@@ -1366,74 +1324,6 @@ html.hero-fixed .hero-line-wrapper {
     --bottom-nav-height-mobile: 3rem;
   }
 
-  /* .elmo-peek-wrap wird auf Mobile zum echten Clip-Fenster (Desktop:
-     display:contents, siehe Basisregel weiter oben -- dort bleibt die
-     alte Optik unveraendert). bottom:2rem setzt die Fenster-Unterkante
-     exakt auf die echte Portraet-Unterkante (2rem = .intro-portrait's
-     eigenes padding-bottom, siehe dortige Regel). Alles unterhalb
-     dieser Kante wird hart abgeschnitten -- der Hund taucht sauber an
-     der Portraet-Unterkante ab, statt mit seiner eigenen (weichen)
-     Bildkante irgendwo mitten im Torso zu enden. Nach oben hin
-     (height:24rem) bleibt er weiterhin frei, ueberlappt das Portrait
-     wie gehabt. */
-  .intro-portrait .elmo-peek-wrap {
-    display: block;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 2rem;
-    height: 24rem;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 5; /* ueber dem Portrait */
-    /* Bekannter WebKit-Bug: overflow:hidden auf einem Elternelement
-       clippt ein transformiertes Kind waehrend der laufenden Transition
-       teils nicht zuverlaessig, erst wenn die Transition abgeschlossen
-       ist ("nachtraeglich" statt fortlaufend). translateZ(0) allein hat
-       sich auf echten iPhones als nicht ausreichend erwiesen -- sichtbar
-       dadurch, dass Elmo waehrend der Bewegung kurz bis zur (tieferen)
-       Unterkante der ganzen Hero-Section durchrutscht, statt durchgehend
-       an der (hoeher liegenden) Portraet-Unterkante abgeschnitten zu sein,
-       und erst nach Transitionsende an der richtigen Kante landet.
-       mask-image erzwingt in Safari einen anderen, Compositor-basierten
-       Clip-Pfad (CALayer-Maske statt Overflow-Rect), der waehrend der
-       gesamten Transform-Transition korrekt aktualisiert wird. Die Maske
-       selbst ist bewusst voll deckend (#000 zu #000, kein Verlauf) --
-       sie dient nur dazu, Safari auf diesen Rendering-Pfad zu zwingen,
-       nicht um irgendetwas auszublenden. */
-    -webkit-mask-image: -webkit-linear-gradient(#000, #000);
-    mask-image: linear-gradient(#000, #000);
-    transform: translateZ(0);
-    /* Haelt die Compositing-Ebene durchgehend bestehen, statt sie erst
-       bei Transitionsbeginn neu aufzubauen -- zusammen mit der Maske
-       oben der uebliche, robustere Ersatz fuer das alleinige
-       translateZ(0), das dieses Safari-Clipping-Problem nicht immer
-       zuverlaessig behebt. */
-    will-change: transform;
-  }
-
-  /* Ruhezustand: 130% schiebt den Hund komplett unter die Fenster-
-     Unterkante (= Portraet-Kante), damit dort nichts durchscheint --
-     mit Sicherheitsabstand per Playwright verifiziert. */
-  .elmo-peek {
-    bottom: 0;
-    transform: translate(-50%, 130%);
-    width: clamp(330px, 54vw, 630px); /* 1.5x von vormals clamp(220px, 36vw, 420px) */
-  }
-
-  /* Kein CSS-Hover auf Touch -- Tap auf .intro-portrait toggelt
-     stattdessen .is-elmo-visible per JS, siehe unten.
-     25% statt vormals 16%: elmo.png hat oben selbst ~13% transparenten
-     Rand vor dem eigentlichen Kopf (per Pixel-Alpha vermessen), die
-     16%-Position liess den Kopf dadurch bis knapp unter die Mundpartie
-     des Portraets hochrutschen. 25% richtet die Kopf-Oberkante (nicht
-     die Element-Kante) am Kinn aus -- bezogen auf die reale Position
-     des Portraets in wolfram-huke-cutout.png (Kinnunterkante bei ca.
-     48% der Bildhoehe) bei object-fit:contain auf 300px Renderhoehe. */
-  .intro-portrait.is-elmo-visible .elmo-peek {
-    transform: translate(-50%, 25%);
-  }
-
   .poem-block {
     left: 6vw; right: 6vw; padding-right: 0;
     padding-bottom: calc(2rem + env(safe-area-inset-bottom)); /* haelt den Scroll-Hint frei von Safaris unterer Systemleiste/Reader-Bar */
@@ -1523,8 +1413,8 @@ html.hero-fixed .hero-line-wrapper {
     padding-top: 2.5rem; /* mehr Raum vor dem Hero-Text -- asymmetrisch zum knappen Abstand vorm Bild darunter, siehe .intro-portrait */
     padding-bottom: 0;
   }
-  /* aspect-ratio:1/1 (siehe Desktop-Regel) ist nur fuer die feste
-     Grid-Spaltenbreite gedacht -- auf Mobile faellt die Spalte weg
+  /* Die feste Desktop-Aspect-Ratio (siehe dortige Regel) ist nur fuer die
+     feste Grid-Spaltenbreite gedacht -- auf Mobile faellt die Spalte weg
      (main-intro-inner wird 1fr einspaltig), das Bild schrumpft eigen-
      staendig auf max-width:300px. Ohne diesen Reset zwingt aspect-ratio
      den Container trotzdem in ein quadratisches Format, waehrend das

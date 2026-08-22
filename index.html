@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=58">
+  <link rel="stylesheet" href="style.css?v=60">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -158,19 +158,9 @@
               <source srcset="wolfram-huke-cutout.webp" type="image/webp">
               <img
                 src="wolfram-huke-cutout.png"
-                alt="Porträt von Wolfram Huke"
+                alt="Porträt von Wolfram Huke mit Hund"
                 class="portrait-freistehend"
                 loading="eager" decoding="async">
-            </picture>
-
-            <!-- Reines Easter Egg ohne inhaltliche Bedeutung -- Screenreader
-                 sollen es ueberspringen (alt="" + aria-hidden). Kind von
-                 .intro-portrait (nicht Geschwister von .main-intro-inner),
-                 damit er mittig vor dem Portrait springt statt an der
-                 Section-Ecke. -->
-            <picture class="elmo-peek-wrap">
-              <source srcset="elmo.webp" type="image/webp">
-              <img src="elmo.png" alt="" class="elmo-peek" aria-hidden="true">
             </picture>
           </div>
         </div>
@@ -941,12 +931,33 @@
         }
       }
 
+      // Verankert das Vorschaubild beim Klick auf einen Listeneintrag knapp
+      // unter der Kopfleiste (Logo-Bar-Hoehe + 1.5rem, dieselbe Distanz wie
+      // z.B. .main-intros eigenes Top-Padding gegen die Logo-Bar) -- Ziel
+      // ist eine feste, vorhersehbare Position statt eines Deltas relativ
+      // zur aktuellen Bildposition, damit jeder Klick unabhaengig von der
+      // Ausgangs-Scrollposition an derselben Stelle landet. Nur auf
+      // Desktop relevant (portfolioPreviewHiddenMQ) -- auf Mobile gibt es
+      // dieses Vorschaubild als eigenstaendiges Element gar nicht.
+      function scrollPreviewIntoView() {
+        var media = document.querySelector('.portfolio-media');
+        var logoBar = document.querySelector('.logo-bar');
+        if (!media) return;
+        var headerClearance = (logoBar ? logoBar.getBoundingClientRect().height : 0) + 24;
+        var delta = media.getBoundingClientRect().top - headerClearance;
+        window.scrollTo({ top: window.scrollY + delta, behavior: 'smooth' });
+      }
+
       items.forEach(function (button) {
         button.setAttribute('aria-expanded', 'false');
         button.addEventListener('click', function () {
           stopPortfolioAutoplay();
           activatePreview(button);
           togglePanel(button);
+
+          if (!portfolioPreviewHiddenMQ.matches) {
+            scrollPreviewIntoView();
+          }
 
           // Direktes Antippen eines Titels soll das Vorschaubild genauso
           // zentrieren wie das Blaettern ueber Voriges/Naechstes -- aus
@@ -1372,26 +1383,6 @@
           });
         });
       });
-
-// Elmo-Peekaboo auf Touch: kein CSS-Hover vorhanden, Tap ist der
-      // natuerliche Ersatz. Echtes click-Toggle statt sich auf :hover zu
-      // verlassen, das auf iOS teils unzuverlaessig bei Touch feuert.
-      // .is-elmo-visible steuert denselben Transform-Wert wie der
-      // bestehende :hover-Zustand (siehe style.css), damit sich Groesse/
-      // Position/Bewegung exakt wie am Desktop anfuehlen. Taucht nach
-      // 2.2s von selbst wieder ab; erneuter Tap waehrenddessen setzt den
-      // Timer nur zurueck, statt ein zweites Mal umzuschalten.
-      var introPortraitEl = document.getElementById('introPortrait');
-      if (introPortraitEl && window.matchMedia('(max-width: 768px)').matches) {
-        var elmoTimer = null;
-        introPortraitEl.addEventListener('click', function () {
-          introPortraitEl.classList.add('is-elmo-visible');
-          clearTimeout(elmoTimer);
-          elmoTimer = setTimeout(function () {
-            introPortraitEl.classList.remove('is-elmo-visible');
-          }, 2200);
-        });
-      }
     });
   </script>
 
