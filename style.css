@@ -1029,6 +1029,17 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--muted-light);
 }
 
+/* Auf Desktop nie sichtbar -- ohne diese Regel stand hinter jedem
+   Titel der fortlaufenden Liste dauerhaft sein Genre, was die Liste
+   sehr unuebersichtlich machte. Auf Mobile bleibt das bestehende
+   Verhalten (nur beim aufgeklappten Titel sichtbar, siehe
+   .portfolio-item-genre.is-open in der Media Query) unveraendert --
+   die dortige eigene display:none/is-open-Logik ueberschreibt dies
+   dort ohnehin wieder. */
+.portfolio-item-genre {
+  display: none;
+}
+
 .portfolio-panel {
   display: none;
 }
@@ -1090,8 +1101,21 @@ html.hero-fixed .hero-line-wrapper {
   margin-top: 1.25rem;
 }
 
+/* Titel + Genre wieder in einer Zeile, Genre hinter dem Titel (DOM-
+   Reihenfolge: Titel zuerst -- semantisch sinnvoller, Screenreader
+   lesen den Titel vor seinem Metadaten-Tag). align-items:baseline
+   statt center, damit die kleinere Genre-Schrift auf derselben
+   Grundlinie wie der Titel sitzt, nicht mittig dazu. Auf Mobile per
+   flex-direction:row-reverse wieder Genre-zuerst (siehe Media Query),
+   dort unveraendert seit der letzten Anpassung. */
+.lightbox-title-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 0.6em;
+}
+
 .lightbox-genre {
-  display: block;
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 900;
@@ -1101,7 +1125,6 @@ html.hero-fixed .hero-line-wrapper {
 }
 
 .lightbox-title {
-  margin-top: 0.6rem;
   font-family: 'Inter', sans-serif;
   font-size: clamp(1.3rem, 1.9vw, 1.75rem);
   font-weight: 400;
@@ -1718,18 +1741,16 @@ html.hero-fixed .hero-line-wrapper {
     margin-top: 1rem;
   }
 
-  /* Auf Mobile Genre und Titel in einer Zeile statt gestapelt, Genre
-     nicht mehr fett -- beide auf display:inline, damit der Whitespace
-     zwischen den Tags im Markup (siehe HTML) als Wortabstand wirkt. */
-  .lightbox-genre {
-    display: inline;
-    font-weight: 400;
+  /* Auf Mobile bleibt Genre vor dem Titel (wie zuvor) -- die DOM-
+     Reihenfolge ist jetzt Titel-dann-Genre (siehe Desktop-Regel oben),
+     row-reverse dreht nur die Anzeige-Reihenfolge zurueck, ohne den
+     Desktop-Fall zu beruehren. Genre nicht fett. */
+  .lightbox-title-row {
+    flex-direction: row-reverse;
   }
 
-  .lightbox-title {
-    display: inline;
-    margin-top: 0;
-    margin-left: 0.5em;
+  .lightbox-genre {
+    font-weight: 400;
   }
 
   .lightbox-frame { inset: 4rem 0.75rem; }
