@@ -30,14 +30,19 @@ if [ -z "$BRANCH" ] || [ "$BRANCH" = "HEAD" ]; then
   exit 0
 fi
 
+# FETCH_HEAD statt origin/$BRANCH: ein gezielter "git fetch origin <branch>"
+# aktualisiert nicht zuverlaessig den lokalen Remote-Tracking-Branch
+# origin/<branch> (der existiert ggf. noch gar nicht), sondern nur
+# FETCH_HEAD -- derselbe Kniff, der sich in diesem Projekt schon fuer die
+# manuelle Wiederherstellung bewaehrt hat.
 git fetch origin "$BRANCH" --quiet 2>/dev/null || exit 0
 
-REMOTE_SHA="$(git rev-parse "origin/$BRANCH" 2>/dev/null || true)"
+REMOTE_SHA="$(git rev-parse FETCH_HEAD 2>/dev/null || true)"
 LOCAL_SHA="$(git rev-parse HEAD 2>/dev/null || true)"
 
 if [ -n "$REMOTE_SHA" ] && [ "$LOCAL_SHA" != "$REMOTE_SHA" ]; then
   if [ -z "$(git status --porcelain)" ]; then
-    git checkout -B "$BRANCH" "origin/$BRANCH" --quiet
+    git checkout -B "$BRANCH" FETCH_HEAD --quiet
     echo "Arbeitskopie war veraltet (lokal $LOCAL_SHA) -- auf origin/$BRANCH ($REMOTE_SHA) zurueckgesetzt." >&2
   else
     echo "WARNUNG: Arbeitskopie weicht von origin/$BRANCH ab (lokal $LOCAL_SHA, remote $REMOTE_SHA), aber es liegen uncommittete Aenderungen vor -- kein automatischer Reset, bitte manuell pruefen." >&2
