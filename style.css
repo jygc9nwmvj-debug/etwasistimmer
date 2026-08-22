@@ -503,8 +503,7 @@ html.hero-fixed .hero-line-wrapper {
    dadurch als bewusst eingeschobener Status-Hinweis statt als weitere
    Absatzzeile, die den Lesefluss von Bio-Text zu Portraet unterbricht.
    display:inline-flex begrenzt die Breite auf den Inhalt (statt volle
-   Breite wie ein Blockelement), Hintergrund in --accent-Ton greift die
-   Farbe des pulsierenden Punkts dezent auf. */
+   Breite wie ein Blockelement). */
 .name-sub-footnote {
   margin-top: 1rem;
   display: inline-flex;
@@ -515,25 +514,39 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--muted-light);
 }
 
-/* Visualisiert das "gerade" im Text -- pulsierender Punkt wie ein
-   Live-/Online-Status-Indikator. */
-.footnote-pulse {
-  flex-shrink: 0;
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background-color: var(--accent);
-  align-self: center;
-  animation: footnote-pulse 2s ease-in-out infinite;
+/* Visualisiert das "Aktuell" im Text -- statt eines separaten
+   pulsierenden Punkts (zu unruhig/technisch) laeuft periodisch ein
+   duenner Akzentstrich einmal unter dem Wort "Aktuell" durch: waechst
+   von links auf volle Breite, haelt kurz, zieht sich dann nach rechts
+   wieder zusammen -- ruhiger, stiller Hinweis auf "Neuigkeit", ohne
+   ein zusaetzliches Icon-Element. */
+.footnote-live {
+  position: relative;
 }
 
-@keyframes footnote-pulse {
-  0%, 100% { opacity: 0.4; transform: scale(0.85); }
-  50%      { opacity: 1;    transform: scale(1); }
+.footnote-live::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.15em;
+  height: 1px;
+  background-color: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: footnote-sweep 4.5s ease-in-out infinite;
+}
+
+@keyframes footnote-sweep {
+  0%   { transform: scaleX(0); transform-origin: left; }
+  30%  { transform: scaleX(1); transform-origin: left; }
+  45%  { transform: scaleX(1); transform-origin: right; }
+  75%  { transform: scaleX(0); transform-origin: right; }
+  100% { transform: scaleX(0); transform-origin: right; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .footnote-pulse { animation: none; opacity: 1; }
+  .footnote-live::after { animation: none; transform: scaleX(0); }
 }
 
 .name-sub-footnote a {
