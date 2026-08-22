@@ -525,15 +525,12 @@ html.hero-fixed .hero-line-wrapper {
 /* Eigenstaendige Chip statt fliessender Fliesstext-Zeile -- liest sich
    dadurch als bewusst eingeschobener Status-Hinweis statt als weitere
    Absatzzeile, die den Lesefluss von Bio-Text zu Portraet unterbricht.
-   display:inline-block + padding-left: Platz fuer den Markierungsstrich
-   (siehe ::before unten), der per position:absolute + top:0/bottom:0
-   die volle Hoehe des (ggf. mehrzeiligen, siehe Mobile) Textblocks
-   umfasst -- das geht nur, wenn .name-sub-footnote selbst der Hoehen-
-   anker ist (position:relative). */
+   display:inline-block, damit .name-sub-footnote (position:relative)
+   der Hoehenanker fuer das Leuchtband (siehe ::after unten) bleibt --
+   das geht nur, wenn der Textblock selbst positioniert ist. */
 .name-sub-footnote {
   position: relative;
   margin-top: 1rem;
-  padding-left: 0.85rem;
   display: inline-block;
   font-family: 'Inter', sans-serif;
   font-size: 1.05rem; /* statt 0.95rem, jetzt konsistent mit .portfolio-subline und anderen Fliesstext-Stellen */
@@ -545,68 +542,51 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--text-secondary);
 }
 
-/* Zurueck zur typografischen Fussnoten-Markierung (nach zwei nicht
-   ueberzeugenden Zwischenstationen: Unterstrich-Sweep, dann eckige
-   Klammern) -- ein einzelner senkrechter Strich links der gesamten
-   Fussnote, wie ein klassisches Buchsatz-Zeichen. top:0/bottom:0 statt
-   der urspruenglichen 0.15em-Einrueckung, damit der Strich auch auf
-   Mobile die volle Hoehe des mehrzeilig umbrechenden Textblocks
-   umfasst. Pulsiert nur in der Deckkraft. Farbe bewusst NICHT --accent
-   (Orange bleibt laut Konvention exklusiv fuer Interaktion) --
-   --accent-2 (Petrol), dieselbe zweite Akzentfarbe wie bei Kicker/
-   Genre-Labels. */
-.name-sub-footnote::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background-color: var(--accent-2);
-  animation: footnote-mark-pulse 3s ease-in-out infinite;
-}
+/* Der Markierungsstrich (::before, senkrechter Strich links) ist raus
+   -- stattdessen traegt jetzt allein das Leuchtband unten die
+   "hier ist was Aktuelles"-Rolle.
 
-@keyframes footnote-mark-pulse {
-  0%, 100% { opacity: 0.3; }
-  50%      { opacity: 1; }
-}
-
-/* Zusaetzlich zum Markierungsstrich: ein schmales, weiches Petrol-
-   Leuchtband, das in ruhigem Abstand einmal von links nach rechts
-   durch den Text laeuft (kein Dauer-Hintergrund wie die alte Orange-
-   Chip-Optik, sondern ein wiederkehrender, gedaempfter Impuls). z-index
-   -1 setzt es HINTER den eigentlichen Fliesstext (der als normaler
-   Inline-Inhalt ohne eigenen z-index in der Stacking-Reihenfolge ueber
-   negativ positionierten Geschwistern liegt), inset ueber die volle
-   (ggf. mehrzeilige) Blockhoehe -- deshalb wirkt es bei mehreren
-   Zeilen wie ein Lichtstreifen, der senkrecht durch den ganzen Absatz
-   wandert, nicht nur durch eine Zeile. 30% der 8s-Laufzeit fuer die
-   eigentliche Bewegung, der Rest Pause -- bewusst traege, damit es
-   nicht hektisch wirkt. */
+   Echte Welle statt Sprung: vorherige Version animierte nur
+   background-position mit einer langen Rest-Plateau-Phase (30%-100%
+   auf demselben Wert) -- dabei blieb an beiden Enden des Zyklus ein
+   Randstueck des Bands sichtbar (Hintergrundposition in % bezieht sich
+   auf den UEBERSCHUSSRAUM, nicht die Containerbreite, -60%/160% bei
+   55% Bandbreite reichten nicht aus, um es wirklich ausserhalb des
+   sichtbaren Bereichs zu schieben) -- beim Zuruecksetzen auf den
+   Startwert entstand dadurch ein sichtbarer Sprung. Jetzt zusaetzlich
+   eine eigene Deckkraft-Huelle (0 -> Maximum -> 0), synchron zur
+   durchgehenden Bewegung von -80% bis 180% (rechnerisch weit genug im
+   Unsichtbaren fuer 35% Bandbreite) -- die Bewegung pausiert an
+   keiner Stelle des Zyklus mehr. Deutlich gedaempfter (18% statt 38%
+   Petrol-Anteil) und langsamer (14s statt 8s) fuer einen ruhigen,
+   nie hektischen Puls. z-index:-1 setzt das Band hinter den normalen
+   Inline-Textfluss (siehe Stacking-Reihenfolge), inset ueber die volle
+   (ggf. mehrzeilige) Blockhoehe, wirkt bei mehreren Zeilen wie ein
+   Lichtstreifen, der senkrecht durch den ganzen Absatz wandert. */
 .name-sub-footnote::after {
   content: '';
   position: absolute;
   inset: -0.15em -0.3em;
   z-index: -1;
-  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent-2) 38%, transparent) 50%, transparent 100%);
-  background-size: 55% 100%;
+  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent-2) 18%, transparent) 50%, transparent 100%);
+  background-size: 35% 100%;
   background-repeat: no-repeat;
-  background-position: -60% 0;
-  animation: footnote-sweep-bg 8s ease-in-out infinite;
+  background-position: -80% 0;
+  opacity: 0;
+  animation: footnote-sweep-bg 14s ease-in-out infinite;
 }
 
 @keyframes footnote-sweep-bg {
-  0%   { background-position: -60% 0; }
-  30%  { background-position: 160% 0; }
-  100% { background-position: 160% 0; }
+  0%   { background-position: -80% 0;  opacity: 0; }
+  20%  { opacity: 0; }
+  40%  { opacity: 1; }
+  50%  { background-position: 50% 0; }
+  60%  { opacity: 1; }
+  80%  { opacity: 0; }
+  100% { background-position: 180% 0; opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .name-sub-footnote::before {
-    animation: none;
-    opacity: 0.85;
-  }
-
   .name-sub-footnote::after {
     animation: none;
     background: none;
@@ -677,15 +657,33 @@ html.hero-fixed .hero-line-wrapper {
    Baut sich wie echtes Reinkritzeln auf statt nur einzublenden: die
    Linie "zeichnet" sich zuerst per stroke-dashoffset (SVG pathLength=1-
    Trick, siehe HTML -- dadurch reicht ein CSS-Wert von 0/1 unabhaengig
-   von der tatsaechlichen Pfad-Laenge), erst wenn sie fertig ist,
-   poppt die Pfeilspitze (echtes gefuelltes Dreieck statt zwei duenner
-   Linien) auf, zuletzt das Label -- zeitversetzt per transition-delay,
-   dieselbe Reihenfolge, in der man von Hand kritzeln wuerde. */
+   von der tatsaechlichen Pfad-Laenge), dann zeichnet sich die
+   Pfeilspitze (zwei kurze Striche, dieselbe Dashoffset-Technik --
+   bewusst KEIN gefuelltes Dreieck, das saehe "ausgemalt" statt
+   handgezeichnet aus), zuletzt wischt sich das Label per clip-path
+   von links nach rechts frei (wie geschrieben, nicht nur eingeblendet)
+   -- alles zeitversetzt per transition-delay, dieselbe Reihenfolge,
+   in der man von Hand kritzeln wuerde. */
 .portrait-scribble {
   position: absolute;
   z-index: 3;
   width: 7rem;
   pointer-events: none;
+  /* Sicherheitsnetz gegen einen bekannten SVG-Rendering-Fall: bei
+     stroke-dasharray/dashoffset-animierten Pfaden mit stroke-linecap:
+     round kann am Off-Zustand (dashoffset:1, siehe .scribble-line/
+     .scribble-arrowhead) ein winziger, aber sichtbarer Punkt am
+     Pfad-Startpunkt uebrig bleiben, obwohl der "Strich" selbst
+     unsichtbar sein sollte -- genau das war vor Hover als zwei kleine
+     Farbpunkte (Teal/Orange) im Foto sichtbar. opacity:0 auf dem
+     ganzen Kritzel-Container schliesst das zuverlaessig aus,
+     unabhaengig von der Pfad-Animation selbst. transition ohne delay
+     (im Gegensatz zu Linie/Spitze/Label, die weiter gestaffelt
+     "reinkritzeln"), damit beim Hover-Start sofort alles sichtbar
+     werden KANN -- der zeitliche Ablauf kommt weiterhin von den
+     einzelnen dashoffset/clip-path-Transitions ihrer Kinder. */
+  opacity: 0;
+  transition: opacity 0.05s linear;
 }
 
 /* War oben/rechts-buendig wie .portrait-scribble-wolfram -- jetzt
@@ -709,9 +707,15 @@ html.hero-fixed .hero-line-wrapper {
   transition: stroke-dashoffset 0.45s ease;
 }
 
+/* War ein gefuelltes Dreieck (<polygon>) -- wirkte "ausgemalt" statt
+   handgezeichnet. Jetzt zwei kurze Striche (wie die Hauptlinie per
+   pathLength=1-Trick gezeichnet), die dieselbe Dashoffset-Technik
+   nutzen -- konsequent derselbe "wird gerade gekritzelt"-Look wie bei
+   Linie und Label, nicht nur ein Opacity-Pop. */
 .scribble-arrowhead {
-  opacity: 0;
-  transition: opacity 0.15s ease;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.18s ease;
 }
 
 /* War 'Permanent Marker' -- optisch eine Druckschrift im Filzstift-
@@ -720,19 +724,26 @@ html.hero-fixed .hero-line-wrapper {
    von Hand geschrieben -- braucht dafuer eine groessere font-size,
    um bei gleicher optischer Praesenz wie vorher anzukommen (Caveats
    Buchstaben sind schmaler/duenner als die von Permanent Marker). */
+/* Statt Einfaden ein Links-nach-rechts-Wisch per clip-path -- liest
+   sich naeher an "wird gerade geschrieben" als ein reines Opacity-
+   Fade. inset(0 100% 0 0) blendet den Text komplett rechts ab (0%
+   sichtbare Breite), auf inset(0 0% 0 0) animiert zeigt ihn komplett.
+   rotate bleibt bestehen: clip-path rechnet in der lokalen, noch
+   unrotierten Box, der Wisch bleibt also relativ zur (leicht
+   gekippten) Textzeile horizontal, nicht absolut zum Bildschirm. */
 .scribble-label {
   display: block;
   font-family: 'Caveat', cursive;
   font-weight: 700;
   font-size: 2rem;
   line-height: 1;
-  opacity: 0;
-  transform: translateY(4px) rotate(-2deg);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transform: rotate(-2deg);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.5s ease;
 }
 
 .portrait-scribble-wolfram .scribble-label {
-  transform: translateY(4px) rotate(2deg);
+  transform: rotate(2deg);
 }
 
 .scribble-label-elmo    { color: var(--accent-2); }
@@ -742,27 +753,21 @@ html.hero-fixed .hero-line-wrapper {
    bliebe das Porträt nach einem Tap auf Touch dauerhaft gezoomt/voll
    deckend haengen. */
 @media (hover: hover) and (pointer: fine) {
+  .intro-portrait:hover .portrait-scribble {
+    opacity: 1;
+  }
+
   .intro-portrait:hover .scribble-line {
     stroke-dashoffset: 0;
   }
 
   .intro-portrait:hover .scribble-arrowhead {
-    opacity: 1;
+    stroke-dashoffset: 0;
     transition-delay: 0.4s;
   }
 
   .intro-portrait:hover .scribble-label {
-    opacity: 1;
-    transition-delay: 0.5s;
-  }
-
-  .intro-portrait:hover .portrait-scribble-elmo .scribble-label {
-    transform: translateY(0) rotate(-2deg);
-    transition-delay: 0.5s;
-  }
-
-  .intro-portrait:hover .portrait-scribble-wolfram .scribble-label {
-    transform: translateY(0) rotate(2deg);
+    clip-path: inset(0 0% 0 0);
     transition-delay: 0.5s;
   }
 
