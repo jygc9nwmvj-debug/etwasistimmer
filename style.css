@@ -563,15 +563,22 @@ html.hero-fixed .hero-line-wrapper {
    Inline-Textfluss (siehe Stacking-Reihenfolge), inset ueber die volle
    (ggf. mehrzeilige) Blockhoehe, wirkt bei mehreren Zeilen wie ein
    Lichtstreifen, der senkrecht durch den ganzen Absatz wandert. */
+/* War ein harter linearer Farbverlauf als Streifen -- das ist genau
+   der "Glanz-Hover-Button"-Mechanismus aus der fruehen Web-2.0-Zeit
+   (glossy Sheen-Effekt), egal wie fein er sonst getuned ist. Jetzt
+   stattdessen ein weicher, unscharfer Lichtfleck (radialer statt
+   linearer Verlauf + filter:blur) -- wirkt organischer, eher wie ein
+   sanftes Aufleuchten als wie ein Reflex auf einer Glasflaeche. */
 .name-sub-footnote::after {
   content: '';
   position: absolute;
-  inset: -0.15em -0.3em;
+  inset: -0.3em -0.5em;
   z-index: -1;
-  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent-2) 18%, transparent) 50%, transparent 100%);
-  background-size: 35% 100%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent-2) 40%, transparent) 0%, transparent 70%);
+  background-size: 26% 220%;
   background-repeat: no-repeat;
   background-position: -80% 0;
+  filter: blur(7px);
   opacity: 0;
   animation: footnote-sweep-bg 9s ease-in-out infinite;
 }
