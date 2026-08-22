@@ -520,17 +520,22 @@ html.hero-fixed .hero-line-wrapper {
 /* Eigenstaendige Chip statt fliessender Fliesstext-Zeile -- liest sich
    dadurch als bewusst eingeschobener Status-Hinweis statt als weitere
    Absatzzeile, die den Lesefluss von Bio-Text zu Portraet unterbricht.
-   display:inline-flex begrenzt die Breite auf den Inhalt (statt volle
-   Breite wie ein Blockelement). gap statt padding: die eckigen Klammern
-   (siehe ::before/::after unten) sind jetzt eigene Pseudo-Elemente vor
-   und nach dem Text, kein absolut positionierter Strich mehr. */
+   display:inline-block (statt inline-flex) + padding statt gap: die
+   Klammern (siehe ::before/::after unten) sind keine Textzeichen mehr,
+   sondern gezeichnete Rahmen-Ecken, die per position:absolute + top:0/
+   bottom:0 die volle Hoehe des (ggf. mehrzeiligen, siehe Mobile)
+   Textblocks umfassen -- das geht nur, wenn .name-sub-footnote selbst
+   der Hoehenanker ist (position:relative), nicht nur einzelne Flex-
+   Kinder. padding-left/right eng gehalten (0.55em), damit die Klammern
+   nah am Text sitzen statt abgerueckt zu wirken. */
 .name-sub-footnote {
+  position: relative;
   margin-top: 1rem;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.35rem;
+  padding: 0.1em 0.55em;
+  display: inline-block;
   font-family: 'Inter', sans-serif;
   font-size: 1.05rem; /* statt 0.95rem, jetzt konsistent mit .portfolio-subline und anderen Fliesstext-Stellen */
+  line-height: 1.5;
   /* War --muted-light -- das war fuer die fruehere Chip-Optik (mit
      Hintergrund) gedacht; ohne eigenen Hintergrund (siehe oben) wirkte
      der Text zu blass. --text-secondary ist der Ton fuer echten
@@ -539,23 +544,36 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--text-secondary);
 }
 
-/* Eckige Klammern statt Strich/Punkt/Sweep -- "[ ... ]" um die ganze
-   Fussnote, wie eine redaktionelle "hier ist gerade was Aktuelles"-
-   Notation. Deutlich praesenter als der vorherige 2px-Strich (echte
-   Zeichen statt duennem Balken), pulsiert weiterhin nur in der
-   Deckkraft, beide Klammern synchron -- liest sich wie ein sanft
-   atmender Rahmen um den Hinweis. Farbe bewusst NICHT --accent (Orange
-   bleibt laut Konvention exklusiv fuer Interaktion) -- --accent-2
-   (Petrol), dieselbe zweite Akzentfarbe wie bei Kicker/Genre-Labels. */
+/* Gezeichnete eckige Klammern statt Textzeichen "[ ]" -- Border-Ecken
+   (oben/unten + eine Seite), die per top:0/bottom:0 relativ zu
+   .name-sub-footnote (siehe dort) die GESAMTE Hoehe des Textblocks
+   umfassen, auch wenn der Text auf Mobile mehrzeilig umbricht (echte
+   "["-Zeichen waeren dafuer nur schrift-hoch, nicht block-hoch
+   gewesen). Pulsiert weiterhin nur in der Deckkraft, beide Klammern
+   synchron. Farbe bewusst NICHT --accent (Orange bleibt laut
+   Konvention exklusiv fuer Interaktion) -- --accent-2 (Petrol),
+   dieselbe zweite Akzentfarbe wie bei Kicker/Genre-Labels. */
 .name-sub-footnote::before,
 .name-sub-footnote::after {
-  font-weight: 700;
-  color: var(--accent-2);
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0.4em;
+  border-top: 2px solid var(--accent-2);
+  border-bottom: 2px solid var(--accent-2);
   animation: footnote-mark-pulse 3s ease-in-out infinite;
 }
 
-.name-sub-footnote::before { content: '['; }
-.name-sub-footnote::after  { content: ']'; }
+.name-sub-footnote::before {
+  left: 0;
+  border-left: 2px solid var(--accent-2);
+}
+
+.name-sub-footnote::after {
+  right: 0;
+  border-right: 2px solid var(--accent-2);
+}
 
 @keyframes footnote-mark-pulse {
   0%, 100% { opacity: 0.3; }
@@ -909,10 +927,12 @@ html.hero-fixed .hero-line-wrapper {
   font-size: 0.8rem; /* war 0.75rem -- reiht sich jetzt bei den uebrigen Uppercase-Labels (Kicker, Genre-Tags) ein statt knapp danebenzuliegen */
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  /* War rgba(255,255,255,0.8) -- jetzt --accent-2-on-dark (helles
-     Petrol), liegt auf dem dunklen Foto-Overlay, siehe --accent-2-
-     Definition oben. Reines Label, kein Link. */
-  color: var(--accent-2-on-dark);
+  /* Zurueck zu rgba(255,255,255,0.8): --accent-2-on-dark (Petrol) sah
+     hier auf dem echten Foto-Overlay wie ein Farbfehler aus, nicht wie
+     ein bewusstes Label -- anders als auf den flachen Hintergruenden
+     der Kicker/Fussnote wirkt Petrol direkt auf einem Foto nicht wie
+     Gestaltung, sondern wie ein Rendering-Bug. */
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .portfolio-media-title {
