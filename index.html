@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=57">
+  <link rel="stylesheet" href="style.css?v=58">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -955,9 +955,19 @@
           // tatsaechlich GEOEFFNET hat: tippt man denselben, bereits
           // offenen Titel erneut an (schliesst das Panel), soll nicht
           // gescrollt werden.
+          //
+          // scrollPanelIntoViewAfterOpen() nur auf Mobile aufrufen: dort
+          // ist .portfolio-panel tatsaechlich sichtbar (siehe Media
+          // Query), auf Desktop bleibt es display:none. getBoundingClientRect()
+          // auf einem Nachfahren eines display:none-Elements liefert ein
+          // Nullrechteck -- die Funktion berechnete daraus bislang trotzdem
+          // einen (bedeutungslosen) Scroll-Delta und sprang auf Desktop an
+          // eine falsche Position, obwohl dort gar kein Panel aufklappte.
           var openedPanel = getPanelForButton(button);
           if (openedPanel && openedPanel.classList.contains('is-open')) {
-            scrollPanelIntoViewAfterOpen(button);
+            if (portfolioPreviewHiddenMQ.matches) {
+              scrollPanelIntoViewAfterOpen(button);
+            }
             revealPanelOverlay(openedPanel);
           }
         });
