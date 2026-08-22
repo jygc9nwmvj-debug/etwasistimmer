@@ -14,7 +14,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=60">
+  <link rel="stylesheet" href="style.css?v=63">
+
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
 
@@ -146,6 +148,44 @@
     banner.appendChild(button);
     document.body.appendChild(banner);
   })();
+  </script>
+
+  <!-- Titel-Hover: zerlegt "Etwas ist immer." in einzelne Buchstaben-Spans
+       und animiert sie bei Hover mit leichtem Stagger-Versatz nach oben
+       (GSAP). Nur auf Geraeten mit echtem Hover/Maus (hover:hover and
+       pointer:fine) -- auf Touch gibt es kein Hover, und der Titel-Button
+       navigiert bereits per Klick weg (zur Startseite, siehe oben); ein
+       Trigger "on click" wuerde die Animation nur anreissen, bevor die
+       Seite ohnehin schon wechselt.
+       In DOMContentLoaded gewrappt: das <script defer> von GSAP fuehrt
+       erst kurz VOR DOMContentLoaded aus, ein normales Inline-Skript an
+       dieser Stelle liefe sonst schon waehrend des Parsens, also bevor
+       "gsap" ueberhaupt existiert. -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var titleEl = document.getElementById('siteTitle');
+    if (!titleEl || typeof gsap === 'undefined') return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    var text = titleEl.textContent;
+    titleEl.textContent = '';
+    var letters = text.split('').map(function (ch) {
+      var span = document.createElement('span');
+      span.className = 'letter';
+      span.innerHTML = ch === ' ' ? '&nbsp;' : ch;
+      titleEl.appendChild(span);
+      return span;
+    });
+
+    var HOVER_DURATION = 0.4;
+    var HOVER_STAGGER = 0.025;
+    titleEl.addEventListener('mouseenter', function () {
+      gsap.to(letters, { y: -3, duration: HOVER_DURATION, ease: 'power2.out', stagger: HOVER_STAGGER });
+    });
+    titleEl.addEventListener('mouseleave', function () {
+      gsap.to(letters, { y: 0, duration: HOVER_DURATION, ease: 'power2.out', stagger: HOVER_STAGGER });
+    });
+  });
   </script>
 </body>
 </html>
