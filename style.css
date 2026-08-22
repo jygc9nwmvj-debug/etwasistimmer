@@ -572,21 +572,25 @@ html.hero-fixed .hero-line-wrapper {
 .name-sub-footnote::after {
   content: '';
   position: absolute;
-  /* War -0.3em/-0.5em -- in Safari zeigte sich am Rand von genau
-     diesem Kasten eine harte Kante, obwohl der Farbverlauf selbst dort
-     laengst transparent ist. Bekanntes WebKit-Verhalten: filter:blur()
-     wird teils exakt auf die Elementgrenzen zugeschnitten statt den
-     Blur-Radius mit einzuberechnen, wodurch die eigentlich unsichtbare
-     Kastenkante als Schnittkante sichtbar wird. Deutlich mehr Rand
-     (Bleed) + will-change als Hinweis fuer eine korrekt bemessene
-     Compositing-Ebene sind der ueblich empfohlene Workaround dagegen. */
-  inset: -1.2em -1.5em;
+  /* War zunaechst -0.3em/-0.5em, dann versuchsweise auf -1.2em/-1.5em
+     vergroessert (Annahme: WebKit schneidet filter:blur() hart an der
+     Elementgrenze zu) -- der eigentliche Grund war aber vermutlich viel
+     simpler: der Fleck selbst war (Erbe des juengeren Sweep-Designs,
+     das noch als durchgehender Streifen ueber die volle mehrzeilige
+     Blockhoehe gedacht war) mit 220% Bild-Hoehe deutlich groesser als
+     die eigentliche Textzeile, wodurch in Safari/Mobile die eigene
+     Boxkante sichtbar wurde. Jetzt spuerbar kleiner (naeher an der
+     Zeilenhoehe), dazu "closest-side" statt der Default-Kreisgroesse
+     (verhindert, dass der Kreisradius durch die schmale/hohe Box
+     unnoetig aufgeblasen wird) und weniger Blur/Bleed, da der Fleck
+     selbst schon kleiner ist. */
+  inset: -0.4em -0.4em;
   z-index: -1;
-  background: radial-gradient(circle, color-mix(in srgb, var(--accent-2) 40%, transparent) 0%, transparent 70%);
-  background-size: 26% 220%;
+  background: radial-gradient(circle closest-side, color-mix(in srgb, var(--accent-2) 45%, transparent) 0%, transparent 100%);
+  background-size: 16% 130%;
   background-repeat: no-repeat;
   background-position: -80% 0;
-  filter: blur(7px);
+  filter: blur(5px);
   will-change: filter, background-position, opacity;
   opacity: 0;
   animation: footnote-sweep-bg 9s ease-in-out infinite;
@@ -731,7 +735,19 @@ html.hero-fixed .hero-line-wrapper {
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
 }
 
+/* stroke-linecap hier bewusst auf "butt" ueberschrieben -- das HTML
+   traegt noch stroke-linecap="round" (Praesentations-Attribut), diese
+   Klassenregel gewinnt aber durchgehend, nicht nur waehrend der
+   Animation. Grund: in Safari zeigten sich waehrend der dashoffset-
+   Animation kurzzeitig kleine, farbige Punkte neben den Pfeilen (in
+   Chrome nicht reproduzierbar) -- bekanntes WebKit-Verhalten bei
+   runden Strichenden auf sehr kurzen/fast-Null-langen Dash-Segmenten
+   waehrend der Animation: ein rundes Strichende rendert dort
+   kurzzeitig als volle Kreisflaeche. "butt" (flaches Ende) hat dieses
+   Problem nicht -- optisch bei 3.5px Strichbreite kaum ein
+   Unterschied. */
 .scribble-line {
+  stroke-linecap: butt;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   transition: stroke-dashoffset 0.45s ease;
@@ -743,6 +759,7 @@ html.hero-fixed .hero-line-wrapper {
    nutzen -- konsequent derselbe "wird gerade gekritzelt"-Look wie bei
    Linie und Label, nicht nur ein Opacity-Pop. */
 .scribble-arrowhead {
+  stroke-linecap: butt;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   transition: stroke-dashoffset 0.18s ease;
