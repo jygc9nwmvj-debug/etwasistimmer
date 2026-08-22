@@ -514,7 +514,12 @@ html.hero-fixed .hero-line-wrapper {
   align-items: center;
   font-family: 'Inter', sans-serif;
   font-size: 1.05rem; /* statt 0.95rem, jetzt konsistent mit .portfolio-subline und anderen Fliesstext-Stellen */
-  color: var(--muted-light);
+  /* War --muted-light -- das war fuer die fruehere Chip-Optik (mit
+     Hintergrund) gedacht; ohne eigenen Hintergrund (siehe oben) wirkte
+     der Text zu blass. --text-secondary ist der Ton fuer echten
+     Fliesstext (siehe Definition oben), die Fussnote soll mindestens
+     so dunkel wie dieser sein, nicht wie ein Nebensaechlichkeits-Label. */
+  color: var(--text-secondary);
 }
 
 /* Wie eine typografische Fussnoten-Markierung: ein senkrechter Strich
@@ -523,9 +528,10 @@ html.hero-fixed .hero-line-wrapper {
    (kein Scale/Sweep, dadurch ruhiger), etwa wie ein leise atmendes
    Zitat-/Fussnotenzeichen. Farbe bewusst NICHT --accent (Orange bleibt
    laut Konvention exklusiv fuer Interaktion, siehe --accent-Kommentar
-   oben) -- --muted-light stattdessen, dieselbe Tonfamilie wie Kicker/
-   Footer/Genre-Tags. War zunaechst 1px/Orange -- zu duenn/zu praesent
-   fuer ein rein dekoratives Element, jetzt 2px kraeftiger. */
+   oben) -- an --text-secondary angeglichen (siehe .name-sub-footnote),
+   damit Strich und Text gleich dunkel wirken. War zunaechst 1px/Orange
+   -- zu duenn/zu praesent fuer ein rein dekoratives Element, jetzt 2px
+   kraeftiger. */
 .name-sub-footnote::before {
   content: '';
   position: absolute;
@@ -533,12 +539,16 @@ html.hero-fixed .hero-line-wrapper {
   top: 0.15em;
   bottom: 0.15em;
   width: 2px;
-  background-color: var(--muted-light);
+  background-color: var(--text-secondary);
   animation: footnote-mark-pulse 3s ease-in-out infinite;
 }
 
+/* War 0.4-1 -- bei dem eher hellen --muted-light-Grauton kaum
+   wahrnehmbar, da schon der "leise" Zustand zu nah am "vollen" lag.
+   Groesserer Bereich (0.12-1) macht die Bewegung sichtbarer, ohne die
+   Deckfarbe selbst zu aendern. */
 @keyframes footnote-mark-pulse {
-  0%, 100% { opacity: 0.4; }
+  0%, 100% { opacity: 0.12; }
   50%      { opacity: 1; }
 }
 
@@ -987,6 +997,7 @@ html.hero-fixed .hero-line-wrapper {
 .portfolio-filters {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.5rem 1.5rem;
 }
 
