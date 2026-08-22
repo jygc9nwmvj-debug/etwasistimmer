@@ -59,7 +59,7 @@
      fixierte, teiltransparente Logo-Bar und wirkt oben angeschnitten.
      Als Variable statt unabhaengiger Werte, die bei einem Redesign
      leise auseinanderlaufen koennen. */
-  --logo-bar-height: 8.5rem;
+  --logo-bar-height: 8rem;
   --logo-bar-height-mobile: 7rem;
 }
 
@@ -101,7 +101,7 @@ body {
    Unterseiten ohne Uebergang. */
 .site-title {
   position: fixed;
-  top: 28px; /* war 48px -- zusammen mit --logo-bar-height und .site-nav's top verkleinert, die Kopfleiste hatte zu viel Luft */
+  top: 20px; /* war zuletzt 28px -- jetzt symmetrisch zum 20px-Abstand zwischen .site-nav-Unterkante und Logo-Bar-Unterkante (siehe dort) */
   left: 50%;
   transform: translateX(-50%);
   z-index: 25;
@@ -135,7 +135,7 @@ body {
 
 .site-nav {
   position: fixed;
-  top: 6rem; /* war 7.25rem, direkt an .site-titles neuen Werten (top:28px + eigene Zeilenhoehe) ausgerichtet */
+  top: 5.5rem; /* direkt an .site-titles neuen Werten (top:20px + eigene Zeilenhoehe) ausgerichtet */
   left: 50%;
   transform: translateX(-50%);
   z-index: 30;

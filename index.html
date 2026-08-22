@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=58">
+  <link rel="stylesheet" href="style.css?v=59">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -941,12 +941,33 @@
         }
       }
 
+      // Verankert das Vorschaubild beim Klick auf einen Listeneintrag knapp
+      // unter der Kopfleiste (Logo-Bar-Hoehe + 1.5rem, dieselbe Distanz wie
+      // z.B. .main-intros eigenes Top-Padding gegen die Logo-Bar) -- Ziel
+      // ist eine feste, vorhersehbare Position statt eines Deltas relativ
+      // zur aktuellen Bildposition, damit jeder Klick unabhaengig von der
+      // Ausgangs-Scrollposition an derselben Stelle landet. Nur auf
+      // Desktop relevant (portfolioPreviewHiddenMQ) -- auf Mobile gibt es
+      // dieses Vorschaubild als eigenstaendiges Element gar nicht.
+      function scrollPreviewIntoView() {
+        var media = document.querySelector('.portfolio-media');
+        var logoBar = document.querySelector('.logo-bar');
+        if (!media) return;
+        var headerClearance = (logoBar ? logoBar.getBoundingClientRect().height : 0) + 24;
+        var delta = media.getBoundingClientRect().top - headerClearance;
+        window.scrollTo({ top: window.scrollY + delta, behavior: 'smooth' });
+      }
+
       items.forEach(function (button) {
         button.setAttribute('aria-expanded', 'false');
         button.addEventListener('click', function () {
           stopPortfolioAutoplay();
           activatePreview(button);
           togglePanel(button);
+
+          if (!portfolioPreviewHiddenMQ.matches) {
+            scrollPreviewIntoView();
+          }
 
           // Direktes Antippen eines Titels soll das Vorschaubild genauso
           // zentrieren wie das Blaettern ueber Voriges/Naechstes -- aus
