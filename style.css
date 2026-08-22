@@ -572,13 +572,22 @@ html.hero-fixed .hero-line-wrapper {
 .name-sub-footnote::after {
   content: '';
   position: absolute;
-  inset: -0.3em -0.5em;
+  /* War -0.3em/-0.5em -- in Safari zeigte sich am Rand von genau
+     diesem Kasten eine harte Kante, obwohl der Farbverlauf selbst dort
+     laengst transparent ist. Bekanntes WebKit-Verhalten: filter:blur()
+     wird teils exakt auf die Elementgrenzen zugeschnitten statt den
+     Blur-Radius mit einzuberechnen, wodurch die eigentlich unsichtbare
+     Kastenkante als Schnittkante sichtbar wird. Deutlich mehr Rand
+     (Bleed) + will-change als Hinweis fuer eine korrekt bemessene
+     Compositing-Ebene sind der ueblich empfohlene Workaround dagegen. */
+  inset: -1.2em -1.5em;
   z-index: -1;
   background: radial-gradient(circle, color-mix(in srgb, var(--accent-2) 40%, transparent) 0%, transparent 70%);
   background-size: 26% 220%;
   background-repeat: no-repeat;
   background-position: -80% 0;
   filter: blur(7px);
+  will-change: filter, background-position, opacity;
   opacity: 0;
   animation: footnote-sweep-bg 9s ease-in-out infinite;
 }
@@ -752,8 +761,17 @@ html.hero-fixed .hero-line-wrapper {
    rotate bleibt bestehen: clip-path rechnet in der lokalen, noch
    unrotierten Box, der Wisch bleibt also relativ zur (leicht
    gekippten) Textzeile horizontal, nicht absolut zum Bildschirm. */
+/* display:block liess das Label auf die volle Breite von
+   .portrait-scribble (7rem) strecken -- bei 2rem Caveat war "Wolfram"
+   breiter als das, der Text lief ueber die eigene Box hinaus. clip-path
+   bezieht sich aber auf die Box selbst, nicht auf den ueberlaufenden
+   Inhalt -- das ueberstehende Stueck (der letzte Buchstabe) wurde
+   dadurch permanent abgeschnitten, nicht nur waehrend der Animation.
+   inline-block + white-space:nowrap laesst die Box exakt am Text
+   entlang wachsen, dann trifft clip-path die richtige Kante. */
 .scribble-label {
-  display: block;
+  display: inline-block;
+  white-space: nowrap;
   font-family: 'Caveat', cursive;
   font-weight: 700;
   font-size: 2rem;
@@ -796,6 +814,34 @@ html.hero-fixed .hero-line-wrapper {
     opacity: 1;
     transform: scale(1.02);
   }
+}
+
+/* Touch-Pendant zum Hover-Kritzel-Easteregg oben -- ohne echtes Hover
+   (Touch-Geraete) passierte bisher gar nichts, das Easteregg existierte
+   dort effektiv nicht. .is-scribbling wird per JS (siehe Skript vor
+   </body>) beim Tap auf #introPortrait gesetzt und nach ein paar
+   Sekunden wieder entfernt -- dasselbe Muster wie das fruehere
+   Elmo-Peek-Easteregg (Tap toggelt sichtbar, kein Dauerzustand).
+   Bewusst AUSSERHALB der hover:hover-Media-Query (die gilt nur fuer
+   echtes :hover, um Sticky-Hover-Effekte nach einem Tap zu vermeiden),
+   dieselben Endzustaende wie im Hover-Block oben, nur ueber die Klasse
+   statt :hover ausgeloest. */
+.intro-portrait.is-scribbling .portrait-scribble {
+  opacity: 1;
+}
+
+.intro-portrait.is-scribbling .scribble-line {
+  stroke-dashoffset: 0;
+}
+
+.intro-portrait.is-scribbling .scribble-arrowhead {
+  stroke-dashoffset: 0;
+  transition-delay: 0.4s;
+}
+
+.intro-portrait.is-scribbling .scribble-label {
+  clip-path: inset(0 0% 0 0);
+  transition-delay: 0.5s;
 }
 
 /* BERATUNG/PROFIL (nur index.html) -- zwei eigenstaendige Flaechen mit
@@ -1695,9 +1741,29 @@ html.hero-fixed .hero-line-wrapper {
   .intro-portrait {
     justify-content: center;
     align-self: auto;
-    margin-left: 0; margin-top: 0; margin-right: 0;
+    margin-top: 0;
     aspect-ratio: auto;
     padding: 0.5rem 0 2rem 0; /* wenig Abstand oben zum Text (natuerliche Lesehierarchie: Bild als dichte Fortsetzung), normaler Abstand nach unten */
+    /* width:fit-content + margin-inline:auto statt margin-left/right:0
+       auf voller Flex-Breite: sonst ist .intro-portrait (der
+       Bezugsrahmen fuer die prozentual positionierten .portrait-
+       scribble-Kritzeleien, siehe dort) auf Mobile deutlich breiter
+       als das tatsaechliche Foto (das per max-width:300px +
+       object-fit:contain kleiner bleibt und zentriert wird) -- die
+       Prozentwerte liefen dadurch komplett am Foto vorbei. Damit deckt
+       sich .intro-portrait wieder exakt mit der Fotoflaeche, wie auf
+       Desktop. */
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  /* Etwas kleiner als auf Desktop -- bei 300px statt ~440px Fotobreite
+     wirkten Pfeile/Labels in Originalgroesse arg dominant. */
+  .portrait-scribble {
+    width: 5.5rem;
+  }
+  .scribble-label {
+    font-size: 1.6rem;
   }
   .portrait-freistehend {
     height: auto; width: 100%; max-width: 300px; max-height: none; object-fit: contain;

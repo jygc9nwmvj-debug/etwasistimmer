@@ -21,7 +21,7 @@
        liest sich naeher an "von Hand hingekritzelt". -->
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=94">
+  <link rel="stylesheet" href="style.css?v=99">
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -182,12 +182,16 @@
               <span class="scribble-label scribble-label-elmo">Elmo</span>
             </div>
             <div class="portrait-scribble portrait-scribble-wolfram" aria-hidden="true">
+              <!-- Label VOR dem Pfeil im Markup (anders als bei Elmo) --
+                   der Pfeil zeigt von hier (oben rechts, Pfeilanfang)
+                   auf das Gesicht (Pfeilspitze unten links), das Label
+                   sitzt also am Anfang, nicht am Ziel des Pfeils. -->
+              <span class="scribble-label scribble-label-wolfram">Wolfram</span>
               <svg class="scribble-arrow" viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path class="scribble-line" pathLength="1" d="M94,8 C78,4 58,20 46,36 C40,44 37,51 36,58" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/>
                 <path class="scribble-arrowhead" pathLength="1" d="M35.6,61.1 L30.9,51.4" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/>
                 <path class="scribble-arrowhead" pathLength="1" d="M35.6,61.1 L42.8,53.1" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/>
               </svg>
-              <span class="scribble-label scribble-label-wolfram">Wolfram</span>
             </div>
           </div>
         </div>
@@ -1525,6 +1529,29 @@
     });
     titleEl.addEventListener('mouseleave', function () {
       gsap.to(letters, { y: 0, duration: HOVER_DURATION, ease: 'power2.out', stagger: HOVER_STAGGER });
+    });
+  });
+  </script>
+
+  <!-- Touch-Pendant zum Hover-Kritzel-Easteregg auf dem Hero-Portrait
+       (siehe .portrait-scribble/.is-scribbling in style.css) -- ohne
+       echtes Hover (Touch-Geraete) blieb das Easteregg bisher komplett
+       unerreichbar. Tap toggelt die Klasse, ein Timer blendet sie nach
+       ein paar Sekunden automatisch wieder aus -- dasselbe Muster wie
+       das fruehere Elmo-Peek-Easteregg. Kein hover-Gate hier noetig:
+       auf echten Hover-Geraeten greift ohnehin schon die CSS-:hover-
+       Regel, ein zusaetzlicher Klick-Toggle stoert dort nicht. -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var portrait = document.getElementById('introPortrait');
+    if (!portrait) return;
+    var hideTimer = null;
+    portrait.addEventListener('click', function () {
+      portrait.classList.add('is-scribbling');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(function () {
+        portrait.classList.remove('is-scribbling');
+      }, 3500);
     });
   });
   </script>
