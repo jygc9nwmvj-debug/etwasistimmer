@@ -322,10 +322,10 @@ html.hero-fixed .hero-line-wrapper {
      Systemleiste geschuetzt, wie .poem-block selbst (Mobile-Regel). */
   position: fixed;
   left: 50%;
-  margin-left: -0.95rem; /* halbe Breite von 1.9rem, siehe .scroll-hint-hand */
+  margin-left: -1.15rem; /* halbe Breite von 2.3rem, siehe .scroll-hint-hand -- war 1.9rem/3.6rem, etwas groesser fuer mehr Praesenz */
   bottom: calc(10vh + env(safe-area-inset-bottom));
-  width: 1.9rem;
-  height: 3.6rem;
+  width: 2.3rem;
+  height: 4.4rem;
   appearance: none;
   background: none;
   border: 0;
