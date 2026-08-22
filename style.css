@@ -573,16 +573,24 @@ html.hero-fixed .hero-line-wrapper {
   background-repeat: no-repeat;
   background-position: -80% 0;
   opacity: 0;
-  animation: footnote-sweep-bg 14s ease-in-out infinite;
+  animation: footnote-sweep-bg 9s ease-in-out infinite;
 }
 
+/* Deckkraft-Kurve auf die Bewegung abgestimmt statt grob geschaetzt --
+   bei 35% Bandbreite und einer Fahrt von -80% bis 180% erreicht das
+   Band die linke Textkante (background-position 0%) bei ca. 31% der
+   Laufzeit; die Opacity muss also UM diesen Punkt herum hochfahren,
+   sonst "materialisiert" sich die Welle sichtbar mitten im Text statt
+   wirklich links loszulaufen (war vorher der Fall: Opacity war schon
+   bei 40% voll da, waehrend die Position erst bei ~24% Fahrtstrecke
+   war). Symmetrisch gespiegelt fuer den Austritt rechts. */
 @keyframes footnote-sweep-bg {
   0%   { background-position: -80% 0;  opacity: 0; }
-  20%  { opacity: 0; }
-  40%  { opacity: 1; }
+  8%   { opacity: 0; }
+  30%  { opacity: 1; }
   50%  { background-position: 50% 0; }
-  60%  { opacity: 1; }
-  80%  { opacity: 0; }
+  70%  { opacity: 1; }
+  92%  { opacity: 0; }
   100% { background-position: 180% 0; opacity: 0; }
 }
 
