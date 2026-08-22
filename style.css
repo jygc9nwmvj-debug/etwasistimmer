@@ -571,10 +571,45 @@ html.hero-fixed .hero-line-wrapper {
   50%      { opacity: 1; }
 }
 
+/* Zusaetzlich zum Markierungsstrich: ein schmales, weiches Petrol-
+   Leuchtband, das in ruhigem Abstand einmal von links nach rechts
+   durch den Text laeuft (kein Dauer-Hintergrund wie die alte Orange-
+   Chip-Optik, sondern ein wiederkehrender, gedaempfter Impuls). z-index
+   -1 setzt es HINTER den eigentlichen Fliesstext (der als normaler
+   Inline-Inhalt ohne eigenen z-index in der Stacking-Reihenfolge ueber
+   negativ positionierten Geschwistern liegt), inset ueber die volle
+   (ggf. mehrzeilige) Blockhoehe -- deshalb wirkt es bei mehreren
+   Zeilen wie ein Lichtstreifen, der senkrecht durch den ganzen Absatz
+   wandert, nicht nur durch eine Zeile. 30% der 8s-Laufzeit fuer die
+   eigentliche Bewegung, der Rest Pause -- bewusst traege, damit es
+   nicht hektisch wirkt. */
+.name-sub-footnote::after {
+  content: '';
+  position: absolute;
+  inset: -0.15em -0.3em;
+  z-index: -1;
+  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent-2) 38%, transparent) 50%, transparent 100%);
+  background-size: 55% 100%;
+  background-repeat: no-repeat;
+  background-position: -60% 0;
+  animation: footnote-sweep-bg 8s ease-in-out infinite;
+}
+
+@keyframes footnote-sweep-bg {
+  0%   { background-position: -60% 0; }
+  30%  { background-position: 160% 0; }
+  100% { background-position: 160% 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .name-sub-footnote::before {
     animation: none;
     opacity: 0.85;
+  }
+
+  .name-sub-footnote::after {
+    animation: none;
+    background: none;
   }
 }
 
@@ -679,10 +714,17 @@ html.hero-fixed .hero-line-wrapper {
   transition: opacity 0.15s ease;
 }
 
+/* War 'Permanent Marker' -- optisch eine Druckschrift im Filzstift-
+   Look (gleichmaessige Blockbuchstaben), keine echte Handschrift.
+   'Caveat' ist tatsaechlich kursiv/verbunden, liest sich naeher an
+   von Hand geschrieben -- braucht dafuer eine groessere font-size,
+   um bei gleicher optischer Praesenz wie vorher anzukommen (Caveats
+   Buchstaben sind schmaler/duenner als die von Permanent Marker). */
 .scribble-label {
   display: block;
-  font-family: 'Permanent Marker', cursive;
-  font-size: 1.4rem;
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 2rem;
   line-height: 1;
   opacity: 0;
   transform: translateY(4px) rotate(-2deg);
