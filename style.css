@@ -299,39 +299,37 @@ html.hero-fixed .hero-line-wrapper {
   color: var(--muted-dark);
 }
 
-/* Schliesst das Gedicht unten ab, linksbuendig mit dem Textblock.
-   Seit dem Umstieg auf Klick-Ausloesung (statt Scroll-Fortschritt)
-   keine Scroll-Metapher mehr noetig -- ein pulsierender Kreis mit
-   Chevron signalisiert "hier antippen", ohne Bewegung vorzuschreiben.
-   Dieselbe Formsprache wie .lightbox-close (duenner Rahmen, kein Glow). */
+/* Schliesst das Gedicht unten ab. Manicule/Zeigehand-Ornament (klass-
+   isches Buchsatz-Schlusszeichen) statt Kreis+Chevron -- beide
+   Ausloese-Wege (Klick UND Scroll/Wisch, siehe JS: window "wheel" +
+   touchstart/touchend auf #poemSection) waren schon immer gleichzeitig
+   aktiv, die Zeigehand ist also semantisch nicht weniger passend als
+   der Chevron, hat aber mehr Charakter. image-neu.png ist eine
+   Woodcut-Zeigehand mit echtem Alphakanal, per CSS-Maske eingesetzt
+   (Farbe kommt von background-color, kein Freistellen mehr noetig). */
 .scroll-hint {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* position:fixed + left:50% + margin-left:-1.5rem (halbe Breite)
+  display: block;
+  /* position:fixed + left:50% + margin-left:-<halbe Breite>
      zentriert auf dem gesamten Bildschirm, unabhaengig von .poem-blocks
      eigener, asymmetrischer Position (left:38vw) -- "unter dem
-     Gedichttext zentriert" (vorherige Loesung: margin:auto innerhalb
-     von .poem-block) ist NICHT dasselbe wie "auf dem Screen zentriert",
-     da .poem-block selbst nicht bildschirmmittig sitzt. margin-left
-     statt transform:translateX(-50%): .scroll-hint traegt bereits zwei
-     transform-Animationen (scroll-hint-fade-in, scroll-hint-pulse) --
-     ein zusaetzlicher statischer transform-Wert wuerde von denen
-     ueberschrieben, sobald sie laufen (derselbe Konflikt wie beim Elmo-
-     Peek weiter oben in dieser Datei). bottom statt der vorherigen
-     Flow-Position (margin-top nach dem letzten Gedichtzeile) --
-     zusaetzlich per env() vor Safaris unterer Systemleiste geschuetzt,
-     wie zuvor nur bei .poem-block selbst (Mobile-Regel). */
+     Gedichttext zentriert" ist NICHT dasselbe wie "auf dem Screen
+     zentriert", da .poem-block selbst nicht bildschirmmittig sitzt.
+     margin-left statt transform:translateX(-50%): .scroll-hint traegt
+     bereits zwei transform-Animationen (scroll-hint-fade-in,
+     scroll-hint-pulse) -- ein zusaetzlicher statischer transform-Wert
+     wuerde von denen ueberschrieben, sobald sie laufen. bottom statt
+     Flow-Position, zusaetzlich per env() vor Safaris unterer
+     Systemleiste geschuetzt, wie .poem-block selbst (Mobile-Regel). */
   position: fixed;
   left: 50%;
-  margin-left: -1.5rem;
+  margin-left: -0.95rem; /* halbe Breite von 1.9rem, siehe .scroll-hint-hand */
   bottom: calc(10vh + env(safe-area-inset-bottom));
-  width: 3rem;
-  height: 3rem;
-  border: 1px solid var(--text-dark); /* war --muted-dark -- kraeftigerer Kontrast statt fein/verwaschen */
-  border-radius: 50%;
+  width: 1.9rem;
+  height: 3.6rem;
   appearance: none;
   background: none;
+  border: 0;
+  padding: 0;
   cursor: pointer;
   pointer-events: auto;
   opacity: 0;
@@ -341,16 +339,26 @@ html.hero-fixed .hero-line-wrapper {
      machen und das Einblenden unterlaufen. */
   animation: scroll-hint-fade-in 0.6s ease 1.2s forwards,
              scroll-hint-pulse 2.2s ease-in-out 1.8s infinite;
-  transition: border-color var(--fade);
 }
 
-.scroll-hint-chevron {
-  width: 1rem;
-  height: 1rem;
-  border-right: 2px solid var(--text-dark); /* war 1.5px / --muted-dark */
-  border-bottom: 2px solid var(--text-dark);
-  transform: translateY(-2px) rotate(45deg);
-  transition: border-color var(--fade);
+.scroll-hint-hand {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: var(--muted-dark);
+  -webkit-mask-image: url('image-neu.png');
+  mask-image: url('image-neu.png');
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  transition: background-color var(--fade);
+}
+
+.scroll-hint:hover .scroll-hint-hand {
+  background-color: var(--text-dark);
 }
 
 /* Faehrt beim Einblenden zusaetzlich ein kurzes Stueck von unten hoch
