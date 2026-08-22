@@ -59,7 +59,16 @@
      fixierte, teiltransparente Logo-Bar und wirkt oben angeschnitten.
      Als Variable statt unabhaengiger Werte, die bei einem Redesign
      leise auseinanderlaufen koennen. */
-  --logo-bar-height: 7.25rem;
+  /* War ein fixer Wert (7.25rem), unabhaengig vom Titel-Schriftgrad
+     (.site-title: clamp(1.4rem, 2.5vw, 2.4rem)) -- beim Verkleinern des
+     Browserfensters (noch VOR dem Mobil-Umbruch bei 768px) schrumpfte
+     der Titeltext zwar mit, die Kopfleiste blieb aber immer gleich
+     hoch, wodurch zunehmend Leerraum zwischen Titel/Nav und dem
+     Leisten-Rand entstand. Jetzt an dieselbe vw-Kurve gekoppelt wie
+     die Titel-Schriftgroesse (2.5vw * 1.3 Zeilenhoehe = 3.25vw), damit
+     die Leiste in gleichem Tempo mitschrumpft. Rechnung siehe
+     .site-nav (dieselbe clamp()-Teilformel fuer den Titel-Zeilenkasten). */
+  --logo-bar-height: calc(4.25rem + clamp(1.82rem, 3.25vw, 3.12rem));
   --logo-bar-height-mobile: 7rem;
 }
 
@@ -145,12 +154,12 @@ body {
 
 .site-nav {
   position: fixed;
-  /* 5rem: direkt an .site-titles neuen Werten (top:16px + eigene, jetzt
-     kompaktere Zeilenhoehe) ausgerichtet -- zusammen mit
-     --logo-bar-height ergibt sich oben wie unten derselbe 16px-Abstand
-     (Titel-Oberkante zur Logo-Bar-Kante bzw. Nav-Unterkante zur
-     Logo-Bar-Unterkante). */
-  top: 5rem;
+  /* War ein fixer Wert (5rem) -- jetzt wie --logo-bar-height an die
+     Titel-Schriftgroesse gekoppelt (1rem Abstand oben + Titel-Zeilen-
+     kasten (clamp(1.4rem,2.5vw,2.4rem) * 1.3 Zeilenhoehe) + 1rem
+     Abstand zur Nav), damit die Nav dem schrumpfenden Titel folgt statt
+     bei kleineren Fensterbreiten zunehmend Luft darueber zu lassen. */
+  top: calc(2rem + clamp(1.82rem, 3.25vw, 3.12rem));
   left: 50%;
   transform: translateX(-50%);
   z-index: 30;
@@ -787,27 +796,33 @@ html.hero-fixed .hero-line-wrapper {
   scroll-margin-top: calc(var(--logo-bar-height) + 1.5rem); /* war hart 12rem -- veraltet seit die Kopfleiste verkleinert wurde, jetzt an --logo-bar-height gekoppelt wie die uebrigen Anker-Ziele */
 }
 
+/* .portfolio-preview und .portfolio-list teilen dieselbe max-width und
+   werden beide zentriert -- dadurch schliessen Vorschaubild und Titel-
+   liste links buendig miteinander ab (beide starten am linken Rand
+   ihrer jeweils gleich breiten, zentrierten Box), UND die Gruppe wirkt
+   als Ganzes zentriert unter der zentrierten Ueberschrift, statt (wie
+   zuvor bei margin:0) an der linken Kante des vollen 1200px-Section-
+   Inhalts zu kleben. */
 .portfolio-preview {
   position: static;
   width: 100%;
-  margin-bottom: 3rem;
+  max-width: min(100%, calc(42vh * 16 / 9));
+  margin: 0 auto 3rem;
+}
+
+.portfolio-list {
+  width: 100%;
+  max-width: min(100%, calc(42vh * 16 / 9));
+  margin: 0 auto;
 }
 
 .portfolio-media {
   position: relative;
   aspect-ratio: 16 / 9;
-  /* Analog zu .lightbox-media: Hoehe bleibt auf einen Anteil der
-     Bildschirmhoehe begrenzt, Breite folgt daraus -- ohne diese Bremse
-     wurde das Bild auf breiten, aber nicht sehr hohen Laptop-Bild-
-     schirmen bei voller Breite und 16:9 unverhaeltnismaessig hoch.
-     42vh statt vormals 56vh: kleinere Vorschau, damit Ueberschrift und
-     mehr von der Titelliste ohne Scrollen mit ins Bild passen -- die
-     grosse Ansicht kommt ohnehin per Klick/Lightbox. */
-  width: min(100%, calc(42vh * 16 / 9));
-  /* War "0 auto" (zentriert) -- dadurch stand die linke Bildkante nicht
-     buendig mit Ueberschrift/Titelliste, die beide am Container-Rand
-     beginnen. Jetzt linksbuendig. */
-  margin: 0;
+  /* Breite/Hoehen-Deckel sitzt jetzt am Elternelement .portfolio-preview
+     (siehe dort) -- hier einfach volle Breite der bereits begrenzten,
+     zentrierten Box fuellen. */
+  width: 100%;
   overflow: hidden;
   background-color: var(--line);
   cursor: pointer;
@@ -1226,6 +1241,21 @@ html.hero-fixed .hero-line-wrapper {
   justify-content: center;
 }
 
+/* Einfache Pfeile unter allem, wie in der Mobil-Loesung -- kein
+   seitlich am Bildrand fixierter Pfeil mit Beschriftung mehr. Da
+   .lightbox-content ein normaler Blockfluss ist (kein Flex-Container),
+   reicht die HTML-Reihenfolge (Media, Info, Filmstrip, dann
+   .lightbox-nav-row) bereits aus, um die Navigation ganz unten
+   erscheinen zu lassen -- auf Mobile zusaetzlich per order:3 in
+   .lightbox-content (dort als Flex-Spalte) nochmal explizit erzwungen. */
+.lightbox-nav-row {
+  display: flex;
+  justify-content: space-between;
+  width: min(100%, 1100px, calc(58vh * 16 / 9));
+  margin: 1.25rem auto 0;
+  padding: 0 1.5rem;
+}
+
 .lightbox-nav {
   appearance: none;
   background: none;
@@ -1233,16 +1263,11 @@ html.hero-fixed .hero-line-wrapper {
   color: inherit;
   cursor: pointer;
   outline: none;
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
+  position: static;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 0;
-  width: 5.5rem;
+  justify-content: center;
+  padding: 0.5rem;
 }
 
 .lightbox-nav:focus-visible {
@@ -1250,40 +1275,27 @@ html.hero-fixed .hero-line-wrapper {
   outline-offset: 3px;
 }
 
-.lightbox-nav-prev { left: 0.5rem; padding-left: 1rem; }
-.lightbox-nav-next { right: 0.5rem; padding-right: 1rem; }
-
 .lightbox-arrow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3.25rem;
-  height: 3.25rem;
-  font-size: 2.2rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 1.9rem;
   color: #e8e6e1;
   line-height: 1;
   transition: color 0.2s, text-shadow 0.2s, transform 0.2s;
 }
 
+/* Wie mobil: keine Beschriftung neben dem Pfeil -- aria-label auf
+   .lightbox-nav traegt die Bedeutung weiterhin fuer Screenreader. */
 .lightbox-nav-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: center;
-  line-height: 1.3;
-  color: rgba(232, 230, 225, 0.55);
-  transition: color 0.2s;
+  display: none;
 }
 
 .lightbox-nav:hover .lightbox-arrow {
   color: var(--accent);
   transform: scale(1.12);
-}
-
-.lightbox-nav:hover .lightbox-nav-label {
-  color: rgba(232, 230, 225, 0.9);
 }
 
 /* KONTAKT (alle drei Seiten) */
@@ -1631,22 +1643,20 @@ html.hero-fixed .hero-line-wrapper {
     position: fixed;
   }
 
-  .lightbox-nav {
-    position: static;
-    top: auto;
-    left: auto;
-    right: auto;
-    transform: none;
-  }
-
   .lightbox-content {
     display: flex;
     flex-direction: column;
   }
 
+  /* Basis-Regel (siehe oben, ausserhalb der Media Query) liefert
+     bereits display:flex/justify-content/margin -- hier nur noch die
+     mobil-spezifische Breite (an .lightbox-media/.lightbox-info's
+     48vh-Formel statt der Desktop-58vh-Formel angepasst) und den
+     order-Wert, da .lightbox-content auf Mobile selbst ein Flex-
+     Container ist (order wirkt hier tatsaechlich, anders als im
+     normalen Blockfluss auf Desktop). */
   .lightbox-nav-row {
-    display: flex;
-    justify-content: space-between;
+    width: min(100%, 1100px, calc(48vh * 16 / 9));
     padding: 0.5rem 1rem;
     order: 3; /* zuletzt, nach .lightbox-info (order 2) -- Inhalt vor Navigation, natuerliche Lesereihenfolge */
     margin-top: 0.5rem;
@@ -1681,20 +1691,6 @@ html.hero-fixed .hero-line-wrapper {
   .filmstrip-thumb { width: 4.5rem; }
   .lightbox-close { width: 2.75rem; height: 2.75rem; font-size: 1.6rem; }
   .lightbox-arrow { width: 2.25rem; height: 2.25rem; font-size: 1.6rem; }
-  /* Nur noch der Pfeil auf Mobile, keine Beschriftung mehr daneben --
-     aria-label auf .lightbox-nav (siehe HTML) traegt die Bedeutung
-     weiterhin fuer Screenreader. */
-  .lightbox-nav-label {
-    display: none;
-  }
-  /* Der <br> bleibt im Markup fuer den Desktop-Zeilenumbruch (der
-     einzeilige Text wuerde dort bei .lightbox-navs schmaler 5.5rem-
-     Breite unkontrolliert umbrechen) -- auf Mobile per display:none
-     unwirksam gemacht, das vorangestellte Leerzeichen im Text sorgt
-     weiterhin fuer den Wortabstand. */
-  .lightbox-nav-break {
-    display: none;
-  }
 
   /* Die eigentliche Ursache fuer den weitlaeufig wirkenden Footer war
      .content-stage's padding-bottom (siehe oben) -- das hier ist eine
